@@ -7,10 +7,13 @@
   },
   "dependencies": {
     "@fingerprintjs/fingerprintjs-pro-server-api": "^6.0.0",
-    "express": "^4.21.1",
+    "express": "^5.0.1",
+    "tslib": "^2.8.1",
     "ts-node": "^10.9.2"
   },
   "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.9.1",
     "@fingerprintjs/tsconfig-dx-team": "^0.0.2",
     "typescript": "^5.6.3"
   }
