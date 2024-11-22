@@ -1,0 +1,17 @@
+{
+  "name": "node-sdk",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "start": "ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@fingerprintjs/fingerprintjs-pro-server-api": "^6.0.0",
+    "express": "^4.21.1",
+    "ts-node": "^10.9.2"
+  },
+  "devDependencies": {
+    "@fingerprintjs/tsconfig-dx-team": "^0.0.2",
+    "typescript": "^5.6.3"
+  }
+}
