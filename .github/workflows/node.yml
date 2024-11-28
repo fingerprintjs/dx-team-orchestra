@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Install Playwright browsers
-        working-directory: ./conductor
+        working-directory: ./projects/conductor
         run: pnpm playwright install --with-deps
 
       # Start the server in the background
@@ -35,5 +35,5 @@ jobs:
 
       # Run tests
       - name: Run tests
-        working-directory: ./conductor
+        working-directory: ./projects/conductor
         run: pnpm playwright test
