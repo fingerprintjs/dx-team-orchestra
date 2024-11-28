@@ -25,17 +25,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Install Playwright browsers
-        run: pnpm playwright install
+        working-directory: ./conductor
+        run: pnpm playwright install --with-deps
 
       # Start the server in the background
       - name: Start server
         run: |
           nohup pnpm start &
 
-      # Wait for the server to be ready
-      - name: Wait for server to start
-        run: sleep 5
-
       # Run tests
       - name: Run tests
+        working-directory: ./conductor
         run: pnpm playwright test
