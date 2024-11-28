@@ -1,0 +1,39 @@
+name: Run Node APIs
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+      - name: Install dependencies
+        run: pnpm install
+
+      # Start the server in the background
+      - name: Start server
+        run: |
+          pnpm start
+
+      # Wait for the server to be ready
+      - name: Wait for server to start
+        run: sleep 5
+
+      # Run tests
+      - name: Run tests
+        run: pnpm playwright test
