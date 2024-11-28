@@ -1,6 +1,9 @@
-name: Run Node APIs
+name: Run Node API tests
 
 on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *" # Runs daily at midnight UTC
   push:
     branches:
       - main
