@@ -24,6 +24,8 @@ jobs:
         run: npm install -g pnpm
       - name: Install dependencies
         run: pnpm install
+      - name: Install Playwright browsers
+        run: pnpm playwright install
 
       # Start the server in the background
       - name: Start server
