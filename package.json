@@ -5,6 +5,8 @@
   "scripts": {
     "start": "pnpm -r run start"
   },
-  "dependencies": {
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "http-server": "^14.1.1"
   }
 }
