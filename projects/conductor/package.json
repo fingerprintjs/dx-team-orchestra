@@ -1,12 +1,14 @@
 {
   "name": "conductor",
-  "private": true,
   "version": "1.0.0",
-  "dependencies": {
-    "playwright": "^1.49.0"
-  },
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
   "devDependencies": {
-    "@fingerprintjs/tsconfig-dx-team": "^0.0.2",
-    "typescript": "^5.6.3"
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^22.10.0"
   }
 }

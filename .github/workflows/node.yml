@@ -1,0 +1,42 @@
+name: Run Node API tests
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *" # Runs daily at midnight UTC
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+      - name: Install dependencies
+        run: pnpm install
+      - name: Install Playwright browsers
+        working-directory: ./projects/conductor
+        run: pnpm playwright install --with-deps
+
+      # Start the server in the background
+      - name: Start server
+        run: |
+          nohup pnpm start &
+
+      # Run tests
+      - name: Run tests
+        working-directory: ./projects/conductor
+        run: pnpm playwright test
