@@ -40,3 +40,6 @@ jobs:
       - name: Run tests
         working-directory: ./projects/conductor
         run: pnpm playwright test
+
+      - name: Generate Request ID
+        run: pnpm ts-node src/generateRequestId.ts
