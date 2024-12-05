@@ -1,0 +1,16 @@
+<script>
+  // Initialize the agent on page load.
+  const publicApiKey = "{{PUBLIC_API_KEY}}";
+
+  const fpPromise = import("https://fpjscdn.net/v3/" + publicApiKey).then(
+    (FingerprintJS) => FingerprintJS.load({ endpoint: "https://api.fpjs.io" })
+  );
+
+  // Get the requestId when you need it.
+  fpPromise
+    .then((fp) => fp.get())
+    .then((result) => {
+      const requestId = result.requestId;
+      localStorage.setItem("requestId", requestId);
+    });
+</script>
