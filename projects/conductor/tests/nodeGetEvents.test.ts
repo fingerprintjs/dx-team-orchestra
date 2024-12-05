@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import testData from "../testData";
-import generateRequestId from "../htmlScripts/generateRequestId";
+import { generateRequestId } from "../htmlScripts/generateRequestId";
 
 test.describe("Node", () => {
   test("getEvents for valid apiKey and requestId", async ({ request }) => {
