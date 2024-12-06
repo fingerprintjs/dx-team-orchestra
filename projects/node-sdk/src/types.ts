@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-export type Handler<QueryParams> = (req: Request<{}, {}, {}, QueryParams>, res: Response) => Promise<void>;
+export type Handler<QueryParams, RequestBody = {}> = (req: Request<{}, {}, RequestBody, QueryParams>, res: Response) => Promise<void>;
 
 export type MusicianResponse<Response200Type> =
     | {
