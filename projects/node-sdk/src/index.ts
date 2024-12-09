@@ -23,12 +23,12 @@ function getRegion(region: string): Region {
 
 app.get("/getEvents", async (req: Request, res: Response) => {
   const { apiKey = "", region = "", requestId = "" } = req.query;
-
-  const client = new FingerprintJsServerApiClient({
-    apiKey: apiKey.toString(),
-    region: getRegion(region.toString()),
-  });
   try {
+    const client = new FingerprintJsServerApiClient({
+      apiKey: apiKey.toString(),
+      region: getRegion(region.toString()),
+    });
+
     const event = await client.getEvent(requestId.toString());
     res.send({
       code: 200, // or 4**, 5** in case of error
