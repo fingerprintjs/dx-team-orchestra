@@ -1,7 +1,7 @@
 import { chromium } from "@playwright/test";
 import path from "path";
 import fs from "fs/promises";
-import testData from "../testData";
+import testData from "../utils/testData";
 
 export async function generateRequestId() {
   const serverPath = path.resolve(process.cwd());
@@ -15,7 +15,12 @@ export async function generateRequestId() {
     testData.generatidentification.publicApiKey
   );
 
-  const tempHtmlPath = path.join(serverPath, "temp_generateRequestId.html");
+  const tempHtmlPath = path.join(
+    serverPath,
+    `temp_RequestId-${Date.now()}-${Math.random()
+      .toString(10)
+      .substring(2, 5)}.html`
+  );
   await fs.writeFile(tempHtmlPath, htmlContent);
 
   try {

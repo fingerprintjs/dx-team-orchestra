@@ -3,6 +3,16 @@ const testData = {
     apiKey: "ftxPJdxnMlPIeZV09RoT",
     region: "Global",
   },
+  missing: {
+    apiKey: "",
+    region: "",
+    requestID: "",
+  },
+  invalid: {
+    apiKey: "ftxPJdxnMlP",
+    region: "AB",
+    requestID: "ftxPJdxnMlP.ftxPJdxnMlP",
+  },
   config: {
     baseURL: "http://localhost:3002",
   },
