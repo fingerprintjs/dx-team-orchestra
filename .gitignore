@@ -4,6 +4,7 @@
 
 
 ### Java template
+.gradle
 # Compiled class file
 *.class
 
