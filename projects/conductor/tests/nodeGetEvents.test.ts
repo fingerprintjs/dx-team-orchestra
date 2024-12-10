@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test";
 import testData from "../utils/testData";
-import { generateRequestId } from "../htmlScripts/generateRequestId";
+import { generateRequestId } from "../htmlScripts/runNodeIdentification";
 import { getApiRequest } from "../utils/api";
 
 test.describe("Node getEvents Suite", () => {
   test("getEvents for valid apiKey and requestId", async ({ request }) => {
-    const requestId = await generateRequestId();
+    const requestId = await generateRequestId("requestId");
     const responseBody = await getApiRequest(
       request,
       `${testData.config.baseURL}/getEvents`,
@@ -61,7 +61,7 @@ test.describe("Node getEvents Suite", () => {
   });
 
   test("getEvents for invalid apikey", async ({ request }) => {
-    const requestId = await generateRequestId();
+    const requestId = await generateRequestId("requestId");
     const responseBody = await getApiRequest(
       request,
       `${testData.config.baseURL}/getEvents`,
@@ -79,7 +79,7 @@ test.describe("Node getEvents Suite", () => {
     );
   });
   test("getEvents for invalid region", async ({ request }) => {
-    const requestId = await generateRequestId();
+    const requestId = await generateRequestId("requestId");
     const responseBody = await getApiRequest(
       request,
       `${testData.config.baseURL}/getEvents`,

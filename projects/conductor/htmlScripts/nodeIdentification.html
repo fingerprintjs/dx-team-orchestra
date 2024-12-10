@@ -11,6 +11,8 @@
     .then((fp) => fp.get())
     .then((result) => {
       const requestId = result.requestId;
+      const visitorId = result.visitorId;
       localStorage.setItem("requestId", requestId);
+      localStorage.setItem("visiotId", visitorId);
     });
 </script>

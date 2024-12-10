@@ -3,9 +3,9 @@ import path from "path";
 import fs from "fs/promises";
 import testData from "../utils/testData";
 
-export async function generateRequestId() {
+export async function generateRequestId(key: "requestId" | "visitorId") {
   const serverPath = path.resolve(process.cwd());
-  const htmlFile = "htmlScripts/nodeRequestID.html";
+  const htmlFile = "htmlScripts/nodeIdentification.html";
 
   const htmlPath = path.join(serverPath, htmlFile);
   let htmlContent = await fs.readFile(htmlPath, { encoding: "utf-8" });
@@ -17,7 +17,7 @@ export async function generateRequestId() {
 
   const tempHtmlPath = path.join(
     serverPath,
-    `temp_RequestId-${Date.now()}-${Math.random()
+    `temp_nodeIdentification-${Date.now()}-${Math.random()
       .toString(10)
       .substring(2, 5)}.html`
   );
@@ -31,16 +31,23 @@ export async function generateRequestId() {
     await page.goto(`file://${tempHtmlPath}`);
 
     await page.waitForTimeout(2000);
+    const value = await page.evaluate(async (key) => {
+      return new Promise((resolve) => {
+        const interval = setInterval(() => {
+          const result = localStorage.getItem(key);
+          if (result) {
+            clearInterval(interval);
+            resolve(result);
+          }
+        }, 100); // Check every 100ms
+      });
+    }, key);
 
-    const requestId = await page.evaluate(() =>
-      localStorage.getItem("requestId")
-    );
-
-    if (!requestId) {
-      throw new Error("Failed to generate requestId");
+    if (!value) {
+      throw new Error(`Failed to generate ${key}`);
     }
 
-    return requestId;
+    return value;
   } finally {
     await fs.unlink(tempHtmlPath);
   }
