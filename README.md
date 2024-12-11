@@ -9,6 +9,10 @@ Work in progress.
 ### Node SDK
 To run node SDK: just run `pnpm start` in project root.
 
+### Java SDK
+To run Java SDK: run `make start-java`
+To stop Java SDK: run `make stop-java`
+
 ### All SDKs
 
 To run all SDKs just run `make start-all`, it will run Docker containers with all available server SDKs (musicians).
