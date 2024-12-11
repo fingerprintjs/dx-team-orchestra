@@ -5,7 +5,20 @@ More info: https://www.notion.so/fingerprintjs/E2E-tests-for-server-SDKs-14302f1
 Work in progress.
 
 ## How to run
+
+### Node SDK
 To run node SDK: just run `pnpm start` in project root.
+
+### All SDKs
+
+To run all SDKs just run `make start-all`, it will run Docker containers with all available server SDKs (musicians).
+To stop these containers just run `make stop-all`.
+
+Ports used for each SDK:
+- Node SDK - `3002`
+- Java SDK - `8080`
+
+### Making requests
 Then You can make GET request in format: `http://localhost:3002/getEvents?apiKey=<SECRET_KEY>&region=<REGION>&requestId=<REQUEST_ID>`
 
 For `/unseal` method use POST with JSON body like:

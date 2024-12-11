@@ -31,3 +31,7 @@ dependencies {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+springBoot {
+	mainClass.set("com.example.java_sdk.JavaSdkApplication")
+}
