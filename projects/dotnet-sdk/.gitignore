@@ -1,6 +1,7 @@
 obj/
 bin/
 .vs/
+.vscode/
 *.user
 *.suo
 *.userosscache
