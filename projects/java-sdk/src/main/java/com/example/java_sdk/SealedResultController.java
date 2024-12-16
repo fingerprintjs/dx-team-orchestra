@@ -16,8 +16,8 @@ import java.util.Map;
 
 
 public class SealedResultController {
-    @PostMapping("/getEvents")
-    public ResponseEntity<MusicianResponse> getEvents(
+    @PostMapping("/unseal")
+    public ResponseEntity<MusicianResponse> unseal(
             @RequestBody String sealedData,
             @RequestBody List<Map<String, String>> keys
     ) {
