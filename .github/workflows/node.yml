@@ -85,9 +85,16 @@ jobs:
 
       - name: Build with Gradle
         working-directory: ./projects/java-sdk
-        run: ./gradlew clean build --no-daemon
+        run: |
+          pwd
+          ls -la
+          ./gradlew clean build --no-daemon
 
       - name: Run the Java web server
         working-directory: ./projects/java-sdk
         run: |
           nohup java -jar build/libs/*-SNAPSHOT.jar &
+
+      - name: Run tests
+        working-directory: ./projects/conductor
+        run: MUSICIAN_PORT=8080 pnpm playwright test
