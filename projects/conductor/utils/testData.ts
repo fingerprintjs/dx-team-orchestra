@@ -13,6 +13,14 @@ const testData = {
     region: "AB",
     requestID: "ftxPJdxnMlP.ftxPJdxnMlP",
   },
+  differentRegion: {
+    apiKey: "ftxPJdxnMlPIeZV09RoT",
+    region: "eu",
+  },
+  deletedApiKey: {
+    apiKey: "ChMHgPDUzzr5qgTt4t45",
+    region: "Global",
+  },
   config: {
     baseURL: "http://localhost:3002",
   },

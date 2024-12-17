@@ -1,20 +1,28 @@
 import { chromium } from "@playwright/test";
 import path from "path";
 import fs from "fs/promises";
+import { fileURLToPath } from "url";
 import testData from "../utils/testData";
 
-export async function generateRequestId(key: "requestId" | "visitorId") {
-  const serverPath = path.resolve(process.cwd());
-  const htmlFile = "htmlScripts/nodeIdentification.html";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+export async function generateRequestId(
+  key: "requestId" | "visitorId"
+): Promise<string> {
+  const serverPath = __dirname;
+  const htmlFile = "/nodeIdentification.html";
+
+  // Read and process the HTML file
   const htmlPath = path.join(serverPath, htmlFile);
   let htmlContent = await fs.readFile(htmlPath, { encoding: "utf-8" });
 
+  // Replace placeholder with public API key
   htmlContent = htmlContent.replace(
     "{{PUBLIC_API_KEY}}",
     testData.generatidentification.publicApiKey
   );
 
+  // Create a temporary HTML file with a unique name
   const tempHtmlPath = path.join(
     serverPath,
     `temp_nodeIdentification-${Date.now()}-${Math.random()
@@ -28,28 +36,31 @@ export async function generateRequestId(key: "requestId" | "visitorId") {
     const context = await browser.newContext();
     const page = await context.newPage();
 
+    // Load the temporary HTML file
     await page.goto(`file://${tempHtmlPath}`);
 
-    await page.waitForTimeout(2000);
+    // Wait for the key to appear in localStorage
     const value = await page.evaluate(async (key) => {
-      return new Promise((resolve) => {
+      return new Promise<string>((resolve) => {
         const interval = setInterval(() => {
           const result = localStorage.getItem(key);
           if (result) {
             clearInterval(interval);
             resolve(result);
           }
-        }, 100); // Check every 100ms
+        }, 100);
       });
     }, key);
 
     if (!value) {
-      throw new Error(`Failed to generate ${key}`);
+      throw new Error(`Failed to retrieve ${key} from localStorage`);
     }
 
     return value;
   } finally {
-    await fs.unlink(tempHtmlPath);
+    await fs.unlink(tempHtmlPath).catch((err) => {
+      console.error(`Failed to delete temp file: ${tempHtmlPath}`, err);
+    });
   }
 }
 
