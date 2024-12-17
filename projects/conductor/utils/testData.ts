@@ -26,7 +26,7 @@ const testData = {
     region: "Global",
   },
   config: {
-    baseURL: "http://localhost:3002",
+    baseURL: `http://localhost:${process.env.MUSICIAN_PORT || 3002}`,
     apiUrl: "https://api.fpjs.io",
   },
   generatidentification: {
