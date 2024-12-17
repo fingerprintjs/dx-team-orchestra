@@ -19,6 +19,8 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
+        with:
+          version: 9
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -51,6 +53,8 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
+        with:
+          version: 9
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
