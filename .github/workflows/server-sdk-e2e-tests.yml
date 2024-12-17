@@ -1,4 +1,4 @@
-name: Run Node API tests
+name: Run Server SDK e2e tests
 
 on:
   workflow_dispatch:
