@@ -86,8 +86,6 @@ jobs:
       - name: Build with Gradle
         working-directory: ./projects/java-sdk
         run: |
-          pwd
-          ls -la
           ./gradlew clean build --no-daemon
 
       - name: Run the Java web server
