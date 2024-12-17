@@ -73,7 +73,6 @@ jobs:
 
       - name: Cache Gradle dependencies
         uses: actions/cache@v4
-        working-directory: ./projects/java-sdk
         with:
           path: ~/.gradle/caches
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}
