@@ -23,6 +23,7 @@ const testData = {
   },
   config: {
     baseURL: "http://localhost:3002",
+    apiUrl: "https://api.fpjs.io",
   },
   generatidentification: {
     publicApiKey: "rO6UOgRbMculDuXmJl4g",

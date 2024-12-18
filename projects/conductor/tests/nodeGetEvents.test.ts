@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { generateRequestId } from "../htmlScripts/runNodeIdentification";
 import { validateGetEventsResponse } from "../utils/api";
 import testData from "../utils/testData";
-import { getEventsexpectedResponseStructure } from "../utils/api";
+import { getEventByRequestId } from "../utils/api";
 
 test.describe("Node getEvents Suite", () => {
   test("getEvents for valid apiKey and requestId", async ({ request }) => {
@@ -13,12 +13,15 @@ test.describe("Node getEvents Suite", () => {
       requestId: requestId,
     };
 
-    const responseBody = await validateGetEventsResponse(
+    const muisicanAppResponseBody = await validateGetEventsResponse(
       request,
       requestData,
       200
     );
-    expect(responseBody).toMatchObject(getEventsexpectedResponseStructure);
+    const eventByRequestId = await getEventByRequestId(request, requestId);
+    expect(muisicanAppResponseBody.parsedResponse).toMatchObject(
+      eventByRequestId
+    );
   });
 
   test("getEvents for missing parameters", async ({ request }) => {

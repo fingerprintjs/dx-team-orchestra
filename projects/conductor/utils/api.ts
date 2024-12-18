@@ -34,52 +34,16 @@ export async function validateGetEventsResponse(
   return responseBody;
 }
 
-export const getEventsexpectedResponseStructure = {
-  code: expect.any(Number),
-  originalResponse: expect.objectContaining({
-    products: expect.objectContaining({
-      identification: expect.objectContaining({
-        data: expect.objectContaining({
-          requestId: expect.any(String),
-          visitorId: expect.any(String),
-          ip: expect.any(String),
-          browserDetails: expect.objectContaining({
-            browserName: expect.any(String),
-            browserFullVersion: expect.any(String),
-            os: expect.any(String),
-            osVersion: expect.any(String),
-          }),
-        }),
-      }),
-      rawDeviceAttributes: expect.objectContaining({
-        data: expect.objectContaining({
-          architecture: expect.objectContaining({
-            value: expect.any(Number),
-          }),
-          audio: expect.objectContaining({
-            value: expect.any(Number),
-          }),
-          canvas: expect.objectContaining({
-            value: expect.objectContaining({
-              Geometry: expect.any(String),
-              Text: expect.any(String),
-              Winding: expect.any(Boolean),
-            }),
-          }),
-          hardwareConcurrency: expect.objectContaining({
-            value: expect.any(Number),
-          }),
-        }),
-      }),
-      botd: expect.objectContaining({
-        data: expect.objectContaining({
-          bot: expect.objectContaining({
-            result: expect.any(String),
-            type: expect.any(String),
-          }),
-        }),
-      }),
-    }),
-  }),
-  parsedResponse: expect.any(Object),
-};
+export async function getEventByRequestId(request, requestId) {
+  const getEventByRequestID = await request.get(
+    `${testData.config.apiUrl}/events/${requestId}`,
+    {
+      headers: {
+        "Auth-API-Key": testData.valid.apiKey,
+        "content-type": "application/json",
+      },
+    }
+  );
+  expect(getEventByRequestID.status()).toEqual(200);
+  return getEventByRequestID.json();
+}
