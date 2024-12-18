@@ -34,12 +34,12 @@ export async function validateGetEventsResponse(
   return responseBody;
 }
 
-export async function getEventByRequestId(request, requestId) {
+export async function getEventByRequestId(request, requestId, apiKey) {
   const getEventByRequestID = await request.get(
     `${testData.config.apiUrl}/events/${requestId}`,
     {
       headers: {
-        "Auth-API-Key": testData.valid.apiKey,
+        "Auth-API-Key": apiKey,
         "content-type": "application/json",
       },
     }

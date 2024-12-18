@@ -5,8 +5,41 @@ import testData from "../utils/testData";
 import { getEventByRequestId } from "../utils/api";
 
 test.describe("Node getEvents Suite", () => {
-  test("getEvents for valid apiKey and requestId", async ({ request }) => {
-    const requestId = await generateRequestId("requestId");
+  test("getEvents for valid apiKey and requestId with Smart Signals", async ({
+    request,
+  }) => {
+    const requestId = await generateRequestId(
+      "requestId",
+      testData.generatidentification.publicApiKeySS
+    );
+    const requestData = {
+      apiKey: testData.validSmartSignal.apiKey,
+      region: testData.validSmartSignal.region,
+      requestId: requestId,
+    };
+
+    const muisicanAppResponseBody = await validateGetEventsResponse(
+      request,
+      requestData,
+      200
+    );
+    const eventByRequestId = await getEventByRequestId(
+      request,
+      requestId,
+      testData.validSmartSignal.apiKey
+    );
+    expect(muisicanAppResponseBody.parsedResponse).toMatchObject(
+      eventByRequestId
+    );
+  });
+
+  test("getEvents for valid apiKey and requestId without Smart Signals", async ({
+    request,
+  }) => {
+    const requestId = await generateRequestId(
+      "requestId",
+      testData.generatidentification.publicApiKey
+    );
     const requestData = {
       apiKey: testData.valid.apiKey,
       region: testData.valid.region,
@@ -18,7 +51,11 @@ test.describe("Node getEvents Suite", () => {
       requestData,
       200
     );
-    const eventByRequestId = await getEventByRequestId(request, requestId);
+    const eventByRequestId = await getEventByRequestId(
+      request,
+      requestId,
+      testData.valid.apiKey
+    );
     expect(muisicanAppResponseBody.parsedResponse).toMatchObject(
       eventByRequestId
     );
@@ -47,10 +84,13 @@ test.describe("Node getEvents Suite", () => {
   });
 
   test("getEvents for invalid apikey", async ({ request }) => {
-    const requestId = await generateRequestId("requestId");
+    const requestId = await generateRequestId(
+      "requestId",
+      testData.generatidentification.publicApiKeySS
+    );
     const requestData = {
       apiKey: testData.invalid.apiKey,
-      region: testData.valid.region,
+      region: testData.validSmartSignal.region,
       requestId: requestId,
     };
 
@@ -58,9 +98,12 @@ test.describe("Node getEvents Suite", () => {
   });
 
   test("getEvents for invalid region", async ({ request }) => {
-    const requestId = await generateRequestId("requestId");
+    const requestId = await generateRequestId(
+      "requestId",
+      testData.generatidentification.publicApiKeySS
+    );
     const requestData = {
-      apiKey: testData.valid.apiKey,
+      apiKey: testData.validSmartSignal.apiKey,
       region: testData.invalid.region,
       requestId: requestId,
     };
@@ -70,8 +113,8 @@ test.describe("Node getEvents Suite", () => {
 
   test("getEvents for invalid requestId", async ({ request }) => {
     const requestData = {
-      apiKey: testData.valid.apiKey,
-      region: testData.valid.region,
+      apiKey: testData.validSmartSignal.apiKey,
+      region: testData.validSmartSignal.region,
       requestId: testData.invalid.requestID,
     };
 
@@ -79,7 +122,10 @@ test.describe("Node getEvents Suite", () => {
   });
 
   test("getEvents for different region", async ({ request }) => {
-    const requestId = await generateRequestId("requestId");
+    const requestId = await generateRequestId(
+      "requestId",
+      testData.generatidentification.publicApiKeySS
+    );
     const requestData = {
       apiKey: testData.differentRegion.apiKey,
       region: testData.differentRegion.region,
@@ -90,7 +136,10 @@ test.describe("Node getEvents Suite", () => {
   });
 
   test("getEvents for deleted APIkey", async ({ request }) => {
-    const requestId = await generateRequestId("requestId");
+    const requestId = await generateRequestId(
+      "requestId",
+      testData.generatidentification.publicApiKeySS
+    );
     const requestData = {
       apiKey: testData.deletedApiKey.apiKey,
       region: testData.deletedApiKey.region,

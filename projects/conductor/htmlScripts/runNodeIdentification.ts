@@ -7,7 +7,8 @@ import testData from "../utils/testData";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export async function generateRequestId(
-  key: "requestId" | "visitorId"
+  key: "requestId" | "visitorId",
+  publicApiKey: string
 ): Promise<string> {
   const serverPath = __dirname;
   const htmlFile = "/nodeIdentification.html";
@@ -17,10 +18,7 @@ export async function generateRequestId(
   let htmlContent = await fs.readFile(htmlPath, { encoding: "utf-8" });
 
   // Replace placeholder with public API key
-  htmlContent = htmlContent.replace(
-    "{{PUBLIC_API_KEY}}",
-    testData.generatidentification.publicApiKey
-  );
+  htmlContent = htmlContent.replace("{{PUBLIC_API_KEY}}", publicApiKey);
 
   // Create a temporary HTML file with a unique name
   const tempHtmlPath = path.join(
