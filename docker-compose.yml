@@ -1,0 +1,12 @@
+version: '3'
+services:
+  java-sdk:
+    build:
+      context: ./projects/java-sdk
+    ports:
+      - "8080:8080"
+  node-sdk:
+    build:
+      context: ./projects/node-sdk
+    ports:
+      - "3002:3002"
