@@ -1,10 +1,14 @@
 start-all:
-	docker-compose up -d
+	docker-compose up --build -d
 stop-all:
+	docker-compose down
+stop-dotnet:
+	docker-compose down
+stop-java:
 	docker-compose down
 
 start-java:
-	docker-compose up java-sdk -d
+	docker-compose up java-sdk --build -d
 
-stop-java:
-	docker-compose down
+start-dotnet:
+	docker-compose up dotnet-sdk --build -d

@@ -5,6 +5,11 @@ services:
       context: ./projects/java-sdk
     ports:
       - "8080:8080"
+  dotnet-sdk:
+    build:
+      context: ./projects/dotnet-sdk
+    ports:
+      - "5243:5243"
   node-sdk:
     build:
       context: ./projects/node-sdk

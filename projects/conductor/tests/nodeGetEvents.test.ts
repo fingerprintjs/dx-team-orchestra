@@ -68,7 +68,7 @@ test.describe("Node getEvents Suite", () => {
       requestId: testData.missing.requestID,
     };
 
-    await validateGetEventsResponse(request, requestData, 500);
+    await validateGetEventsResponse(request, requestData, 404);
   });
 
   test("getEvents for invalid apikey, region, and requestID", async ({

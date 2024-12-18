@@ -1,0 +1,150 @@
+name: Run Server SDK e2e tests
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *" # Runs daily at midnight UTC
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  run-node-sdk-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
+        with:
+          version: 9
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          cache: pnpm
+          node-version: 18
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Playwright browsers
+        working-directory: ./projects/conductor
+        run: pnpm playwright install --with-deps
+
+      # Start the server in the background
+      - name: Start server
+        run: |
+          nohup pnpm start &
+
+      # Run tests
+      - name: Run tests
+        working-directory: ./projects/conductor
+        env:
+          MUSICIAN_PORT: 3002
+        run: pnpm playwright test
+
+  run-java-sdk-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
+        with:
+          version: 9
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          cache: pnpm
+          node-version: 18
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Playwright browsers
+        working-directory: ./projects/conductor
+        run: pnpm playwright install --with-deps
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Build with Gradle
+        working-directory: ./projects/java-sdk
+        run: |
+          ./gradlew clean build --no-daemon
+
+      - name: Run the Java web server
+        working-directory: ./projects/java-sdk
+        run: |
+          nohup java -jar build/libs/*-SNAPSHOT.jar &
+
+      - name: Run tests
+        working-directory: ./projects/conductor
+        env:
+          MUSICIAN_PORT: 8080
+        run: pnpm playwright test
+  run-dotnet-sdk-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
+        with:
+          version: 9
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          cache: pnpm
+          node-version: 18
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Playwright browsers
+        working-directory: ./projects/conductor
+        run: pnpm playwright install --with-deps
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0'
+
+      - name: Restore dependencies
+        run: dotnet restore ./projects/dotnet-sdk
+
+      - name: Build the project
+        run: dotnet publish ./projects/dotnet-sdk --configuration Release --output ./projects/dotnet-sdk/out
+
+
+      - name: Run .NET application
+        working-directory: ./projects/dotnet-sdk
+        env:
+          HTTP_PORTS: 5243
+        run: |
+          nohup dotnet ./out/dotnet-sdk.dll &
+
+      - name: Run tests
+        working-directory: ./projects/conductor
+        env:
+          MUSICIAN_PORT: 5243
+        run: pnpm playwright test
