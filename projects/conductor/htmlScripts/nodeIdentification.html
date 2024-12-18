@@ -6,7 +6,6 @@
     (FingerprintJS) => FingerprintJS.load({ endpoint: "https://api.fpjs.io" })
   );
 
-  // Get the requestId when you need it.
   fpPromise
     .then((fp) => fp.get())
     .then((result) => {

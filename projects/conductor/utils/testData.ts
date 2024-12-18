@@ -1,6 +1,10 @@
 const testData = {
-  valid: {
+  validSmartSignal: {
     apiKey: "ftxPJdxnMlPIeZV09RoT",
+    region: "Global",
+  },
+  valid: {
+    apiKey: "BCSjInUvHRIOKTpEuIF2",
     region: "Global",
   },
   missing: {
@@ -13,11 +17,21 @@ const testData = {
     region: "AB",
     requestID: "ftxPJdxnMlP.ftxPJdxnMlP",
   },
+  differentRegion: {
+    apiKey: "ftxPJdxnMlPIeZV09RoT",
+    region: "eu",
+  },
+  deletedApiKey: {
+    apiKey: "ChMHgPDUzzr5qgTt4t45",
+    region: "Global",
+  },
   config: {
     baseURL: "http://localhost:3002",
+    apiUrl: "https://api.fpjs.io",
   },
   generatidentification: {
-    publicApiKey: "rO6UOgRbMculDuXmJl4g",
+    publicApiKeySS: "rO6UOgRbMculDuXmJl4g",
+    publicApiKey: "GyvQGYtzxEmK6JszqXaA",
   },
 };
 export default testData;
