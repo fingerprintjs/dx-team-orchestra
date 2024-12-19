@@ -10,6 +10,11 @@ services:
       context: ./projects/dotnet-sdk
     ports:
       - "5243:5243"
+  go-sdk:
+    build:
+      context: ./projects/go-sdk
+    ports:
+      - "8081:8081"
   node-sdk:
     build:
       context: ./projects/node-sdk

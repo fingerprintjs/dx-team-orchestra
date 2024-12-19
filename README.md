@@ -11,7 +11,15 @@ To run node SDK: just run `pnpm start` in project root.
 
 ### Java SDK
 To run Java SDK: run `make start-java`
-To stop Java SDK: run `make stop-java`
+To stop Java SDK: run `make stop-all`
+
+### DotNET SDK
+To run Java SDK: run `make start-dotnet`
+To stop Java SDK: run `make stop-all`
+
+### Go SDK
+To run Java SDK: run `make start-go`
+To stop Java SDK: run `make stop-all`
 
 ### All SDKs
 
