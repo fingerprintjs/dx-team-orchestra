@@ -148,3 +148,63 @@ jobs:
         env:
           MUSICIAN_PORT: 5243
         run: pnpm playwright test
+
+  run-go-sdk-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
+        with:
+          version: 9
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          cache: pnpm
+          node-version: 18
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Playwright browsers
+        working-directory: ./projects/conductor
+        run: pnpm playwright install --with-deps
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-mod-
+
+      - name: Install dependencies
+        working-directory: ./projects/go-sdk
+        run: |
+          go mod tidy
+
+      - name: Build Go app
+        working-directory: ./projects/go-sdk
+        run: |
+          go build -o myapp .
+
+      - name: Run Go application
+        working-directory: ./projects/go-sdk
+        run: |
+          nohup ./myapp &
+
+      - name: Run tests
+        working-directory: ./projects/conductor
+        env:
+          MUSICIAN_PORT: 8081
+        run: pnpm playwright test
