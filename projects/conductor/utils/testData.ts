@@ -33,5 +33,14 @@ const testData = {
     publicApiKeySS: "rO6UOgRbMculDuXmJl4g",
     publicApiKey: "GyvQGYtzxEmK6JszqXaA",
   },
+
+  updateEvent: {
+    linkedId: `linkedId_${Math.floor(Math.random() * 1000)}`,
+    suspect: Math.random() < 0.5,
+    tag: {
+      automationTest: `test_${Math.random().toString(36).substring(2, 10)}`,
+    },
+  },
 };
+
 export default testData;
