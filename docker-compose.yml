@@ -20,3 +20,8 @@ services:
       context: ./projects/node-sdk
     ports:
       - "3002:3002"
+  python-sdk:
+    build:
+      context: ./projects/python-sdk
+    ports:
+      - "3003:3003"
