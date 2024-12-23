@@ -14,7 +14,10 @@ test.describe("Node updateEvents Suite", () => {
     await updateEventByRequestId(
       request,
       requestId,
-      testData.validSmartSignal.apiKey
+      testData.validSmartSignal.apiKey,
+      testData.updateEvent.linkedId,
+      testData.updateEvent.suspect,
+      testData.updateEvent.tag
     );
 
     const eventByRequestId = await getEventByRequestId(
@@ -29,5 +32,71 @@ test.describe("Node updateEvents Suite", () => {
         testData.updateEvent[property]
       );
     });
+  });
+
+  test("updateEvents for valid compelx tag", async ({ request }) => {
+    const requestId = await generateRequestId(
+      "requestId",
+      testData.generatidentification.publicApiKeySS
+    );
+    await updateEventByRequestId(
+      request,
+      requestId,
+      testData.validSmartSignal.apiKey,
+      undefined,
+      undefined,
+      testData.updateEventComplexTag.tag
+    );
+
+    const eventByRequestId = await getEventByRequestId(
+      request,
+      requestId,
+      testData.validSmartSignal.apiKey
+    );
+    const responsebody = await eventByRequestId.products.identification.data;
+    expect(responsebody.tag).toStrictEqual(testData.updateEventComplexTag.tag);
+  });
+
+  test("updateEvents for linkedId only", async ({ request }) => {
+    const requestId = await generateRequestId(
+      "requestId",
+      testData.generatidentification.publicApiKeySS
+    );
+    await updateEventByRequestId(
+      request,
+      requestId,
+      testData.validSmartSignal.apiKey,
+      testData.updateEvent.linkedId
+    );
+
+    const eventByRequestId = await getEventByRequestId(
+      request,
+      requestId,
+      testData.validSmartSignal.apiKey
+    );
+    const responsebody = await eventByRequestId.products.identification.data;
+    expect(responsebody.linkedId).toStrictEqual(testData.updateEvent.linkedId);
+  });
+
+  test("updateEvents for suspect only", async ({ request }) => {
+    const requestId = await generateRequestId(
+      "requestId",
+      testData.generatidentification.publicApiKeySS
+    );
+    await updateEventByRequestId(
+      request,
+      requestId,
+      testData.validSmartSignal.apiKey,
+      undefined,
+      testData.updateEvent.suspect
+    );
+
+    const eventByRequestId = await getEventByRequestId(
+      request,
+      requestId,
+      testData.validSmartSignal.apiKey
+    );
+    const responsebody = await eventByRequestId.products.identification.data;
+    expect(responsebody.suspect).toStrictEqual(testData.updateEvent.suspect);
   });
 });

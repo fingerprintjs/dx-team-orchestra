@@ -49,17 +49,25 @@ export async function getEventByRequestId(request, requestId, apiKey) {
   return getEventByRequestID.json();
 }
 
-export async function updateEventByRequestId(request, requestId, apiKey) {
+export async function updateEventByRequestId(
+  request,
+  requestId,
+  apiKey,
+  linkedId?,
+  suspect?,
+  tag?
+) {
   // delay added before updating to ensure that the requestId is ready to be used
   await delay(10000);
+  const updateData = {
+    linkedId,
+    suspect,
+    tag,
+  };
   const updateEventByRequestID = await request.put(
     `${testData.config.apiUrl}/events/${requestId}`,
     {
-      data: {
-        linkedId: testData.updateEvent.linkedId,
-        suspect: testData.updateEvent.suspect,
-        tag: testData.updateEvent.tag,
-      },
+      data: updateData,
       headers: {
         "Auth-API-Key": apiKey,
         "content-type": "application/json",
