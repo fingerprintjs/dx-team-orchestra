@@ -11,6 +11,12 @@ test.describe("Node updateEvents Suite", () => {
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
+    const initialEvent = await getEventByRequestId(
+      request,
+      requestId,
+      testData.validSmartSignal.apiKey
+    );
+
     await updateEventByRequestId(
       request,
       requestId,
@@ -20,18 +26,45 @@ test.describe("Node updateEvents Suite", () => {
       testData.updateEvent.tag
     );
 
-    const eventByRequestId = await getEventByRequestId(
+    const updatedEvent = await getEventByRequestId(
       request,
       requestId,
       testData.validSmartSignal.apiKey
     );
-    const responsebody = await eventByRequestId.products.identification.data;
+
+    // validate fields are updated
+    const updatedResponseBody = updatedEvent.products.identification.data;
     const propertiesToValidate = ["linkedId", "tag", "suspect"];
     propertiesToValidate.forEach((property) => {
-      expect(responsebody[property]).toStrictEqual(
+      expect(updatedResponseBody[property]).toStrictEqual(
         testData.updateEvent[property]
       );
     });
+
+    // Validate other fields were not changed
+    function removeRepeatedFields(response) {
+      Object.keys(response).forEach((key) => {
+        if (typeof response[key] === "object" && response[key] !== null) {
+          removeRepeatedFields(response[key]);
+        }
+
+        // Remove `linkedId`, `tag`, and `suspect` outside `.products.identification.data`
+        if (
+          ["linkedId", "tag", "suspect"].includes(key) &&
+          !response.products?.identification?.data
+        ) {
+          delete response[key];
+        }
+        if (key === "meta" && response[key]?.automationTest) {
+          delete response[key];
+        }
+      });
+    }
+
+    removeRepeatedFields(initialEvent);
+    removeRepeatedFields(updatedEvent);
+
+    expect(initialEvent).toStrictEqual(updatedEvent);
   });
 
   test("updateEvents for valid apiKey and requestId without Smart Signals", async ({
