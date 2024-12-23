@@ -1,7 +1,8 @@
 import { APIRequestContext, expect } from "@playwright/test";
 import testData from "../utils/testData";
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export async function getApiRequest(
+export async function getEventsApiRequest(
   request: APIRequestContext,
   url: string,
   params: Record<string, string>
@@ -19,7 +20,7 @@ export async function validateGetEventsResponse(
   expectedCode: number,
   expectedStructure?: any
 ) {
-  const responseBody = await getApiRequest(
+  const responseBody = await getEventsApiRequest(
     request,
     `${testData.config.baseURL}/getEvents`,
     requestData
@@ -46,4 +47,38 @@ export async function getEventByRequestId(request, requestId, apiKey) {
   );
   expect(getEventByRequestID.status()).toEqual(200);
   return getEventByRequestID.json();
+}
+
+export async function updateEventByRequestId(
+  request,
+  requestId,
+  apiKey?,
+  linkedId?,
+  suspect?,
+  tag?,
+  withDelay: boolean = true
+) {
+  // delay added before updating to ensure that the requestId is ready to be used
+  if (withDelay) {
+    await delay(10000);
+  }
+  const updateData = {
+    linkedId,
+    suspect,
+    tag,
+  };
+  const updateEventByRequestID = await request.put(
+    `${testData.config.apiUrl}/events/${requestId}`,
+    {
+      data: updateData,
+      headers: {
+        "Auth-API-Key": apiKey,
+        "content-type": "application/json",
+      },
+    }
+  );
+  return {
+    status: updateEventByRequestID.status(),
+    json: await updateEventByRequestID.json(),
+  };
 }
