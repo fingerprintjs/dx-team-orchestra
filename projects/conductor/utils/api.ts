@@ -52,13 +52,16 @@ export async function getEventByRequestId(request, requestId, apiKey) {
 export async function updateEventByRequestId(
   request,
   requestId,
-  apiKey,
+  apiKey?,
   linkedId?,
   suspect?,
-  tag?
+  tag?,
+  withDelay: boolean = true
 ) {
   // delay added before updating to ensure that the requestId is ready to be used
-  await delay(10000);
+  if (withDelay) {
+    await delay(10000);
+  }
   const updateData = {
     linkedId,
     suspect,
@@ -74,6 +77,8 @@ export async function updateEventByRequestId(
       },
     }
   );
-  expect(updateEventByRequestID.status()).toEqual(200);
-  return updateEventByRequestID.json();
+  return {
+    status: updateEventByRequestID.status(),
+    json: await updateEventByRequestID.json(),
+  };
 }
