@@ -58,10 +58,10 @@ test.describe("Node updateEvents Suite", () => {
       requestId,
       testData.valid.apiKey
     );
-    const responsebody = await eventByRequestId.products.identification.data;
+    const ResponseBody = await eventByRequestId.products.identification.data;
     const propertiesToValidate = ["linkedId", "tag", "suspect"];
     propertiesToValidate.forEach((property) => {
-      expect(responsebody[property]).toStrictEqual(
+      expect(ResponseBody[property]).toStrictEqual(
         testData.updateEvent[property]
       );
     });
@@ -92,15 +92,15 @@ test.describe("Node updateEvents Suite", () => {
       requestId,
       testData.validSmartSignal.apiKey
     );
-    const updatedResponsebody = await eventByRequestId.products.identification
+    const updatedResponseBody = await eventByRequestId.products.identification
       .data;
-    expect(updatedResponsebody.tag).toStrictEqual(
+    expect(updatedResponseBody.tag).toStrictEqual(
       testData.updateEventComplexTag.tag
     );
-    expect(updatedResponsebody.linkedId).toStrictEqual(
+    expect(updatedResponseBody.linkedId).toStrictEqual(
       initialResponseBody.linkedId
     );
-    expect(updatedResponsebody.suspect).toStrictEqual(
+    expect(updatedResponseBody.suspect).toStrictEqual(
       initialResponseBody.suspect
     );
   });
@@ -128,15 +128,15 @@ test.describe("Node updateEvents Suite", () => {
       requestId,
       testData.validSmartSignal.apiKey
     );
-    const updatedResponsebody = await eventByRequestId.products.identification
+    const updatedResponseBody = await eventByRequestId.products.identification
       .data;
-    expect(updatedResponsebody.linkedId).toStrictEqual(
+    expect(updatedResponseBody.linkedId).toStrictEqual(
       testData.updateEvent.linkedId
     );
-    expect(updatedResponsebody.suspect).toStrictEqual(
+    expect(updatedResponseBody.suspect).toStrictEqual(
       initialResponseBody.suspect
     );
-    expect(updatedResponsebody.tag).toStrictEqual(initialResponseBody.tag);
+    expect(updatedResponseBody.tag).toStrictEqual(initialResponseBody.tag);
   });
 
   test("updateEvents for suspect only", async ({ request }) => {
@@ -164,15 +164,15 @@ test.describe("Node updateEvents Suite", () => {
       requestId,
       testData.validSmartSignal.apiKey
     );
-    const updatedResponsebody = await updatedEvent.products.identification.data;
-    expect(updatedResponsebody.suspect).toStrictEqual(
+    const updatedResponseBody = await updatedEvent.products.identification.data;
+    expect(updatedResponseBody.suspect).toStrictEqual(
       testData.updateEvent.suspect
     );
 
-    expect(updatedResponsebody.linkedId).toStrictEqual(
+    expect(updatedResponseBody.linkedId).toStrictEqual(
       initialResponseBody.linkedId
     );
-    expect(updatedResponsebody.tag).toStrictEqual(initialResponseBody.tag);
+    expect(updatedResponseBody.tag).toStrictEqual(initialResponseBody.tag);
   });
 });
 
