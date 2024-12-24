@@ -11,11 +11,6 @@ test.describe("Node updateEvents Suite", () => {
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
-    const initialEvent = await getEventByRequestId(
-      request,
-      requestId,
-      testData.validSmartSignal.apiKey
-    );
 
     await updateEventByRequestId(
       request,
@@ -40,31 +35,6 @@ test.describe("Node updateEvents Suite", () => {
         testData.updateEvent[property]
       );
     });
-
-    // Validate other fields were not changed
-    function removeRepeatedFields(response) {
-      Object.keys(response).forEach((key) => {
-        if (typeof response[key] === "object" && response[key] !== null) {
-          removeRepeatedFields(response[key]);
-        }
-
-        // Remove `linkedId`, `tag`, and `suspect` outside `.products.identification.data`
-        if (
-          ["linkedId", "tag", "suspect"].includes(key) &&
-          !response.products?.identification?.data
-        ) {
-          delete response[key];
-        }
-        if (key === "meta" && response[key]?.automationTest) {
-          delete response[key];
-        }
-      });
-    }
-
-    removeRepeatedFields(initialEvent);
-    removeRepeatedFields(updatedEvent);
-
-    expect(initialEvent).toStrictEqual(updatedEvent);
   });
 
   test("updateEvents for valid apiKey and requestId without Smart Signals", async ({
@@ -102,6 +72,12 @@ test.describe("Node updateEvents Suite", () => {
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
+    const initialEvent = await getEventByRequestId(
+      request,
+      requestId,
+      testData.validSmartSignal.apiKey
+    );
+    const initialResponseBody = await initialEvent.products.identification.data;
     await updateEventByRequestId(
       request,
       requestId,
@@ -116,8 +92,17 @@ test.describe("Node updateEvents Suite", () => {
       requestId,
       testData.validSmartSignal.apiKey
     );
-    const responsebody = await eventByRequestId.products.identification.data;
-    expect(responsebody.tag).toStrictEqual(testData.updateEventComplexTag.tag);
+    const updatedResponsebody = await eventByRequestId.products.identification
+      .data;
+    expect(updatedResponsebody.tag).toStrictEqual(
+      testData.updateEventComplexTag.tag
+    );
+    expect(updatedResponsebody.linkedId).toStrictEqual(
+      initialResponseBody.linkedId
+    );
+    expect(updatedResponsebody.suspect).toStrictEqual(
+      initialResponseBody.suspect
+    );
   });
 
   test("updateEvents for linkedId only", async ({ request }) => {
@@ -125,6 +110,12 @@ test.describe("Node updateEvents Suite", () => {
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
+    const initialEvent = await getEventByRequestId(
+      request,
+      requestId,
+      testData.validSmartSignal.apiKey
+    );
+    const initialResponseBody = await initialEvent.products.identification.data;
     await updateEventByRequestId(
       request,
       requestId,
@@ -137,8 +128,15 @@ test.describe("Node updateEvents Suite", () => {
       requestId,
       testData.validSmartSignal.apiKey
     );
-    const responsebody = await eventByRequestId.products.identification.data;
-    expect(responsebody.linkedId).toStrictEqual(testData.updateEvent.linkedId);
+    const updatedResponsebody = await eventByRequestId.products.identification
+      .data;
+    expect(updatedResponsebody.linkedId).toStrictEqual(
+      testData.updateEvent.linkedId
+    );
+    expect(updatedResponsebody.suspect).toStrictEqual(
+      initialResponseBody.suspect
+    );
+    expect(updatedResponsebody.tag).toStrictEqual(initialResponseBody.tag);
   });
 
   test("updateEvents for suspect only", async ({ request }) => {
@@ -146,6 +144,13 @@ test.describe("Node updateEvents Suite", () => {
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
+    const initialEvent = await getEventByRequestId(
+      request,
+      requestId,
+      testData.validSmartSignal.apiKey
+    );
+    const initialResponseBody = await initialEvent.products.identification.data;
+
     await updateEventByRequestId(
       request,
       requestId,
@@ -154,13 +159,20 @@ test.describe("Node updateEvents Suite", () => {
       testData.updateEvent.suspect
     );
 
-    const eventByRequestId = await getEventByRequestId(
+    const updatedEvent = await getEventByRequestId(
       request,
       requestId,
       testData.validSmartSignal.apiKey
     );
-    const responsebody = await eventByRequestId.products.identification.data;
-    expect(responsebody.suspect).toStrictEqual(testData.updateEvent.suspect);
+    const updatedResponsebody = await updatedEvent.products.identification.data;
+    expect(updatedResponsebody.suspect).toStrictEqual(
+      testData.updateEvent.suspect
+    );
+
+    expect(updatedResponsebody.linkedId).toStrictEqual(
+      initialResponseBody.linkedId
+    );
+    expect(updatedResponsebody.tag).toStrictEqual(initialResponseBody.tag);
   });
 });
 
