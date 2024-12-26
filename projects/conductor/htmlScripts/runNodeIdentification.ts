@@ -2,11 +2,10 @@ import { chromium } from "@playwright/test";
 import path from "path";
 import fs from "fs/promises";
 import { fileURLToPath } from "url";
-import testData from "../utils/testData";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-export async function generateRequestId(
+export async function generateIdentificationData(
   key: "requestId" | "visitorId",
   publicApiKey: string
 ): Promise<string> {
@@ -62,4 +61,4 @@ export async function generateRequestId(
   }
 }
 
-export default generateRequestId;
+export default generateIdentificationData;

@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { generateRequestId } from "../htmlScripts/runNodeIdentification";
+import { generateIdentificationData } from "../htmlScripts/runNodeIdentification";
 import testData from "../utils/testData";
 import { getEventByRequestId, updateEventApiRequest } from "../utils/api";
 
@@ -7,7 +7,7 @@ test.describe("Node updateEvents Suite", () => {
   test("updateEvents for valid apiKey and requestId with Smart Signals", async ({
     request,
   }) => {
-    const requestId = await generateRequestId(
+    const requestId = await generateIdentificationData(
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
@@ -43,7 +43,7 @@ test.describe("Node updateEvents Suite", () => {
   test("updateEvents for valid apiKey and requestId without Smart Signals", async ({
     request,
   }) => {
-    const requestId = await generateRequestId(
+    const requestId = await generateIdentificationData(
       "requestId",
       testData.generatidentification.publicApiKey
     );
@@ -74,8 +74,8 @@ test.describe("Node updateEvents Suite", () => {
     });
   });
 
-  test("updateEvents for valid compelx tag", async ({ request }) => {
-    const requestId = await generateRequestId(
+  test("updateEvents for valid compelx tag only", async ({ request }) => {
+    const requestId = await generateIdentificationData(
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
@@ -115,7 +115,7 @@ test.describe("Node updateEvents Suite", () => {
   });
 
   test("updateEvents for linkedId only", async ({ request }) => {
-    const requestId = await generateRequestId(
+    const requestId = await generateIdentificationData(
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
@@ -152,7 +152,7 @@ test.describe("Node updateEvents Suite", () => {
   });
 
   test("updateEvents for suspect only", async ({ request }) => {
-    const requestId = await generateRequestId(
+    const requestId = await generateIdentificationData(
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
@@ -193,7 +193,7 @@ test.describe("Node updateEvents Suite 400 errors", () => {
   test("updateEvents without sending any parameter to update - RequestCannotBeParsed", async ({
     request,
   }) => {
-    const requestId = await generateRequestId(
+    const requestId = await generateIdentificationData(
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
@@ -221,7 +221,7 @@ test.describe("Node updateEvents Suite 403 errors", () => {
   test("updateEvents Auth-API-Key header is missing - TokenRequired", async ({
     request,
   }) => {
-    const requestId = await generateRequestId(
+    const requestId = await generateIdentificationData(
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
@@ -243,7 +243,7 @@ test.describe("Node updateEvents Suite 403 errors", () => {
   test("updateEvents invalid Auth-API-Key - TokenNotFound", async ({
     request,
   }) => {
-    const requestId = await generateRequestId(
+    const requestId = await generateIdentificationData(
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
@@ -292,7 +292,7 @@ test.describe("Node updateEvents Suite 404 errors", () => {
 
 test.describe("Node updateEvents Suite 409 errors", () => {
   test("updateEvents Event Not ready - StateNotReady", async ({ request }) => {
-    const requestId = await generateRequestId(
+    const requestId = await generateIdentificationData(
       "requestId",
       testData.generatidentification.publicApiKeySS
     );

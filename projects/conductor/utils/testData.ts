@@ -16,6 +16,7 @@ const testData = {
     apiKey: "ftxPJdxnMlP",
     region: "AB",
     requestID: "ftxPJdxnMlP.ftxPJdxnMlP",
+    visitorId: "gzm0RjeSe9g2netPpoWz",
   },
   differentRegion: {
     apiKey: "ftxPJdxnMlPIeZV09RoT",

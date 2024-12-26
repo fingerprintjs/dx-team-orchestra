@@ -85,3 +85,40 @@ export async function updateEventApiRequest(
   expect(updateEventByRequestID.status()).toEqual(200);
   return musicianResponse;
 }
+
+export async function deleteDataByVisitorId(request, visitorId, apiKey?) {
+  const deleteDataByVisitorId = await request.delete(
+    `${testData.config.apiUrl}/visitors/${visitorId}`,
+    {
+      headers: {
+        "Auth-API-Key": apiKey,
+        "content-type": "application/json",
+      },
+    }
+  );
+  return {
+    status: deleteDataByVisitorId.status(),
+    json: await deleteDataByVisitorId.json(),
+  };
+}
+export async function getEventByVisitorId(
+  request,
+  visitorId,
+  apiKey,
+  withDelay: boolean = false
+) {
+  if (withDelay) {
+    await delay(30000);
+  }
+  const getEventByVisitorId = await request.get(
+    `${testData.config.apiUrl}/visitors/${visitorId}`,
+    {
+      headers: {
+        "Auth-API-Key": apiKey,
+        "content-type": "application/json",
+      },
+    }
+  );
+  expect(getEventByVisitorId.status()).toEqual(200);
+  return getEventByVisitorId.json();
+}
