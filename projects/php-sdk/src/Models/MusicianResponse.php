@@ -3,6 +3,7 @@
 namespace PHP_SDK\Models;
 
 use Fingerprint\ServerAPI\ApiException;
+use Fingerprint\ServerAPI\Sealed\UnsealAggregateException;
 use PHP_SDK\Utils\ObjectSerializer;
 
 class MusicianResponse
@@ -21,6 +22,11 @@ class MusicianResponse
     public static function BuildForApiException(ApiException $e): MusicianResponse
     {
         return new self($e->getCode(), $e->getResponseObject(), $e->getErrorDetails());
+    }
+
+    public static function BuildForUnsealAggregateException(UnsealAggregateException $e): MusicianResponse
+    {
+        return new self(500, $e->getMessage(), $e->getExceptions());
     }
 
     public static function BuildForGenericException(\Throwable $e): MusicianResponse
