@@ -5,21 +5,26 @@ namespace PHP_SDK\Controllers;
 use Fingerprint\ServerAPI\Api\FingerprintApi;
 use Fingerprint\ServerAPI\ApiException;
 use Fingerprint\ServerAPI\Configuration;
-use Fingerprint\ServerAPI\Model\EventsUpdateRequest;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
 use PHP_SDK\Models\MusicianResponse;
 use Psr\Http\Message\MessageInterface;
 
-class EventsController
+class VisitsController
 {
-    public function getEvents(ServerRequest $request, Response $response): MessageInterface
+    public function getVisits(ServerRequest $request, Response $response): MessageInterface
     {
         $queryParams = $request->getQueryParams();
         $apiKey = $queryParams['apiKey'] ?? '';
         $region = $queryParams['region'] ?? '';
-        $requestId = $queryParams['requestId'] ?? '';
+        $visitorId = $queryParams['visitorId'] ?? '';
+
+        $requestId = $queryParams['requestId'] ?? null;
+        $linkedId = $queryParams['linkedId'] ?? null;
+        $limit = $queryParams['limit'] ?? null;
+        $paginationKey = $queryParams['paginationKey'] ?? null;
+        $before = $queryParams['before'] ?? null;
 
         $config = Configuration::getDefaultConfiguration($apiKey, $region);
         $client = new FingerprintApi(
@@ -28,7 +33,7 @@ class EventsController
         );
 
         try {
-            list($model, $api_response) = $client->getEvent($requestId);
+            list($model, $api_response) = $client->getVisits($visitorId, $requestId, $linkedId, $limit, $paginationKey, $before);
             $result = new MusicianResponse($api_response->getStatusCode(), $api_response, $model);
         } catch (ApiException $e) {
             $result = MusicianResponse::BuildForApiException($e);
@@ -36,22 +41,17 @@ class EventsController
             $result = new MusicianResponse(500, $e->getMessage(), $e->getMessage());
         }
 
-
         $response->getBody()->write(json_encode($result));
 
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-    public function updateEvent(ServerRequest $request, Response $response): MessageInterface
+    public function deleteVisitorData(ServerRequest $request, Response $response): MessageInterface
     {
         $queryParams = $request->getQueryParams();
         $apiKey = $queryParams['apiKey'] ?? '';
         $region = $queryParams['region'] ?? '';
-        $requestId = $queryParams['requestId'] ?? '';
-
-        $linkedId = $queryParams['linkedId'] ?? '';
-        $suspect = $queryParams['suspect'] ?? null;
-        $tag = $queryParams['tag'] ?? null;
+        $visitorId = $queryParams['visitorId'] ?? '';
 
         $config = Configuration::getDefaultConfiguration($apiKey, $region);
         $client = new FingerprintApi(
@@ -59,22 +59,8 @@ class EventsController
             $config
         );
 
-        $body = new EventsUpdateRequest();
-        if ($linkedId) {
-            $body->setLinkedId($linkedId);
-        }
-
-        if ($suspect) {
-            $body->setSuspect(filter_var($suspect, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE));
-        }
-
-        if ($tag) {
-            $parsedTag = json_decode($tag, true);
-            $body->setTag($parsedTag);
-        }
-
         try {
-            list($model, $api_response) = $client->updateEvent($body, $requestId);
+            list($model, $api_response) = $client->deleteVisitorData($visitorId);
             $result = new MusicianResponse($api_response->getStatusCode(), $api_response, $model);
         } catch (ApiException $e) {
             $result = MusicianResponse::BuildForApiException($e);
