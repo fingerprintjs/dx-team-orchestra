@@ -29,7 +29,8 @@ def prepare_musician_response(musician_data, code, http_response):
     return {
         "code": code,
         "originalResponse": str(http_response),
-        "parsedResponse": convert_keys_to_camel_case(musician_data.to_dict()),
+        "parsedResponse": convert_keys_to_camel_case(
+            musician_data.to_dict()) if musician_data is not None else musician_data,
     }
 
 def prepare_musician_response_from_error(error: Exception):
