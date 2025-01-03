@@ -7,12 +7,11 @@ builder.Services.AddControllers()
     .AddJsonOptions(options =>
         {
             // By default .NET serializes enums capitalized
-            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
-        });;
+            options.JsonSerializerOptions.Converters.Add(new VPNConfidenceConverter());
+            options.JsonSerializerOptions.Converters.Add(new BotdBotResultConverter());
+        });
 
 var app = builder.Build();
-
-// app.MapGet("/", () => "Hello World!");
 
 app.MapControllers();
 
