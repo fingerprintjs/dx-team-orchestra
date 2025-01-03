@@ -253,3 +253,57 @@ jobs:
         env:
           MUSICIAN_PORT: 3003
         run: pnpm playwright test
+
+  run-php-sdk-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
+        with:
+          version: 9
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          cache: pnpm
+          node-version: 18
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Playwright browsers
+        working-directory: ./projects/conductor
+        run: pnpm playwright install --with-deps
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@9e72090525849c5e82e596468b86eb55e9cc5401
+        with:
+          php-version: '8.1'
+          tools: composer:v2
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        working-directory: ./projects/php-sdk
+        run: |
+          composer install --no-interaction
+
+      - name: Run PHP built-in server
+        working-directory: ./projects/php-sdk
+        run: |
+          nohup php -S 0.0.0.0:3004 -t public/ &
+
+      - name: Run tests
+        working-directory: ./projects/conductor
+        env:
+          MUSICIAN_PORT: 3004
+        run: pnpm playwright test
