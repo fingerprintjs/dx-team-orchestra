@@ -12,7 +12,10 @@ export function getRegion(region: string): Region {
     }
 }
 
-export async function unwrapError<Response200Type>(error: unknown): Promise<MusicianResponse<Response200Type>> {
+type Method = 'updateEvent'
+
+export async function unwrapError<Response200Type>(error: unknown, method?: Method): Promise<MusicianResponse<Response200Type>> {
+    console.log(unwrapError, error);
     if (error instanceof RequestError) {
         const originalResponse = await error.response.text();
         return {
@@ -23,6 +26,20 @@ export async function unwrapError<Response200Type>(error: unknown): Promise<Musi
     }
     // Make behaviour consistent with other Server SDKs
     if (error instanceof Error && error.message == `Api key is not set`){
+        console.log(error.message, error.toString(), JSON.stringify(error));
+        if (method == 'updateEvent') {
+            return {
+                code: 403,
+                originalResponse: error.toString(),
+                parsedResponse: {
+                    // @ts-ignore
+                    error: {
+                        code: "TokenRequired",
+                        message: "secret key is required",
+                    }
+                },
+            };
+        }
         return {
             code: 404,
             originalResponse: error.toString(),
@@ -34,4 +51,14 @@ export async function unwrapError<Response200Type>(error: unknown): Promise<Musi
         originalResponse: error?.toString(),
         parsedResponse: JSON.stringify(error),
     };
+}
+
+export function parseBoolean(value: string) {
+    if (value === 'true') {
+        return true;
+    }
+    if (value === 'false') {
+        return false;
+    }
+    throw new Error(`Invalid boolean value: ${value}`);
 }
