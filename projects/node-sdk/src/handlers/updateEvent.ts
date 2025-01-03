@@ -3,7 +3,7 @@ import {
   EventsUpdateRequest,
   FingerprintJsServerApiClient,
 } from "@fingerprintjs/fingerprintjs-pro-server-api";
-import { getRegion, unwrapError } from "../utils";
+import { getRegion, parseBoolean, unwrapError } from '../utils';
 
 interface QueryParams {
   apiKey?: string;
@@ -11,7 +11,7 @@ interface QueryParams {
   requestId?: string;
   linkedId?: string;
   tag?: string;
-  suspect?: boolean;
+  suspect?: 'true' | 'false';
 }
 
 export const updateEvent: Handler<QueryParams> = async (req, res) => {
@@ -23,6 +23,7 @@ export const updateEvent: Handler<QueryParams> = async (req, res) => {
     tag,
     suspect,
   } = req.query;
+  console.log(req.query);
   let result: MusicianResponse<void>;
   try {
     const client = new FingerprintJsServerApiClient({
@@ -38,8 +39,9 @@ export const updateEvent: Handler<QueryParams> = async (req, res) => {
       eventsUpdateRequest.tag = JSON.parse(tag);
     }
     if (suspect != undefined) {
-      eventsUpdateRequest.suspect = suspect;
+      eventsUpdateRequest.suspect = parseBoolean(suspect);
     }
+    console.log(eventsUpdateRequest, linkedId, tag, suspect, JSON.stringify(eventsUpdateRequest));
     const event = await client.updateEvent(eventsUpdateRequest, requestId);
     result = {
       code: 200,
@@ -47,7 +49,7 @@ export const updateEvent: Handler<QueryParams> = async (req, res) => {
       parsedResponse: event,
     };
   } catch (error) {
-    result = await unwrapError<void>(error);
+    result = await unwrapError<void>(error, 'updateEvent');
   }
   res.send(result);
 };

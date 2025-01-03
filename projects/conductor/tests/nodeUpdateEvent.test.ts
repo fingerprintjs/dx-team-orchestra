@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { generateRequestId } from "../htmlScripts/runNodeIdentification";
 import testData from "../utils/testData";
-import { getEventByRequestId, updateEventByRequestId } from "../utils/api";
+import { getEventByRequestId, updateEventApiRequest } from "../utils/api";
 
 test.describe("Node updateEvents Suite", () => {
   test("updateEvents for valid apiKey and requestId with Smart Signals", async ({
@@ -11,15 +11,18 @@ test.describe("Node updateEvents Suite", () => {
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
-
-    await updateEventByRequestId(
+     const updateResult = await updateEventApiRequest(
       request,
-      requestId,
-      testData.validSmartSignal.apiKey,
-      testData.updateEvent.linkedId,
-      testData.updateEvent.suspect,
-      testData.updateEvent.tag
+      {
+        requestId,
+        apiKey: testData.validSmartSignal.apiKey,
+        region: testData.validSmartSignal.region,
+        linkedId: testData.updateEvent.linkedId,
+        suspect: testData.updateEvent.suspect,
+        tag: testData.updateEvent.tag
+      }
     );
+    expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
 
     const updatedEvent = await getEventByRequestId(
       request,
@@ -44,14 +47,18 @@ test.describe("Node updateEvents Suite", () => {
       "requestId",
       testData.generatidentification.publicApiKey
     );
-    await updateEventByRequestId(
+    const updateResult = await updateEventApiRequest(
       request,
-      requestId,
-      testData.valid.apiKey,
-      testData.updateEvent.linkedId,
-      testData.updateEvent.suspect,
-      testData.updateEvent.tag
+      {
+        requestId,
+        apiKey: testData.valid.apiKey,
+        region: testData.valid.region,
+        linkedId: testData.updateEvent.linkedId,
+        suspect: testData.updateEvent.suspect,
+        tag: testData.updateEvent.tag
+      }
     );
+    expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
 
     const eventByRequestId = await getEventByRequestId(
       request,
@@ -78,14 +85,16 @@ test.describe("Node updateEvents Suite", () => {
       testData.validSmartSignal.apiKey
     );
     const initialResponseBody = await initialEvent.products.identification.data;
-    await updateEventByRequestId(
+    const updateResult = await updateEventApiRequest(
       request,
-      requestId,
-      testData.validSmartSignal.apiKey,
-      undefined,
-      undefined,
-      testData.updateEventComplexTag.tag
+      {
+        requestId,
+        apiKey: testData.validSmartSignal.apiKey,
+        region: testData.validSmartSignal.region,
+        tag: testData.updateEventComplexTag.tag
+      }
     );
+    expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
 
     const eventByRequestId = await getEventByRequestId(
       request,
@@ -116,20 +125,23 @@ test.describe("Node updateEvents Suite", () => {
       testData.validSmartSignal.apiKey
     );
     const initialResponseBody = await initialEvent.products.identification.data;
-    await updateEventByRequestId(
+    const updateResult = await updateEventApiRequest(
       request,
-      requestId,
-      testData.validSmartSignal.apiKey,
-      testData.updateEvent.linkedId
+        {
+          requestId,
+          apiKey: testData.validSmartSignal.apiKey,
+          region: testData.validSmartSignal.region,
+          linkedId: testData.updateEvent.linkedId
+        }
     );
+    expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
 
     const eventByRequestId = await getEventByRequestId(
       request,
       requestId,
       testData.validSmartSignal.apiKey
     );
-    const updatedResponseBody = await eventByRequestId.products.identification
-      .data;
+    const updatedResponseBody = eventByRequestId.products.identification.data;
     expect(updatedResponseBody.linkedId).toStrictEqual(
       testData.updateEvent.linkedId
     );
@@ -151,13 +163,16 @@ test.describe("Node updateEvents Suite", () => {
     );
     const initialResponseBody = await initialEvent.products.identification.data;
 
-    await updateEventByRequestId(
+    const updateResult = await updateEventApiRequest(
       request,
-      requestId,
-      testData.validSmartSignal.apiKey,
-      undefined,
-      testData.updateEvent.suspect
+      {
+        requestId,
+        apiKey: testData.validSmartSignal.apiKey,
+        region: testData.validSmartSignal.region,
+        suspect: testData.updateEvent.suspect
+      }
     );
+    expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
 
     const updatedEvent = await getEventByRequestId(
       request,
@@ -169,9 +184,7 @@ test.describe("Node updateEvents Suite", () => {
       testData.updateEvent.suspect
     );
 
-    expect(updatedResponseBody.linkedId).toStrictEqual(
-      initialResponseBody.linkedId
-    );
+    expect(updatedResponseBody.linkedId).toStrictEqual(initialResponseBody.linkedId);
     expect(updatedResponseBody.tag).toStrictEqual(initialResponseBody.tag);
   });
 });
@@ -184,13 +197,16 @@ test.describe("Node updateEvents Suite 400 errors", () => {
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
-    const updateEventResponse = await updateEventByRequestId(
-      request,
-      requestId,
-      testData.validSmartSignal.apiKey
+    const updateEventResponse = await updateEventApiRequest(
+        request,
+        {
+          requestId,
+          apiKey: testData.validSmartSignal.apiKey,
+          region: testData.validSmartSignal.region,
+        }
     );
-    expect(updateEventResponse.status).toBe(400);
-    expect(updateEventResponse.json).toEqual(
+    expect(updateEventResponse.code).toBe(400);
+    expect(updateEventResponse.parsedResponse).toEqual(
       expect.objectContaining({
         error: expect.objectContaining({
           code: "RequestCannotBeParsed",
@@ -209,12 +225,13 @@ test.describe("Node updateEvents Suite 403 errors", () => {
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
-    const updateEventResponse = await updateEventByRequestId(
+    const updateEventResponse = await updateEventApiRequest(
       request,
-      requestId
+      {requestId}
     );
-    expect(updateEventResponse.status).toBe(403);
-    expect(updateEventResponse.json).toEqual(
+
+    expect(updateEventResponse.code).toBe(403);
+    expect(updateEventResponse.parsedResponse).toEqual(
       expect.objectContaining({
         error: expect.objectContaining({
           code: "TokenRequired",
@@ -230,13 +247,16 @@ test.describe("Node updateEvents Suite 403 errors", () => {
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
-    const updateEventResponse = await updateEventByRequestId(
+    const updateEventResponse = await updateEventApiRequest(
       request,
-      requestId,
-      testData.invalid.apiKey
+      {
+        requestId,
+        apiKey: testData.invalid.apiKey,
+        region: testData.invalid.region,
+      }
     );
-    expect(updateEventResponse.status).toBe(403);
-    expect(updateEventResponse.json).toEqual(
+    expect(updateEventResponse.code).toBe(403);
+    expect(updateEventResponse.parsedResponse).toEqual(
       expect.objectContaining({
         error: expect.objectContaining({
           code: "TokenNotFound",
@@ -251,12 +271,15 @@ test.describe("Node updateEvents Suite 404 errors", () => {
   test("updateEvents invalid requestId - RequestNotFound", async ({
     request,
   }) => {
-    const updateEventResponse = await updateEventByRequestId(
+    const updateEventResponse = await updateEventApiRequest(
       request,
-      testData.invalid.requestID
+      {
+        apiKey: testData.invalid.apiKey,
+        requestId: testData.invalid.requestID
+      }
     );
-    expect(updateEventResponse.status).toBe(404);
-    expect(updateEventResponse.json).toEqual(
+    expect(updateEventResponse.code).toBe(404);
+    expect(updateEventResponse.parsedResponse).toEqual(
       expect.objectContaining({
         error: expect.objectContaining({
           code: "RequestNotFound",
@@ -273,17 +296,18 @@ test.describe("Node updateEvents Suite 409 errors", () => {
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
-    const updateEventResponse = await updateEventByRequestId(
+    const updateEventResponse = await updateEventApiRequest(
       request,
-      requestId,
-      testData.validSmartSignal.apiKey,
-      testData.updateEvent.linkedId,
-      undefined,
-      undefined,
+      {
+        requestId,
+        apiKey: testData.validSmartSignal.apiKey,
+        region: testData.validSmartSignal.region,
+        linkedId: testData.updateEvent.linkedId
+      },
       false
     );
-    expect(updateEventResponse.status).toBe(409);
-    expect(updateEventResponse.json).toEqual(
+    expect(updateEventResponse.code).toBe(409);
+    expect(updateEventResponse.parsedResponse).toEqual(
       expect.objectContaining({
         error: expect.objectContaining({
           code: "StateNotReady",
