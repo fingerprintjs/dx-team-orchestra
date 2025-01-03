@@ -1,7 +1,12 @@
 package com.example.java_sdk;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.fingerprint.Sealed;
 import com.fingerprint.sdk.ApiException;
+
+import java.util.Map;
 
 class MusicianResponse<T> {
     private int code;
@@ -15,10 +20,15 @@ class MusicianResponse<T> {
     }
 
     public MusicianResponse(ApiException e) {
+        ObjectMapper objectMapper = new ObjectMapper();
         this.code = e.getCode();
-        // TODO: should be a model
         this.originalResponse = (T) e.getMessage();
-        this.parsedResponse = (T) e.getResponseBody();
+        // TODO: should be a model
+        try {
+            this.parsedResponse = (T) objectMapper.readValue(e.getResponseBody(), Map.class);
+        } catch (JsonProcessingException ex) {
+            this.parsedResponse = (T) e.getResponseBody();
+        }
     }
 
     public MusicianResponse(Exception e) {
