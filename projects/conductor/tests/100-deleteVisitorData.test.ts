@@ -1,9 +1,9 @@
 import { test, expect } from "@playwright/test";
-import { generateIdentificationData } from "../htmlScripts/runNodeIdentification";
+import { generateIdentificationData } from "../htmlScripts/runIdentification";
 import testData from "../utils/testData";
 import { deleteVisitorDataRequest, getEventByVisitorId } from "../utils/api";
 
-test.describe("Node deleteVisitorData Suite", () => {
+test.describe("DeleteVisitorData Suite", () => {
   test("deleteVisitorData for valid apiKey and visitorId with Smart Signals", async ({
     request,
   }) => {
@@ -35,7 +35,7 @@ test.describe("Node deleteVisitorData Suite", () => {
   });
 });
 
-test.describe("Node deleteVisitorData Suite 400 errors", () => {
+test.describe("DeleteVisitorData Suite 400 errors", () => {
   test("deleteVisitorData without sending vistorId - RequestCannotBeParsed", async ({
     request,
   }) => {
@@ -55,7 +55,7 @@ test.describe("Node deleteVisitorData Suite 400 errors", () => {
       })
     );
   });
-  test.describe("Node deleteVisitorData Suite 403 errors", () => {
+  test.describe("DeleteVisitorData Suite 403 errors", () => {
     test("deleteVisitorData APIKey is missing - TokenRequired", async ({
       request,
     }) => {
@@ -101,7 +101,7 @@ test.describe("Node deleteVisitorData Suite 400 errors", () => {
     });
   });
 
-  test.describe("Node deleteVisitorData Suite 404 errors", () => {
+  test.describe("DeleteVisitorData Suite 404 errors", () => {
     test("deleteVisitorData - VisitorNotFound", async ({ request }) => {
       const deleteResponseBody = await deleteVisitorDataRequest(
         request,

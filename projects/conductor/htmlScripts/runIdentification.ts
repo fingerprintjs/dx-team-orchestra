@@ -10,7 +10,7 @@ export async function generateIdentificationData(
   publicApiKey: string
 ): Promise<string> {
   const serverPath = __dirname;
-  const htmlFile = "/nodeIdentification.html";
+  const htmlFile = "/identification.html";
 
   // Read and process the HTML file
   const htmlPath = path.join(serverPath, htmlFile);

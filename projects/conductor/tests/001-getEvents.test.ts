@@ -1,10 +1,10 @@
 import { test, expect } from "@playwright/test";
-import { generateIdentificationData } from "../htmlScripts/runNodeIdentification";
+import { generateIdentificationData } from "../htmlScripts/runIdentification";
 import { validateGetEventsResponse } from "../utils/api";
 import testData from "../utils/testData";
 import { getEventByRequestId } from "../utils/api";
 
-test.describe("Node getEvents Suite", () => {
+test.describe("GetEvents Suite", () => {
   test("getEvents for valid apiKey and requestId with Smart Signals", async ({
     request,
   }) => {

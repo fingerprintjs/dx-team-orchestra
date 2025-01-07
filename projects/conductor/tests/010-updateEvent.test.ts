@@ -1,9 +1,9 @@
 import { test, expect } from "@playwright/test";
-import { generateIdentificationData } from "../htmlScripts/runNodeIdentification";
+import { generateIdentificationData } from "../htmlScripts/runIdentification";
 import testData from "../utils/testData";
 import { getEventByRequestId, updateEventApiRequest } from "../utils/api";
 
-test.describe("Node updateEvents Suite", () => {
+test.describe("UpdateEvents Suite", () => {
   test("updateEvents for valid apiKey and requestId with Smart Signals", async ({
     request,
   }) => {
@@ -189,7 +189,7 @@ test.describe("Node updateEvents Suite", () => {
   });
 });
 
-test.describe("Node updateEvents Suite 400 errors", () => {
+test.describe("UpdateEvents Suite 400 errors", () => {
   test("updateEvents without sending any parameter to update - RequestCannotBeParsed", async ({
     request,
   }) => {
@@ -217,7 +217,7 @@ test.describe("Node updateEvents Suite 400 errors", () => {
   });
 });
 
-test.describe("Node updateEvents Suite 403 errors", () => {
+test.describe("UpdateEvents Suite 403 errors", () => {
   test("updateEvents Auth-API-Key header is missing - TokenRequired", async ({
     request,
   }) => {
@@ -267,7 +267,7 @@ test.describe("Node updateEvents Suite 403 errors", () => {
   });
 });
 
-test.describe("Node updateEvents Suite 404 errors", () => {
+test.describe("UpdateEvents Suite 404 errors", () => {
   test("updateEvents invalid requestId - RequestNotFound", async ({
     request,
   }) => {
@@ -290,7 +290,7 @@ test.describe("Node updateEvents Suite 404 errors", () => {
   });
 });
 
-test.describe("Node updateEvents Suite 409 errors", () => {
+test.describe("UpdateEvents Suite 409 errors", () => {
   test("updateEvents Event Not ready - StateNotReady", async ({ request }) => {
     const requestId = await generateIdentificationData(
       "requestId",
