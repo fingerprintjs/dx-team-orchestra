@@ -56,7 +56,7 @@ export async function getEventByRequestId(request: APIRequestContext, requestId:
 }
 
 
-interface UpdateEventParams {
+type UpdateEventParams = {
   apiKey?: string;
   region?: string;
   requestId?: string;
@@ -86,20 +86,17 @@ export async function updateEventApiRequest(
   return musicianResponse;
 }
 
-export async function deleteDataByVisitorId(request, visitorId, apiKey?) {
-  const deleteDataByVisitorId = await request.delete(
-    `${testData.config.apiUrl}/visitors/${visitorId}`,
-    {
-      headers: {
-        "Auth-API-Key": apiKey,
-        "content-type": "application/json",
-      },
-    }
-  );
-  return {
-    status: deleteDataByVisitorId.status(),
-    json: await deleteDataByVisitorId.json(),
-  };
+type DeleteVisitorDataParams = {
+  apiKey?: string;
+  region?: string;
+  visitorId?: string;
+}
+
+export async function deleteVisitorDataRequest(request: APIRequestContext, params: DeleteVisitorDataParams): Promise<MusicianResponse> {
+  const deleteEventByRequestID = await request.get(`${testData.config.baseURL}/deleteVisitorData`, {params});
+  const musicianResponse = await deleteEventByRequestID.json();
+  expect(deleteEventByRequestID.status()).toEqual(200);
+  return musicianResponse;
 }
 export async function getEventByVisitorId(
   request,

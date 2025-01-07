@@ -24,7 +24,7 @@ export const deleteVisitorData: Handler<QueryParams> = async (req, res) => {
       parsedResponse: event,
     };
   } catch (error) {
-    result = await unwrapError<void>(error);
+    result = await unwrapError<void>(error, 'deleteVisitorData');
   }
   res.send(result);
 };

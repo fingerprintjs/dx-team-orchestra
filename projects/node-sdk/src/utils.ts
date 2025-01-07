@@ -12,7 +12,7 @@ export function getRegion(region: string): Region {
     }
 }
 
-type Method = 'updateEvent'
+type Method = 'updateEvent' | 'deleteVisitorData'
 
 export async function unwrapError<Response200Type>(error: unknown, method?: Method): Promise<MusicianResponse<Response200Type>> {
     console.log(unwrapError, error);
@@ -27,7 +27,7 @@ export async function unwrapError<Response200Type>(error: unknown, method?: Meth
     // Make behaviour consistent with other Server SDKs
     if (error instanceof Error && error.message == `Api key is not set`){
         console.log(error.message, error.toString(), JSON.stringify(error));
-        if (method == 'updateEvent') {
+        if (['updateEvent', 'deleteVisitorData'].includes(method!)) {
             return {
                 code: 403,
                 originalResponse: error.toString(),
@@ -44,6 +44,19 @@ export async function unwrapError<Response200Type>(error: unknown, method?: Meth
             code: 404,
             originalResponse: error.toString(),
             parsedResponse: JSON.stringify(error),
+        };
+    }
+    if (method === 'deleteVisitorData' && error instanceof Error && error.message == 'VisitorId is not set') {
+        return {
+            code: 400,
+            originalResponse: error?.toString(),
+            parsedResponse: {
+                // @ts-ignore
+                error: {
+                    code: "RequestCannotBeParsed",
+                    message: "visitor id is required",
+                }
+            }
         };
     }
     return {

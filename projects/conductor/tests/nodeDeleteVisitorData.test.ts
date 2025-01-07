@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { generateIdentificationData } from "../htmlScripts/runNodeIdentification";
 import testData from "../utils/testData";
-import { deleteDataByVisitorId, getEventByVisitorId } from "../utils/api";
+import { deleteVisitorDataRequest, getEventByVisitorId } from "../utils/api";
 
 test.describe("Node deleteVisitorData Suite", () => {
   test("deleteVisitorData for valid apiKey and visitorId with Smart Signals", async ({
@@ -12,10 +12,12 @@ test.describe("Node deleteVisitorData Suite", () => {
       testData.generatidentification.publicApiKeySS
     );
 
-    await deleteDataByVisitorId(
+    await deleteVisitorDataRequest(
       request,
-      visitorId,
-      testData.validSmartSignal.apiKey
+      {
+        visitorId,
+        apiKey: testData.validSmartSignal.apiKey
+      }
     );
 
     const deletedVisitor = await getEventByVisitorId(
@@ -37,39 +39,36 @@ test.describe("Node deleteVisitorData Suite 400 errors", () => {
   test("deleteVisitorData without sending vistorId - RequestCannotBeParsed", async ({
     request,
   }) => {
-    const visitorId = await generateIdentificationData(
-      "visitorId",
-      testData.generatidentification.publicApiKeySS
-    );
-    const deleteResponseBody = await deleteDataByVisitorId(
+    const deleteResponseBody = await deleteVisitorDataRequest(
       request,
-      undefined,
-      testData.validSmartSignal.apiKey
+      {
+        apiKey: testData.validSmartSignal.apiKey
+      }
     );
-    expect(deleteResponseBody.status).toBe(400);
-    expect(deleteResponseBody.json).toEqual(
+    expect(deleteResponseBody.code).toBe(400);
+    expect(deleteResponseBody.parsedResponse).toEqual(
       expect.objectContaining({
         error: expect.objectContaining({
           code: "RequestCannotBeParsed",
-          message: "invalid visitor id",
+          message: "visitor id is required",
         }),
       })
     );
   });
   test.describe("Node deleteVisitorData Suite 403 errors", () => {
-    test("deleteVisitorData Auth-API-Key header is missing - TokenRequired", async ({
+    test("deleteVisitorData APIKey is missing - TokenRequired", async ({
       request,
     }) => {
       const visitorId = await generateIdentificationData(
         "visitorId",
         testData.generatidentification.publicApiKeySS
       );
-      const deleteResponseBody = await deleteDataByVisitorId(
+      const deleteResponseBody = await deleteVisitorDataRequest(
         request,
-        visitorId
+        {visitorId}
       );
-      expect(deleteResponseBody.status).toBe(403);
-      expect(deleteResponseBody.json).toEqual(
+      expect(deleteResponseBody.code).toBe(403);
+      expect(deleteResponseBody.parsedResponse).toEqual(
         expect.objectContaining({
           error: expect.objectContaining({
             code: "TokenRequired",
@@ -83,13 +82,15 @@ test.describe("Node deleteVisitorData Suite 400 errors", () => {
         "visitorId",
         testData.generatidentification.publicApiKeySS
       );
-      const deleteResponseBody = await deleteDataByVisitorId(
+      const deleteResponseBody = await deleteVisitorDataRequest(
         request,
-        visitorId,
-        testData.valid.apiKey
+        {
+          visitorId,
+          apiKey: testData.valid.apiKey
+        }
       );
-      expect(deleteResponseBody.status).toBe(403);
-      expect(deleteResponseBody.json).toEqual(
+      expect(deleteResponseBody.code).toBe(403);
+      expect(deleteResponseBody.parsedResponse).toEqual(
         expect.objectContaining({
           error: expect.objectContaining({
             code: "FeatureNotEnabled",
@@ -102,13 +103,15 @@ test.describe("Node deleteVisitorData Suite 400 errors", () => {
 
   test.describe("Node deleteVisitorData Suite 404 errors", () => {
     test("deleteVisitorData - VisitorNotFound", async ({ request }) => {
-      const deleteResponseBody = await deleteDataByVisitorId(
+      const deleteResponseBody = await deleteVisitorDataRequest(
         request,
-        testData.invalid.visitorId,
-        testData.validSmartSignal.apiKey
+        {
+          visitorId: testData.invalid.visitorId,
+          apiKey: testData.validSmartSignal.apiKey
+        }
       );
-      expect(deleteResponseBody.status).toBe(404);
-      expect(deleteResponseBody.json).toEqual(
+      expect(deleteResponseBody.code).toBe(404);
+      expect(deleteResponseBody.parsedResponse).toEqual(
         expect.objectContaining({
           error: expect.objectContaining({
             code: "VisitorNotFound",
