@@ -1,14 +1,14 @@
 import { test, expect } from "@playwright/test";
-import { generateRequestId } from "../htmlScripts/runNodeIdentification";
+import { generateIdentificationData } from "../htmlScripts/runIdentification";
 import { validateGetEventsResponse } from "../utils/api";
 import testData from "../utils/testData";
 import { getEventByRequestId } from "../utils/api";
 
-test.describe("Node getEvents Suite", () => {
+test.describe("GetEvents Suite", () => {
   test("getEvents for valid apiKey and requestId with Smart Signals", async ({
     request,
   }) => {
-    const requestId = await generateRequestId(
+    const requestId = await generateIdentificationData(
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
@@ -36,7 +36,7 @@ test.describe("Node getEvents Suite", () => {
   test("getEvents for valid apiKey and requestId without Smart Signals", async ({
     request,
   }) => {
-    const requestId = await generateRequestId(
+    const requestId = await generateIdentificationData(
       "requestId",
       testData.generatidentification.publicApiKey
     );
@@ -84,7 +84,7 @@ test.describe("Node getEvents Suite", () => {
   });
 
   test("getEvents for invalid apikey", async ({ request }) => {
-    const requestId = await generateRequestId(
+    const requestId = await generateIdentificationData(
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
@@ -98,7 +98,7 @@ test.describe("Node getEvents Suite", () => {
   });
 
   test("getEvents for invalid region", async ({ request }) => {
-    const requestId = await generateRequestId(
+    const requestId = await generateIdentificationData(
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
@@ -122,7 +122,7 @@ test.describe("Node getEvents Suite", () => {
   });
 
   test("getEvents for different region", async ({ request }) => {
-    const requestId = await generateRequestId(
+    const requestId = await generateIdentificationData(
       "requestId",
       testData.generatidentification.publicApiKeySS
     );
@@ -136,7 +136,7 @@ test.describe("Node getEvents Suite", () => {
   });
 
   test("getEvents for deleted APIkey", async ({ request }) => {
-    const requestId = await generateRequestId(
+    const requestId = await generateIdentificationData(
       "requestId",
       testData.generatidentification.publicApiKeySS
     );

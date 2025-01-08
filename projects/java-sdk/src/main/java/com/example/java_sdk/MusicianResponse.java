@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fingerprint.Sealed;
 import com.fingerprint.sdk.ApiException;
 
+import java.util.HashMap;
 import java.util.Map;
 
 class MusicianResponse<T> {
@@ -23,11 +24,21 @@ class MusicianResponse<T> {
         ObjectMapper objectMapper = new ObjectMapper();
         this.code = e.getCode();
         this.originalResponse = (T) e.getMessage();
-        // TODO: should be a model
-        try {
-            this.parsedResponse = (T) objectMapper.readValue(e.getResponseBody(), Map.class);
-        } catch (JsonProcessingException ex) {
-            this.parsedResponse = (T) e.getResponseBody();
+        // TODO: better solution?
+        if (e.getMessage() == "Missing the required parameter 'visitorId' when calling deleteVisitorData") {
+            this.parsedResponse = (T) new HashMap<String, Object>() {{
+                put("error", new HashMap<String, String>() {{
+                    put("code", "RequestCannotBeParsed");
+                    put("message", "visitor id is required");
+                }});
+            }};
+        } else {
+            // TODO: should be a model
+            try {
+                this.parsedResponse = (T) objectMapper.readValue(e.getResponseBody(), Map.class);
+            } catch (JsonProcessingException ex) {
+                this.parsedResponse = (T) e.getResponseBody();
+            }
         }
     }
 
