@@ -45,6 +45,13 @@ jobs:
         working-directory: ./projects/conductor
         env:
           MUSICIAN_PORT: 3002
+          MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
+          DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
+          DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
 
   run-java-sdk-tests:
@@ -99,6 +106,13 @@ jobs:
         working-directory: ./projects/conductor
         env:
           MUSICIAN_PORT: 8080
+          MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
+          DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
+          DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
   run-dotnet-sdk-tests:
     runs-on: ubuntu-latest
@@ -147,6 +161,13 @@ jobs:
         working-directory: ./projects/conductor
         env:
           MUSICIAN_PORT: 5243
+          MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
+          DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
+          DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
 
   run-go-sdk-tests:
@@ -207,6 +228,13 @@ jobs:
         working-directory: ./projects/conductor
         env:
           MUSICIAN_PORT: 8081
+          MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
+          DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
+          DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
 
   run-python-sdk-tests:
@@ -252,6 +280,13 @@ jobs:
         working-directory: ./projects/conductor
         env:
           MUSICIAN_PORT: 3003
+          MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
+          DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
+          DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
 
   run-php-sdk-tests:
@@ -306,4 +341,11 @@ jobs:
         working-directory: ./projects/conductor
         env:
           MUSICIAN_PORT: 3004
+          MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
+          DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
+          DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test

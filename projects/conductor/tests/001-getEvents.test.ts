@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { generateIdentificationData } from "../htmlScripts/runIdentification";
 import { validateGetEventsResponse } from "../utils/api";
-import testData from "../utils/testData";
+import { testData } from "../utils/testData";
 import { getEventByRequestId } from "../utils/api";
 
 test.describe("GetEvents Suite", () => {
@@ -10,14 +10,13 @@ test.describe("GetEvents Suite", () => {
   }) => {
     const requestId = await generateIdentificationData(
       "requestId",
-      testData.generatidentification.publicApiKeySS
+      testData.identificationKey.maximumFeaturesUS
     );
     const requestData = {
       apiKey: testData.validSmartSignal.apiKey,
       region: testData.validSmartSignal.region,
       requestId: requestId,
     };
-
     const muisicanAppResponseBody = await validateGetEventsResponse(
       request,
       requestData,
@@ -38,7 +37,7 @@ test.describe("GetEvents Suite", () => {
   }) => {
     const requestId = await generateIdentificationData(
       "requestId",
-      testData.generatidentification.publicApiKey
+      testData.identificationKey.minimumFeaturesUS
     );
     const requestData = {
       apiKey: testData.valid.apiKey,
@@ -86,7 +85,7 @@ test.describe("GetEvents Suite", () => {
   test("getEvents for invalid apikey", async ({ request }) => {
     const requestId = await generateIdentificationData(
       "requestId",
-      testData.generatidentification.publicApiKeySS
+      testData.identificationKey.maximumFeaturesUS
     );
     const requestData = {
       apiKey: testData.invalid.apiKey,
@@ -100,7 +99,7 @@ test.describe("GetEvents Suite", () => {
   test("getEvents for invalid region", async ({ request }) => {
     const requestId = await generateIdentificationData(
       "requestId",
-      testData.generatidentification.publicApiKeySS
+      testData.identificationKey.maximumFeaturesUS
     );
     const requestData = {
       apiKey: testData.validSmartSignal.apiKey,
@@ -124,7 +123,7 @@ test.describe("GetEvents Suite", () => {
   test("getEvents for different region", async ({ request }) => {
     const requestId = await generateIdentificationData(
       "requestId",
-      testData.generatidentification.publicApiKeySS
+      testData.identificationKey.maximumFeaturesUS
     );
     const requestData = {
       apiKey: testData.differentRegion.apiKey,
@@ -138,7 +137,7 @@ test.describe("GetEvents Suite", () => {
   test("getEvents for deleted APIkey", async ({ request }) => {
     const requestId = await generateIdentificationData(
       "requestId",
-      testData.generatidentification.publicApiKeySS
+      testData.identificationKey.maximumFeaturesUS
     );
     const requestData = {
       apiKey: testData.deletedApiKey.apiKey,
