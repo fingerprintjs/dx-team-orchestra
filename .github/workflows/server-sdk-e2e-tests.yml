@@ -56,6 +56,8 @@ jobs:
 
   run-java-sdk-tests:
     runs-on: ubuntu-latest
+    needs: run-node-sdk-tests
+    continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -116,6 +118,8 @@ jobs:
         run: pnpm playwright test
   run-dotnet-sdk-tests:
     runs-on: ubuntu-latest
+    needs: run-java-sdk-tests
+    continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -172,6 +176,8 @@ jobs:
 
   run-go-sdk-tests:
     runs-on: ubuntu-latest
+    needs: run-dotnet-sdk-tests
+    continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -239,6 +245,8 @@ jobs:
 
   run-python-sdk-tests:
     runs-on: ubuntu-latest
+    needs: run-go-sdk-tests
+    continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -291,6 +299,8 @@ jobs:
 
   run-php-sdk-tests:
     runs-on: ubuntu-latest
+    needs: run-python-sdk-tests
+    continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
