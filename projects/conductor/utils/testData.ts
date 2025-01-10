@@ -1,11 +1,30 @@
-const testData = {
-  validSmartSignal: {
-    apiKey: "ftxPJdxnMlPIeZV09RoT",
+const accounts = {
+  minimumFeatures: {
     region: "Global",
+    publicKey: process.env.MINIMUM_US_DEFAULT_PUBLIC_KEY,
+    privateKey: process.env.MINIMUM_US_DEFAULT_PRIVATE_KEY,
+  },
+  maximumFeatures: {
+    region: "Global",
+    publicKey: process.env.MAXIMUM_US_DEFAULT_PUBLIC_KEY,
+    privateKey: process.env.MAXIMUM_US_DEFAULT_PRIVATE_KEY,
+    deletedPrivateKey: process.env.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY,
+  },
+  regular: {
+    region: "eu",
+    publicKey: process.env.DEFAULT_EU_DEFAULT_PUBLIC_KEY,
+    privateKey: process.env.DEFAULT_EU_DEFAULT_PRIVATE_KEY,
+  }
+}
+
+export const testData = {
+  validSmartSignal: {
+    apiKey: accounts.maximumFeatures.privateKey,
+    region: accounts.maximumFeatures.region,
   },
   valid: {
-    apiKey: "BCSjInUvHRIOKTpEuIF2",
-    region: "Global",
+    apiKey: accounts.minimumFeatures.privateKey,
+    region: accounts.minimumFeatures.region,
   },
   missing: {
     apiKey: "",
@@ -19,20 +38,22 @@ const testData = {
     visitorId: "gzm0RjeSe9g2netPpoWz",
   },
   differentRegion: {
-    apiKey: "ftxPJdxnMlPIeZV09RoT",
+    apiKey: accounts.maximumFeatures.privateKey,
     region: "eu",
   },
   deletedApiKey: {
-    apiKey: "ChMHgPDUzzr5qgTt4t45",
-    region: "Global",
+    apiKey: accounts.maximumFeatures.deletedPrivateKey,
+    region: accounts.maximumFeatures.region,
   },
   config: {
     baseURL: `http://localhost:${process.env.MUSICIAN_PORT || 3002}`,
     apiUrl: "https://api.fpjs.io",
   },
-  generatidentification: {
-    publicApiKeySS: "rO6UOgRbMculDuXmJl4g",
-    publicApiKey: "GyvQGYtzxEmK6JszqXaA",
+
+  identificationKey: {
+    minimumFeaturesUS: accounts.minimumFeatures.publicKey,
+    maximumFeaturesUS: accounts.maximumFeatures.publicKey,
+    regularEU: accounts.regular.publicKey,
   },
 
   updateEvent: {

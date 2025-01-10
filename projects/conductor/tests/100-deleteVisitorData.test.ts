@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { generateIdentificationData } from "../htmlScripts/runIdentification";
-import testData from "../utils/testData";
+import { testData } from "../utils/testData";
 import { deleteVisitorDataRequest, getEventByVisitorId } from "../utils/api";
 
 test.describe("DeleteVisitorData Suite", () => {
@@ -9,7 +9,7 @@ test.describe("DeleteVisitorData Suite", () => {
   }) => {
     const visitorId = await generateIdentificationData(
       "visitorId",
-      testData.generatidentification.publicApiKeySS
+      testData.identificationKey.maximumFeaturesUS
     );
 
     await deleteVisitorDataRequest(
@@ -61,7 +61,7 @@ test.describe("DeleteVisitorData Suite 400 errors", () => {
     }) => {
       const visitorId = await generateIdentificationData(
         "visitorId",
-        testData.generatidentification.publicApiKeySS
+        testData.identificationKey.maximumFeaturesUS
       );
       const deleteResponseBody = await deleteVisitorDataRequest(
         request,
@@ -80,7 +80,7 @@ test.describe("DeleteVisitorData Suite 400 errors", () => {
     test("deleteVisitorData - FeatureNotEnabled", async ({ request }) => {
       const visitorId = await generateIdentificationData(
         "visitorId",
-        testData.generatidentification.publicApiKeySS
+        testData.identificationKey.maximumFeaturesUS
       );
       const deleteResponseBody = await deleteVisitorDataRequest(
         request,

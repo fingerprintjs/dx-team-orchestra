@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { generateIdentificationData } from "../htmlScripts/runIdentification";
-import testData from "../utils/testData";
+import { testData } from "../utils/testData";
 import { getEventByRequestId, updateEventApiRequest } from "../utils/api";
 
 test.describe("UpdateEvents Suite", () => {
@@ -9,7 +9,7 @@ test.describe("UpdateEvents Suite", () => {
   }) => {
     const requestId = await generateIdentificationData(
       "requestId",
-      testData.generatidentification.publicApiKeySS
+      testData.identificationKey.maximumFeaturesUS
     );
      const updateResult = await updateEventApiRequest(
       request,
@@ -45,7 +45,7 @@ test.describe("UpdateEvents Suite", () => {
   }) => {
     const requestId = await generateIdentificationData(
       "requestId",
-      testData.generatidentification.publicApiKey
+      testData.identificationKey.minimumFeaturesUS
     );
     const updateResult = await updateEventApiRequest(
       request,
@@ -77,7 +77,7 @@ test.describe("UpdateEvents Suite", () => {
   test("updateEvents for valid compelx tag only", async ({ request }) => {
     const requestId = await generateIdentificationData(
       "requestId",
-      testData.generatidentification.publicApiKeySS
+      testData.identificationKey.maximumFeaturesUS
     );
     const initialEvent = await getEventByRequestId(
       request,
@@ -117,7 +117,7 @@ test.describe("UpdateEvents Suite", () => {
   test("updateEvents for linkedId only", async ({ request }) => {
     const requestId = await generateIdentificationData(
       "requestId",
-      testData.generatidentification.publicApiKeySS
+      testData.identificationKey.maximumFeaturesUS
     );
     const initialEvent = await getEventByRequestId(
       request,
@@ -151,10 +151,10 @@ test.describe("UpdateEvents Suite", () => {
     expect(updatedResponseBody.tag).toStrictEqual(initialResponseBody.tag);
   });
 
-  test("updateEvents for suspect only", async ({ request }) => {
+  test("updateEvents for suspect=true only", async ({ request }) => {
     const requestId = await generateIdentificationData(
       "requestId",
-      testData.generatidentification.publicApiKeySS
+      testData.identificationKey.maximumFeaturesUS
     );
     const initialEvent = await getEventByRequestId(
       request,
@@ -169,7 +169,7 @@ test.describe("UpdateEvents Suite", () => {
         requestId,
         apiKey: testData.validSmartSignal.apiKey,
         region: testData.validSmartSignal.region,
-        suspect: testData.updateEvent.suspect
+        suspect: true
       }
     );
     expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
@@ -180,12 +180,45 @@ test.describe("UpdateEvents Suite", () => {
       testData.validSmartSignal.apiKey
     );
     const updatedResponseBody = await updatedEvent.products.identification.data;
-    expect(updatedResponseBody.suspect).toStrictEqual(
-      testData.updateEvent.suspect
-    );
+    expect(updatedResponseBody.suspect).toBe(true);
 
     expect(updatedResponseBody.linkedId).toStrictEqual(initialResponseBody.linkedId);
     expect(updatedResponseBody.tag).toStrictEqual(initialResponseBody.tag);
+  });
+
+  test("updateEvents for suspect=false only", async ({ request }) => {
+      const requestId = await generateIdentificationData(
+          "requestId",
+          testData.identificationKey.maximumFeaturesUS
+      );
+      const initialEvent = await getEventByRequestId(
+          request,
+          requestId,
+          testData.validSmartSignal.apiKey
+      );
+      const initialResponseBody = await initialEvent.products.identification.data;
+
+      const updateResult = await updateEventApiRequest(
+          request,
+          {
+              requestId,
+              apiKey: testData.validSmartSignal.apiKey,
+              region: testData.validSmartSignal.region,
+              suspect: false
+          }
+      );
+      expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
+
+      const updatedEvent = await getEventByRequestId(
+          request,
+          requestId,
+          testData.validSmartSignal.apiKey
+      );
+      const updatedResponseBody = await updatedEvent.products.identification.data;
+      expect(updatedResponseBody.suspect).toBe(false);
+
+      expect(updatedResponseBody.linkedId).toStrictEqual(initialResponseBody.linkedId);
+      expect(updatedResponseBody.tag).toStrictEqual(initialResponseBody.tag);
   });
 });
 
@@ -195,7 +228,7 @@ test.describe("UpdateEvents Suite 400 errors", () => {
   }) => {
     const requestId = await generateIdentificationData(
       "requestId",
-      testData.generatidentification.publicApiKeySS
+      testData.identificationKey.maximumFeaturesUS
     );
     const updateEventResponse = await updateEventApiRequest(
         request,
@@ -223,7 +256,7 @@ test.describe("UpdateEvents Suite 403 errors", () => {
   }) => {
     const requestId = await generateIdentificationData(
       "requestId",
-      testData.generatidentification.publicApiKeySS
+      testData.identificationKey.minimumFeaturesUS
     );
     const updateEventResponse = await updateEventApiRequest(
       request,
@@ -245,7 +278,7 @@ test.describe("UpdateEvents Suite 403 errors", () => {
   }) => {
     const requestId = await generateIdentificationData(
       "requestId",
-      testData.generatidentification.publicApiKeySS
+      testData.identificationKey.minimumFeaturesUS
     );
     const updateEventResponse = await updateEventApiRequest(
       request,
@@ -294,7 +327,7 @@ test.describe("UpdateEvents Suite 409 errors", () => {
   test("updateEvents Event Not ready - StateNotReady", async ({ request }) => {
     const requestId = await generateIdentificationData(
       "requestId",
-      testData.generatidentification.publicApiKeySS
+      testData.identificationKey.maximumFeaturesUS
     );
     const updateEventResponse = await updateEventApiRequest(
       request,
