@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { generateIdentificationData } from "../htmlScripts/runIdentification";
 import { testData } from "../utils/testData";
-import { deleteVisitorDataRequest, getEventByVisitorId } from "../utils/api";
+import { deleteVisitorDataRequest, getEventByVisitorId } from "../utils/musician";
 
 test.describe("DeleteVisitorData Suite", () => {
   test("deleteVisitorData for valid apiKey and visitorId with Smart Signals", async ({
