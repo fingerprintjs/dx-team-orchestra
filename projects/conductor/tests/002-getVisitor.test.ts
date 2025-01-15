@@ -8,17 +8,17 @@ test.describe('GetVisitor Suite', () => {
     const [requestId, visitorId] = await Promise.all([
       generateIdentificationData(
         'requestId',
-        testData.identificationKey.maximumFeaturesUS
+        testData.credentials.maxFeaturesUS.publicKey
       ),
       generateIdentificationData(
         'visitorId',
-        testData.identificationKey.maximumFeaturesUS
+        testData.credentials.maxFeaturesUS.publicKey
       )
     ])
 
     const params = {
-      apiKey: testData.validSmartSignal.apiKey,
-      region: testData.validSmartSignal.region,
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      region: testData.credentials.maxFeaturesUS.region,
       requestId,
       visitorId
     };
@@ -28,8 +28,8 @@ test.describe('GetVisitor Suite', () => {
 
   test('getVisitor with invalid visitor ID and api key', async ({sdkApi}) => {
     const {response} = await sdkApi.getVisitor({
-      apiKey: testData.invalid.apiKey,
-      visitorId: testData.invalid.visitorId
+      apiKey: testData.credentials.invalid.privateKey,
+      visitorId: testData.mocks.invalid.visitorId,
     })
 
     expect(response.status()).toEqual(403)
@@ -37,9 +37,9 @@ test.describe('GetVisitor Suite', () => {
 
   test('getVisitor with invalid visitor ID', async ({sdkApi}) => {
     const {response} = await sdkApi.getVisitor({
-      apiKey: testData.validSmartSignal.apiKey,
-      visitorId: testData.invalid.visitorId,
-      requestId: testData.invalid.requestID
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      visitorId: testData.mocks.invalid.visitorId,
+      requestId: testData.mocks.invalid.requestID
     })
 
     expect(response.status()).toEqual(400)

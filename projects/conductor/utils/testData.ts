@@ -17,7 +17,47 @@ const accounts = {
   }
 }
 
+export type Credential = {
+  region: string
+  publicKey: string
+  privateKey: string
+}
+
+export type Credentials = {
+  maxFeaturesUS: Credential
+  invalid: Credential
+}
+
+export type Mocks = {
+  invalid: {
+    requestID: string,
+    visitorId: string,
+  }
+}
+
+const credentials: Credentials = {
+  maxFeaturesUS: {
+    region: accounts.maximumFeatures.region,
+    publicKey: accounts.maximumFeatures.publicKey,
+    privateKey: accounts.maximumFeatures.privateKey,
+  },
+  invalid: {
+    publicKey: "ftxPJdxnMlP",
+    privateKey: 'fz2%^pvvv',
+    region: "AB",
+  }
+}
+
+const mocks: Mocks = {
+  invalid: {
+    requestID: "ftxPJdxnMlP.ftxPJdxnMlP",
+    visitorId: "gzm0RjeSe9g2netPpoWz",
+  }
+}
+
 export const testData = {
+  credentials,
+  mocks,
   validSmartSignal: {
     apiKey: accounts.maximumFeatures.privateKey,
     region: accounts.maximumFeatures.region,
