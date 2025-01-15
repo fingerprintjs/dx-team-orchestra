@@ -1,20 +1,11 @@
-import {generateIdentificationData} from "../htmlScripts/runIdentification";
+import {generateIdentificationDataPair} from "../htmlScripts/runIdentification";
 import {testData} from "../utils/testData";
 import {test} from "../utils/playwright";
 import {expect} from "@playwright/test";
 
 test.describe('GetVisitor Suite', () => {
-  test('getVisitor for valid apiKey', async ({assert}) => {
-    const [requestId, visitorId] = await Promise.all([
-      generateIdentificationData(
-        'requestId',
-        testData.credentials.maxFeaturesUS.publicKey
-      ),
-      generateIdentificationData(
-        'visitorId',
-        testData.credentials.maxFeaturesUS.publicKey
-      )
-    ])
+  test('with valid apiKey', async ({assert}) => {
+    const {visitorId, requestId} = await generateIdentificationDataPair(testData.credentials.maxFeaturesUS.publicKey);
 
     const params = {
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
@@ -26,22 +17,62 @@ test.describe('GetVisitor Suite', () => {
     await assert.thatResponsesMatch('getVisitor', params)
   })
 
-  test('getVisitor with invalid visitor ID and api key', async ({sdkApi}) => {
-    const {response} = await sdkApi.getVisitor({
+  test('with invalid visitor ID and api key', async ({sdkApi}) => {
+    const {response, data} = await sdkApi.getVisitor({
       apiKey: testData.credentials.invalid.privateKey,
       visitorId: testData.mocks.invalid.visitorId,
     })
 
     expect(response.status()).toEqual(403)
+    expect(data).toEqual({
+      error: 'Forbidden (HTTP 403)'
+    })
   })
 
-  test('getVisitor with invalid visitor ID', async ({sdkApi}) => {
-    const {response} = await sdkApi.getVisitor({
+  test('with invalid visitor ID', async ({sdkApi}) => {
+    const {response, data} = await sdkApi.getVisitor({
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
       visitorId: testData.mocks.invalid.visitorId,
-      requestId: testData.mocks.invalid.requestID
+      requestId: testData.mocks.invalid.requestId
     })
 
     expect(response.status()).toEqual(400)
+    expect(data).toEqual({
+      error: 'bad request'
+    })
+  })
+
+  test('with different region', async ({sdkApi}) => {
+    const {visitorId, requestId} = await generateIdentificationDataPair(testData.credentials.maxFeaturesUS.publicKey);
+
+    const {response, data} = await sdkApi.getVisitor({
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      visitorId,
+      requestId,
+      region: 'eu'
+    })
+
+
+    expect(response.status()).toEqual(403)
+    expect(data).toEqual({
+      error: 'Wrong region (HTTP 403)'
+    })
+  })
+
+  test('with deleted API key', async ({sdkApi}) => {
+    const {visitorId, requestId} = await generateIdentificationDataPair(testData.credentials.deleted.publicKey);
+
+    const {response, data} = await sdkApi.getVisitor({
+      apiKey: testData.credentials.deleted.privateKey,
+      visitorId,
+      requestId,
+      region: 'eu'
+    })
+
+
+    expect(response.status()).toEqual(403)
+    expect(data).toEqual({
+      error: 'Forbidden (HTTP 403)'
+    })
   })
 });

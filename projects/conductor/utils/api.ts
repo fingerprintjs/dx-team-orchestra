@@ -39,12 +39,12 @@ export class SdkFingerprintApi implements FingerprintApi {
       params,
     });
 
+    Object.assign(resp.response, {
+      status: () => resp.data.code,
+    })
+
     return {
       ...resp,
-      response: {
-        ...resp.response,
-        status: () => resp.data.code,
-      },
       data: resp.data.parsedResponse
     };
   }

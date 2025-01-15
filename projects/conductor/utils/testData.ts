@@ -26,11 +26,16 @@ export type Credential = {
 export type Credentials = {
   maxFeaturesUS: Credential
   invalid: Credential
+  deleted: Credential
 }
 
 export type Mocks = {
   invalid: {
-    requestID: string,
+    requestId: string,
+    visitorId: string,
+  }
+  missing: {
+    requestId: string,
     visitorId: string,
   }
 }
@@ -45,13 +50,22 @@ const credentials: Credentials = {
     publicKey: "ftxPJdxnMlP",
     privateKey: 'fz2%^pvvv',
     region: "AB",
+  },
+  deleted: {
+    privateKey: accounts.maximumFeatures.deletedPrivateKey,
+    publicKey: accounts.maximumFeatures.publicKey,
+    region: accounts.maximumFeatures.region,
   }
 }
 
 const mocks: Mocks = {
   invalid: {
-    requestID: "ftxPJdxnMlP.ftxPJdxnMlP",
+    requestId: "ftxPJdxnMlP.ftxPJdxnMlP",
     visitorId: "gzm0RjeSe9g2netPpoWz",
+  },
+  missing: {
+    requestId: "",
+    visitorId: "",
   }
 }
 
