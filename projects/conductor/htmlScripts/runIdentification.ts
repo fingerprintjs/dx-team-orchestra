@@ -1,9 +1,29 @@
 import { chromium } from "@playwright/test";
-import path from "path";
-import fs from "fs/promises";
+import * as path from "path";
+import *as fs from "fs/promises";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export async function generateIdentificationDataPair(
+  publicApiKey: string
+) {
+  const [requestId, visitorId] = await Promise.all([
+    generateIdentificationData(
+      'requestId',
+      publicApiKey
+    ),
+    generateIdentificationData(
+      'visitorId',
+      publicApiKey
+    )
+  ])
+
+  return {
+    requestId,
+    visitorId,
+  }
+}
 
 export async function generateIdentificationData(
   key: "requestId" | "visitorId",
