@@ -82,4 +82,14 @@ export async function generateIdentificationData(
   }
 }
 
+export async function generateIdentificationDataBulk(
+  key: "requestId" | "visitorId",
+  publicApiKey: string,
+  size: number
+) {
+  return Promise.all(
+    Array.from({length: size}).map(() => generateIdentificationData(key, publicApiKey))
+  )
+}
+
 export default generateIdentificationData;

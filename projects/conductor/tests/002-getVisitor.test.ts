@@ -1,4 +1,4 @@
-import {generateIdentificationDataPair} from "../htmlScripts/runIdentification";
+import {generateIdentificationDataBulk, generateIdentificationDataPair} from "../htmlScripts/runIdentification";
 import {testData} from "../utils/testData";
 import {test} from "../utils/playwright";
 import {expect} from "@playwright/test";
@@ -74,5 +74,27 @@ test.describe('GetVisitor Suite', () => {
     expect(data).toEqual({
       error: 'Forbidden (HTTP 403)'
     })
+  })
+
+  test('with pagination', async ({sdkApi}) => {
+    const visitorIds = await generateIdentificationDataBulk('visitorId', testData.identificationKey.maximumFeaturesUS, 10);
+
+    const params = {
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      visitorId: visitorIds[0],
+      limit: 5,
+      region: testData.credentials.maxFeaturesUS.region,
+    };
+    const {data} = await sdkApi.getVisitor(params)
+
+    expect(data.visits).toHaveLength(5)
+
+    const {data: nextData} = await sdkApi.getVisitor({
+      ...params,
+      paginationKey: data.paginationKey
+    })
+
+    expect(nextData.visits).toHaveLength(5)
+    expect(nextData.visits).not.toEqual(data.visits)
   })
 });
