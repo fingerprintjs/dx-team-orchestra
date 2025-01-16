@@ -63,6 +63,7 @@ export async function generateIdentificationData(
           const result = localStorage.getItem(key);
           if (result) {
             clearInterval(interval);
+            localStorage.removeItem(key);
             resolve(result);
           }
         }, 100);
