@@ -15,6 +15,12 @@ export type GetVisitorParams = {
   before?: number;
 }
 
+export type GetRelatedVisitorsParams = {
+  apiKey: string;
+  region?: string;
+  visitorId: string
+};
+
 export interface FingerprintApi {
   getEvent(params: GetEventsParams): Promise<JsonResponse<EventsGetResponse>>;
 
@@ -61,6 +67,18 @@ export class SdkFingerprintApi implements FingerprintApi {
 
 export class RealFingerprintApi implements FingerprintApi {
   constructor(private request: APIRequestContext) {
+  }
+
+  async getRelatedVisitors(params: GetRelatedVisitorsParams) {
+    return await jsonRequest(
+      {
+        request: this.request,
+        url: `${testData.config.apiUrl}/related-visitors/${params.visitorId}`,
+        headers: {
+          "Auth-API-Key": params.apiKey,
+          "content-type": "application/json",
+        },
+      })
   }
 
   async getEvent(params: GetEventsParams) {
