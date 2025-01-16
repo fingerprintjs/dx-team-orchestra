@@ -19,6 +19,8 @@ export interface FingerprintApi {
   getEvent(params: GetEventsParams): Promise<JsonResponse<EventsGetResponse>>;
 
   getVisitor(params: GetVisitorParams): Promise<JsonResponse<VisitorsResponse>>;
+
+  getRelatedVisitors(params: GetRelatedVisitorsParams): Promise<JsonResponse<any>>;
 }
 
 export class SdkFingerprintApi implements FingerprintApi {
@@ -31,6 +33,10 @@ export class SdkFingerprintApi implements FingerprintApi {
 
   async getVisitor(params: GetVisitorParams): Promise<JsonResponse<VisitorsResponse>> {
     return this.doRequest<VisitorsResponse>('/getVisits', params);
+  }
+
+  async getRelatedVisitors(params: GetRelatedVisitorsParams) {
+    return this.doRequest('/getRelatedVisitors', params);
   }
 
   private async doRequest<T>(path: string, params: RequestParams) {

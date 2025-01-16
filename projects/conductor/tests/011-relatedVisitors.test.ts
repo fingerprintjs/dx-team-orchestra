@@ -1,22 +1,15 @@
-import {expect, test} from "@playwright/test";
+import {expect} from "@playwright/test";
 import testData from "../utils/testData";
-import generateIdentificationData from "../htmlScripts/runIdentification";
-import {getRelatedVisitors} from "../utils/api";
-import {getFingerprintEndpoint} from "../utils/fingerprint";
+import {test} from "../utils/playwright";
 
 test.describe('Related Visitors Suite', () => {
-  test('get related visitors with valid apiKey and visitor id', async ({request}) => {
-    const visitorId = await generateIdentificationData(
-      "visitorId",
-     testData.identificationKey.maximumFeaturesUS,
-    );
-
-    const musicianResponse = await getRelatedVisitors(request, {
-      visitorId,
-      apiKey: testData.validSmartSignal.apiKey,
+  test('with valid apiKey and visitor id', async ({sdkApi}) => {
+    const {data} = await sdkApi.getRelatedVisitors({
+      visitorId: 'SzJDU0OIz1AoClm2vtcH',
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
     })
 
-    expect(musicianResponse.parsedResponse).toStrictEqual({
+    expect(data).toStrictEqual({
       relatedVisitors: []
     })
   })
