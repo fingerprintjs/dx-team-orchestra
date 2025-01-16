@@ -1,7 +1,7 @@
 import {chromium} from "@playwright/test";
 import {Agent, ExtendedGetResult, GetOptions, GetResult} from '@fingerprintjs/fingerprintjs-pro';
 import * as path from "path";
-import *as fs from "fs/promises";
+import * as fs from "fs/promises";
 import {fileURLToPath} from "url";
 
 type DeriveGetResult<TExtended extends boolean> = TExtended extends true ? ExtendedGetResult : GetResult;
