@@ -34,9 +34,10 @@ export class SdkFingerprintApi implements FingerprintApi {
   }
 
   private async doRequest<T>(path: string, params: RequestParams) {
+    const url = `${testData.config.baseURL}${path}`;
     const resp =  await jsonRequest<MusicianResponse>({
       request: this.request,
-      url: `${testData.config.baseURL}${path}/`,
+      url,
       params,
     });
 
