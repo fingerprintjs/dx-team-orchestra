@@ -1,11 +1,13 @@
-import {generateIdentificationDataBulk, generateIdentificationDataPair} from "../htmlScripts/runIdentification";
+import {identify, identifyBulk} from "../htmlScripts/runIdentification";
 import {testData} from "../utils/testData";
 import {test} from "../utils/playwright";
 import {expect} from "@playwright/test";
 
 test.describe('GetVisitor Suite', () => {
   test('with valid apiKey', async ({assert}) => {
-    const {visitorId, requestId} = await generateIdentificationDataPair(testData.credentials.maxFeaturesUS.publicKey);
+    const {visitorId, requestId} = await identify({
+      publicApiKey: testData.credentials.maxFeaturesUS.publicKey
+    });
 
     const params = {
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
@@ -43,7 +45,9 @@ test.describe('GetVisitor Suite', () => {
   })
 
   test('with different region', async ({sdkApi}) => {
-    const {visitorId, requestId} = await generateIdentificationDataPair(testData.credentials.maxFeaturesUS.publicKey);
+    const {visitorId, requestId} = await identify({
+      publicApiKey: testData.credentials.maxFeaturesUS.publicKey
+    });
 
     const {response, data} = await sdkApi.getVisitor({
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
@@ -60,7 +64,9 @@ test.describe('GetVisitor Suite', () => {
   })
 
   test('with deleted API key', async ({sdkApi}) => {
-    const {visitorId, requestId} = await generateIdentificationDataPair(testData.credentials.deleted.publicKey);
+    const {visitorId, requestId} = await identify({
+      publicApiKey: testData.credentials.deleted.publicKey
+    });
 
     const {response, data} = await sdkApi.getVisitor({
       apiKey: testData.credentials.deleted.privateKey,
@@ -77,11 +83,13 @@ test.describe('GetVisitor Suite', () => {
   })
 
   test('with pagination', async ({sdkApi}) => {
-    const visitorIds = await generateIdentificationDataBulk('visitorId', testData.identificationKey.maximumFeaturesUS, 10);
+    const visitors = await identifyBulk({
+      publicApiKey: testData.identificationKey.maximumFeaturesUS
+    }, 10);
 
     const params = {
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
-      visitorId: visitorIds[0],
+      visitorId: visitors[0].visitorId,
       limit: 5,
       region: testData.credentials.maxFeaturesUS.region,
     };
@@ -96,5 +104,31 @@ test.describe('GetVisitor Suite', () => {
 
     expect(nextData.visits).toHaveLength(5)
     expect(nextData.visits).not.toEqual(data.visits)
+  })
+
+  test('with linked id', async ({sdkApi}) => {
+    const linkedId = `test_${Date.now()}`;
+    const {visitorId, requestId} = await identify({
+      publicApiKey: testData.credentials.maxFeaturesUS.publicKey,
+      linkedId,
+    });
+
+    const {data} = await sdkApi.getVisitor({
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      linkedId,
+      visitorId,
+      requestId,
+    });
+
+    expect(data.visits).toHaveLength(1);
+
+    const {data: emptyData} = await sdkApi.getVisitor({
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      linkedId: 'different',
+      visitorId,
+      requestId,
+    });
+
+    expect(emptyData.visits).toHaveLength(0);
   })
 });
