@@ -1,20 +1,19 @@
 import {chromium} from "@playwright/test";
-import {Agent, ExtendedGetResult, GetOptions, GetResult} from '@fingerprintjs/fingerprintjs-pro';
+import {Agent, ExtendedGetResult, GetOptions} from '@fingerprintjs/fingerprintjs-pro';
 import * as path from "path";
 import * as fs from "fs/promises";
 import {fileURLToPath} from "url";
 
-type DeriveGetResult<TExtended extends boolean> = TExtended extends true ? ExtendedGetResult : GetResult;
 
 const serverPath = path.dirname(fileURLToPath(import.meta.url));
 
-export type IdentifyOptions<TExtended extends boolean, TIP = unknown> = GetOptions<TExtended, TIP> & {
+export type IdentifyOptions = GetOptions<true> & {
   publicApiKey: string
 };
 
-export async function identify<TExtended extends boolean, TIP = unknown>(
-  {publicApiKey, ...options}: Readonly<IdentifyOptions<TExtended, TIP>>,
-): Promise<DeriveGetResult<TExtended>> {
+export async function identify(
+  {publicApiKey, ...options}: Readonly<IdentifyOptions>,
+): Promise<ExtendedGetResult> {
   const htmlFile = "/identification.html";
 
   // Read and process the HTML file
@@ -43,14 +42,14 @@ export async function identify<TExtended extends boolean, TIP = unknown>(
 
     // Wait for the key to appear in localStorage
     const value = await page.evaluate(async (params) => {
-      return new Promise<DeriveGetResult<TExtended>>((resolve) => {
+      return new Promise<ExtendedGetResult>((resolve) => {
         const interval = setInterval(async () => {
           const agent = (window as any).FPJS as Agent | undefined;
           if (!agent) {
             return
           }
 
-          const result = await agent.get(params as GetOptions<TExtended, TIP>);
+          const result = await agent.get(params as GetOptions<true>);
           if (result) {
             clearInterval(interval);
             resolve(result);
@@ -85,8 +84,8 @@ export async function generateIdentificationData(
   return key === 'requestId' ? result.requestId : result.visitorId;
 }
 
-export async function identifyBulk<TExtended extends boolean, TIP = unknown>(
-  options: Readonly<IdentifyOptions<TExtended, TIP>>,
+export async function identifyBulk(
+  options: Readonly<IdentifyOptions>,
   size: number
 ) {
   return Promise.all(
