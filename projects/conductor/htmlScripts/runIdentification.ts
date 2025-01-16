@@ -1,40 +1,25 @@
-import { chromium } from "@playwright/test";
+import {chromium} from "@playwright/test";
+import {Agent, ExtendedGetResult, GetOptions, GetResult} from '@fingerprintjs/fingerprintjs-pro';
 import * as path from "path";
 import *as fs from "fs/promises";
-import { fileURLToPath } from "url";
+import {fileURLToPath} from "url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+type DeriveGetResult<TExtended extends boolean> = TExtended extends true ? ExtendedGetResult : GetResult;
 
-export async function generateIdentificationDataPair(
+const serverPath = path.dirname(fileURLToPath(import.meta.url));
+
+export type IdentifyOptions<TExtended extends boolean, TIP = unknown> = GetOptions<TExtended, TIP> & {
   publicApiKey: string
-) {
-  const [requestId, visitorId] = await Promise.all([
-    generateIdentificationData(
-      'requestId',
-      publicApiKey
-    ),
-    generateIdentificationData(
-      'visitorId',
-      publicApiKey
-    )
-  ])
+};
 
-  return {
-    requestId,
-    visitorId,
-  }
-}
-
-export async function generateIdentificationData(
-  key: "requestId" | "visitorId",
-  publicApiKey: string
-): Promise<string> {
-  const serverPath = __dirname;
+export async function identify<TExtended extends boolean, TIP = unknown>(
+  {publicApiKey, ...options}: Readonly<IdentifyOptions<TExtended, TIP>>,
+): Promise<DeriveGetResult<TExtended>> {
   const htmlFile = "/identification.html";
 
   // Read and process the HTML file
   const htmlPath = path.join(serverPath, htmlFile);
-  let htmlContent = await fs.readFile(htmlPath, { encoding: "utf-8" });
+  let htmlContent = await fs.readFile(htmlPath, {encoding: "utf-8"});
 
   // Replace placeholder with public API key
   htmlContent = htmlContent.replace("{{PUBLIC_API_KEY}}", publicApiKey);
@@ -57,21 +42,25 @@ export async function generateIdentificationData(
     await page.goto(`file://${tempHtmlPath}`);
 
     // Wait for the key to appear in localStorage
-    const value = await page.evaluate(async (key) => {
-      return new Promise<string>((resolve) => {
-        const interval = setInterval(() => {
-          const result = localStorage.getItem(key);
+    const value = await page.evaluate(async (params) => {
+      return new Promise<DeriveGetResult<TExtended>>((resolve) => {
+        const interval = setInterval(async () => {
+          const agent = (window as any).FPJS as Agent | undefined;
+          if (!agent) {
+            return
+          }
+
+          const result = await agent.get(params as GetOptions<TExtended, TIP>);
           if (result) {
             clearInterval(interval);
-            localStorage.removeItem(key);
             resolve(result);
           }
         }, 100);
       });
-    }, key);
+    }, options);
 
     if (!value) {
-      throw new Error(`Failed to retrieve ${key} from localStorage`);
+      throw new Error(`Failed to identify`);
     }
 
     return value;
@@ -82,13 +71,26 @@ export async function generateIdentificationData(
   }
 }
 
-export async function generateIdentificationDataBulk(
+/**
+ * @deprecated Use {@link identify} instead
+ * */
+export async function generateIdentificationData(
   key: "requestId" | "visitorId",
-  publicApiKey: string,
+  publicApiKey: string
+): Promise<string> {
+  const result = await identify({
+    publicApiKey,
+  })
+
+  return key === 'requestId' ? result.requestId : result.visitorId;
+}
+
+export async function identifyBulk<TExtended extends boolean, TIP = unknown>(
+  options: Readonly<IdentifyOptions<TExtended, TIP>>,
   size: number
 ) {
   return Promise.all(
-    Array.from({length: size}).map(() => generateIdentificationData(key, publicApiKey))
+    Array.from({length: size}).map(() => identify(options))
   )
 }
 
