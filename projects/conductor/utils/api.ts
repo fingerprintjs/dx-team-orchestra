@@ -2,6 +2,7 @@ import {APIRequestContext, expect} from "@playwright/test";
 import testData from "./testData";
 import {jsonRequest, JsonResponse, RequestParams} from "./http";
 import {GetEventsParams, MusicianResponse} from "./musician";
+import {VisitorsResponse, EventsGetResponse} from '@fingerprintjs/fingerprintjs-pro-server-api'
 
 export type GetVisitorParams = {
   apiKey: string;
@@ -15,24 +16,24 @@ export type GetVisitorParams = {
 }
 
 export interface FingerprintApi {
-  getEvent(params: GetEventsParams): Promise<JsonResponse<unknown>>;
+  getEvent(params: GetEventsParams): Promise<JsonResponse<EventsGetResponse>>;
 
-  getVisitor(params: GetVisitorParams): Promise<JsonResponse<unknown>>;
+  getVisitor(params: GetVisitorParams): Promise<JsonResponse<VisitorsResponse>>;
 }
 
 export class SdkFingerprintApi implements FingerprintApi {
   constructor(private request: APIRequestContext) {
   }
 
-  async getEvent(params: GetEventsParams): Promise<JsonResponse<unknown>> {
-    return this.doRequest('/getEvents', params);
+  async getEvent(params: GetEventsParams): Promise<JsonResponse<EventsGetResponse>> {
+    return this.doRequest<EventsGetResponse>('/getEvents', params);
   }
 
-  async getVisitor(params: GetVisitorParams) {
-    return this.doRequest('/getVisits', params);
+  async getVisitor(params: GetVisitorParams): Promise<JsonResponse<VisitorsResponse>> {
+    return this.doRequest<VisitorsResponse>('/getVisits', params);
   }
 
-  private async doRequest(path: string, params: RequestParams) {
+  private async doRequest<T>(path: string, params: RequestParams) {
     const resp =  await jsonRequest<MusicianResponse>({
       request: this.request,
       url: `${testData.config.baseURL}${path}/`,
@@ -45,7 +46,7 @@ export class SdkFingerprintApi implements FingerprintApi {
 
     return {
       ...resp,
-      data: resp.data.parsedResponse
+      data: resp.data.parsedResponse as T
     };
   }
 

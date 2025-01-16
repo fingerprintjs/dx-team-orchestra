@@ -8,6 +8,9 @@
   "license": "ISC",
   "type": "module",
   "description": "",
+  "dependencies": {
+    "@fingerprintjs/fingerprintjs-pro-server-api": "^6.1.0"
+  },
   "devDependencies": {
     "@playwright/test": "^1.49.0",
     "@types/node": "^22.10.1",
