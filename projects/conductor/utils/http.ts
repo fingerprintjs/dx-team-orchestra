@@ -1,9 +1,11 @@
 import {APIRequestContext, APIResponse} from "@playwright/test";
 
+export type RequestParams = Record<string, string | number>;
+
 type JsonRequestOptions = {
   request: APIRequestContext,
   url: string,
-  params?: Record<string, string | number>
+  params?: RequestParams
   headers?: Record<string, string>
   method?: 'get' | 'delete'
 };
