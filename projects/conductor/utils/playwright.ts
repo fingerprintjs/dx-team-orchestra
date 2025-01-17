@@ -4,7 +4,7 @@ import {Assertions} from "./assertions";
 
 type Fixture = {
   fingerprintApi: FingerprintApi
-  sdkApi: FingerprintApi
+  sdkApi: SdkFingerprintApi
   assert: Assertions
 }
 
