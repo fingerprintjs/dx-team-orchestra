@@ -26,7 +26,7 @@ test.describe('Sealed', () => {
         test.expect(sealedData).not.toBe(undefined);
         const keys = [
             {
-                key: testData.sealedMaximumFeaturesUs.encryptionKey + 'qwe',
+                key: testData.sealedMinimumFeaturesUs.encryptionKey,
                 algorithm: 'aes-256-gcm'
             },
             {

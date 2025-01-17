@@ -19,17 +19,14 @@ import java.util.Map;
 @RestController
 public class SealedResultController {
     @PostMapping("/unseal")
-    public ResponseEntity<MusicianResponse> unseal(
-            @RequestBody String sealedData,
-            @RequestBody List<Map<String, String>> keys
-    ) {
+    public ResponseEntity<MusicianResponse> unseal(@RequestBody UnsealRequest request) {
         try {
-            final Sealed.DecryptionKey[] keysList = keys.stream().map(
+            final Sealed.DecryptionKey[] keysList = request.getKeys().stream().map(
                     key -> new Sealed.DecryptionKey(
                             Base64.getDecoder().decode(key.get("key")),
-                            Sealed.DecryptionAlgorithm.valueOf(key.get("algorithm"))
+                            Sealed.DecryptionAlgorithm.valueOf(key.get("algorithm").toUpperCase().replace("-", "_"))
                     )).toArray(Sealed.DecryptionKey[]::new);
-            final EventsGetResponse event = Sealed.unsealEventResponse(Base64.getDecoder().decode(sealedData), keysList);
+            final EventsGetResponse event = Sealed.unsealEventResponse(Base64.getDecoder().decode(request.getSealedData()), keysList);
             final MusicianResponse response = new MusicianResponse(200, event, event);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
