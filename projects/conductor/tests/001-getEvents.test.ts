@@ -1,8 +1,9 @@
 import { test, expect } from "@playwright/test";
 import { generateIdentificationData } from "../htmlScripts/runIdentification";
-import { validateGetEventsResponse } from "../utils/api";
+import { validateGetEventsResponse } from "../utils/musician";
 import { testData } from "../utils/testData";
-import { getEventByRequestId } from "../utils/api";
+
+import {getEvent} from "../utils/api";
 
 test.describe("GetEvents Suite", () => {
   test("getEvents for valid apiKey and requestId with Smart Signals", async ({
@@ -22,7 +23,7 @@ test.describe("GetEvents Suite", () => {
       requestData,
       200
     );
-    const eventByRequestId = await getEventByRequestId(
+    const eventByRequestId = await getEvent(
       request,
       requestId,
       testData.validSmartSignal.apiKey
@@ -50,7 +51,7 @@ test.describe("GetEvents Suite", () => {
       requestData,
       200
     );
-    const eventByRequestId = await getEventByRequestId(
+    const eventByRequestId = await getEvent(
       request,
       requestId,
       testData.valid.apiKey

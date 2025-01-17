@@ -21,7 +21,7 @@ namespace dotnet_sdk
                 {
                     if (e.InnerException is ApiException innerEx)
                     {
-                        return new MusicianResponse<ErrorResponse>(innerEx.HttpCode, innerEx.ResponseMessage, innerEx.ErrorContent);
+                        return new MusicianResponse<dynamic>(innerEx.HttpCode, innerEx.ResponseMessage, innerEx.ErrorContent);
                     }
                 }
                 return new MusicianResponse<String>(System.Net.HttpStatusCode.InternalServerError, e.Message, "error");

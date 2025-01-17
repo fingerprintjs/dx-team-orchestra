@@ -1,20 +1,24 @@
-import { chromium } from "@playwright/test";
-import path from "path";
-import fs from "fs/promises";
-import { fileURLToPath } from "url";
+import {chromium} from "@playwright/test";
+import {Agent, ExtendedGetResult, GetOptions} from '@fingerprintjs/fingerprintjs-pro';
+import * as path from "path";
+import * as fs from "fs/promises";
+import {fileURLToPath} from "url";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-export async function generateIdentificationData(
-  key: "requestId" | "visitorId",
+const serverPath = path.dirname(fileURLToPath(import.meta.url));
+
+export type IdentifyOptions = GetOptions<true> & {
   publicApiKey: string
-): Promise<string> {
-  const serverPath = __dirname;
+};
+
+export async function identify(
+  {publicApiKey, ...options}: Readonly<IdentifyOptions>,
+): Promise<ExtendedGetResult> {
   const htmlFile = "/identification.html";
 
   // Read and process the HTML file
   const htmlPath = path.join(serverPath, htmlFile);
-  let htmlContent = await fs.readFile(htmlPath, { encoding: "utf-8" });
+  let htmlContent = await fs.readFile(htmlPath, {encoding: "utf-8"});
 
   // Replace placeholder with public API key
   htmlContent = htmlContent.replace("{{PUBLIC_API_KEY}}", publicApiKey);
@@ -37,20 +41,25 @@ export async function generateIdentificationData(
     await page.goto(`file://${tempHtmlPath}`);
 
     // Wait for the key to appear in localStorage
-    const value = await page.evaluate(async (key) => {
-      return new Promise<string>((resolve) => {
-        const interval = setInterval(() => {
-          const result = localStorage.getItem(key);
+    const value = await page.evaluate(async (params) => {
+      return new Promise<ExtendedGetResult>((resolve) => {
+        const interval = setInterval(async () => {
+          const agent = (window as any).FPJS as Agent | undefined;
+          if (!agent) {
+            return
+          }
+
+          const result = await agent.get(params as GetOptions<true>);
           if (result) {
             clearInterval(interval);
             resolve(result);
           }
         }, 100);
       });
-    }, key);
+    }, options);
 
     if (!value) {
-      throw new Error(`Failed to retrieve ${key} from localStorage`);
+      throw new Error(`Failed to identify`);
     }
 
     return value;
@@ -59,6 +68,29 @@ export async function generateIdentificationData(
       console.error(`Failed to delete temp file: ${tempHtmlPath}`, err);
     });
   }
+}
+
+/**
+ * @deprecated Use {@link identify} instead
+ * */
+export async function generateIdentificationData(
+  key: "requestId" | "visitorId",
+  publicApiKey: string
+): Promise<string> {
+  const result = await identify({
+    publicApiKey,
+  })
+
+  return key === 'requestId' ? result.requestId : result.visitorId;
+}
+
+export async function identifyBulk(
+  options: Readonly<IdentifyOptions>,
+  size: number
+) {
+  return Promise.all(
+    Array.from({length: size}).map(() => identify(options))
+  )
 }
 
 export default generateIdentificationData;

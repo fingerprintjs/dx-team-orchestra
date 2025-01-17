@@ -1,7 +1,8 @@
 import { test, expect } from "@playwright/test";
 import { generateIdentificationData } from "../htmlScripts/runIdentification";
 import { testData } from "../utils/testData";
-import { getEventByRequestId, updateEventApiRequest } from "../utils/api";
+import { updateEventApiRequest } from "../utils/musician";
+import {getEvent} from "../utils/api";
 
 test.describe("UpdateEvents Suite", () => {
   test("updateEvents for valid apiKey and requestId with Smart Signals", async ({
@@ -24,7 +25,7 @@ test.describe("UpdateEvents Suite", () => {
     );
     expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
 
-    const updatedEvent = await getEventByRequestId(
+    const updatedEvent = await getEvent(
       request,
       requestId,
       testData.validSmartSignal.apiKey
@@ -60,7 +61,7 @@ test.describe("UpdateEvents Suite", () => {
     );
     expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
 
-    const eventByRequestId = await getEventByRequestId(
+    const eventByRequestId = await getEvent(
       request,
       requestId,
       testData.valid.apiKey
@@ -79,7 +80,7 @@ test.describe("UpdateEvents Suite", () => {
       "requestId",
       testData.identificationKey.maximumFeaturesUS
     );
-    const initialEvent = await getEventByRequestId(
+    const initialEvent = await getEvent(
       request,
       requestId,
       testData.validSmartSignal.apiKey
@@ -96,7 +97,7 @@ test.describe("UpdateEvents Suite", () => {
     );
     expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
 
-    const eventByRequestId = await getEventByRequestId(
+    const eventByRequestId = await getEvent(
       request,
       requestId,
       testData.validSmartSignal.apiKey
@@ -119,7 +120,7 @@ test.describe("UpdateEvents Suite", () => {
       "requestId",
       testData.identificationKey.maximumFeaturesUS
     );
-    const initialEvent = await getEventByRequestId(
+    const initialEvent = await getEvent(
       request,
       requestId,
       testData.validSmartSignal.apiKey
@@ -136,7 +137,7 @@ test.describe("UpdateEvents Suite", () => {
     );
     expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
 
-    const eventByRequestId = await getEventByRequestId(
+    const eventByRequestId = await getEvent(
       request,
       requestId,
       testData.validSmartSignal.apiKey
@@ -156,7 +157,7 @@ test.describe("UpdateEvents Suite", () => {
       "requestId",
       testData.identificationKey.maximumFeaturesUS
     );
-    const initialEvent = await getEventByRequestId(
+    const initialEvent = await getEvent(
       request,
       requestId,
       testData.validSmartSignal.apiKey
@@ -174,7 +175,7 @@ test.describe("UpdateEvents Suite", () => {
     );
     expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
 
-    const updatedEvent = await getEventByRequestId(
+    const updatedEvent = await getEvent(
       request,
       requestId,
       testData.validSmartSignal.apiKey
@@ -191,7 +192,7 @@ test.describe("UpdateEvents Suite", () => {
           "requestId",
           testData.identificationKey.maximumFeaturesUS
       );
-      const initialEvent = await getEventByRequestId(
+      const initialEvent = await getEvent(
           request,
           requestId,
           testData.validSmartSignal.apiKey
@@ -209,7 +210,7 @@ test.describe("UpdateEvents Suite", () => {
       );
       expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
 
-      const updatedEvent = await getEventByRequestId(
+      const updatedEvent = await getEvent(
           request,
           requestId,
           testData.validSmartSignal.apiKey

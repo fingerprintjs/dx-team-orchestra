@@ -22,7 +22,7 @@ public class VisitsController {
             @RequestParam(required = false, value = "") String visitorId,
             @RequestParam(required = false) String requestId,
             @RequestParam(required = false) String linkedId,
-            @RequestParam(required = false) int limit,
+            @RequestParam(required = false) Integer limit,
             @RequestParam(required = false) String paginationKey,
             @RequestParam(required = false) Long before
     ) {

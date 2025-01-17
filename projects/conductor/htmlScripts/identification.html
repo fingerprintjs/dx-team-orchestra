@@ -3,15 +3,13 @@
   const publicApiKey = "{{PUBLIC_API_KEY}}";
 
   const fpPromise = import("https://fpjscdn.net/v3/" + publicApiKey).then(
-    (FingerprintJS) => FingerprintJS.load({ endpoint: "https://api.fpjs.io" })
+      (FingerprintJS) => FingerprintJS.load({endpoint: "https://api.fpjs.io"})
   );
 
   fpPromise
-    .then((fp) => fp.get())
-    .then((result) => {
-      const requestId = result.requestId;
-      const visitorId = result.visitorId;
-      localStorage.setItem("requestId", requestId);
-      localStorage.setItem("visitorId", visitorId);
-    });
+      .then((fp) => {
+        Object.assign(window, {
+          FPJS: fp
+        })
+      })
 </script>
