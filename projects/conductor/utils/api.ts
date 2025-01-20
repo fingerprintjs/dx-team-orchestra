@@ -73,7 +73,10 @@ export class RealFingerprintApi implements FingerprintApi {
     return await jsonRequest(
       {
         request: this.request,
-        url: `${testData.config.apiUrl}/related-visitors/${params.visitorId}`,
+        url: `${testData.config.apiUrl}/related-visitors`,
+        params: {
+          visitor_id: params.visitorId,
+        },
         headers: {
           "Auth-API-Key": params.apiKey,
           "content-type": "application/json",

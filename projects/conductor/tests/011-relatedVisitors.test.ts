@@ -4,9 +4,14 @@ import {test} from "../utils/playwright";
 import {identify} from "../htmlScripts/runIdentification";
 
 test.describe('Related Visitors Suite', () => {
-  test('with valid apiKey and visitor id', async ({sdkApi}) => {
+  test('with valid apiKey and visitor id', async ({sdkApi, assert}) => {
     const {visitorId} = await identify({
       publicApiKey: testData.credentials.maxFeaturesUS.publicKey,
+    })
+
+    await assert.thatResponsesMatch('getRelatedVisitors', {
+      visitorId,
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
     })
 
     const {data} = await sdkApi.getRelatedVisitors({
