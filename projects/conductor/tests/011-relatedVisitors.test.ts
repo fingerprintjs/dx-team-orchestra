@@ -4,9 +4,9 @@ import {test} from "../utils/playwright";
 import {identify} from "../htmlScripts/runIdentification";
 
 test.describe('Related Visitors Suite', () => {
-  test('with valid apiKey and visitor id', async ({sdkApi, assert}) => {
+  test('with valid apiKey and visitor id', async ({sdkApi, identify, assert}) => {
     const {visitorId} = await identify({
-      publicApiKey: testData.credentials.maxFeaturesUS.publicKey,
+      auth: testData.credentials.maxFeaturesUS,
     })
 
     await assert.thatResponsesMatch('getRelatedVisitors', {
@@ -24,9 +24,9 @@ test.describe('Related Visitors Suite', () => {
     })
   })
 
-  test('with invalid region', async ({sdkApi}) => {
+  test('with invalid region', async ({sdkApi, identify}) => {
     const {visitorId} = await identify({
-      publicApiKey: testData.credentials.maxFeaturesUS.publicKey,
+      auth: testData.credentials.maxFeaturesUS,
     })
 
     const {data, response} = await sdkApi.getRelatedVisitors({
@@ -61,11 +61,10 @@ test.describe('Related Visitors Suite', () => {
     })
   })
 
-  test('with api key that does not have the feature enabled', async ({sdkApi}) => {
+  test('with api key that does not have the feature enabled', async ({sdkApi, identify}) => {
     const {visitorId} = await identify({
-      publicApiKey: testData.credentials.minFeaturesUS.publicKey,
+      auth: testData.credentials.minFeaturesUS,
     })
-
 
     const {data, response} = await sdkApi.getRelatedVisitors({
       visitorId,
@@ -81,9 +80,9 @@ test.describe('Related Visitors Suite', () => {
     })
   })
 
-  test('with invalid api key', async ({sdkApi}) => {
+  test('with invalid api key', async ({sdkApi, identify}) => {
     const {visitorId} = await identify({
-      publicApiKey: testData.credentials.maxFeaturesUS.publicKey,
+      auth: testData.credentials.maxFeaturesUS,
     })
 
     const {data, response} = await sdkApi.getRelatedVisitors({
