@@ -1,12 +1,12 @@
-import {identify, identifyBulk} from "../htmlScripts/runIdentification";
 import {testData} from "../utils/testData";
 import {test} from "../utils/playwright";
 import {expect} from "@playwright/test";
+import {getRandomDevice} from "../htmlScripts/runIdentification";
 
 test.describe('GetVisitor Suite', () => {
-  test('with valid apiKey', async ({assert}) => {
+  test('with valid apiKey', async ({assert, identify}) => {
     const {visitorId, requestId} = await identify({
-      publicApiKey: testData.credentials.maxFeaturesUS.publicKey
+      auth: testData.credentials.maxFeaturesUS
     });
 
     const params = {
@@ -44,9 +44,9 @@ test.describe('GetVisitor Suite', () => {
     })
   })
 
-  test('with different region', async ({sdkApi}) => {
+  test('with different region', async ({sdkApi, identify}) => {
     const {visitorId, requestId} = await identify({
-      publicApiKey: testData.credentials.maxFeaturesUS.publicKey
+      auth: testData.credentials.maxFeaturesUS
     });
 
     const {response, data} = await sdkApi.getVisitor({
@@ -63,9 +63,10 @@ test.describe('GetVisitor Suite', () => {
     })
   })
 
-  test('with deleted API key', async ({sdkApi}) => {
+  test('with deleted API key', async ({sdkApi, identify}) => {
     const {visitorId, requestId} = await identify({
-      publicApiKey: testData.credentials.deleted.publicKey
+      auth: testData.credentials.deleted,
+      skipCleanup: true,
     });
 
     const {response, data} = await sdkApi.getVisitor({
@@ -82,9 +83,10 @@ test.describe('GetVisitor Suite', () => {
     })
   })
 
-  test('with pagination', async ({sdkApi}) => {
+  test('with pagination', async ({sdkApi, identifyBulk}) => {
     const visitors = await identifyBulk({
-      publicApiKey: testData.identificationKey.maximumFeaturesUS
+      auth: testData.credentials.maxFeaturesUS,
+      device: getRandomDevice(),
     }, 10);
 
     const params = {
@@ -106,10 +108,10 @@ test.describe('GetVisitor Suite', () => {
     expect(nextData.visits).not.toEqual(data.visits)
   })
 
-  test('with linked id', async ({sdkApi}) => {
+  test('with linked id', async ({sdkApi, identify}) => {
     const linkedId = `test_${Date.now()}`;
     const {visitorId, requestId} = await identify({
-      publicApiKey: testData.credentials.maxFeaturesUS.publicKey,
+      auth: testData.credentials.maxFeaturesUS,
       linkedId,
     });
 

@@ -1,8 +1,7 @@
 import {APIRequestContext, expect} from "@playwright/test";
 import testData from "../utils/testData";
 import {jsonRequest} from "./http";
-
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+import {delay} from "./delay";
 
 export type MusicianResponse = {
   code: number;

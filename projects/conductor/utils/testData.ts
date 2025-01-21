@@ -1,6 +1,6 @@
 const accounts = {
   minimumFeatures: {
-    region: "Global",
+    region: "us",
     publicKey: process.env.MINIMUM_US_DEFAULT_PUBLIC_KEY,
     privateKey: process.env.MINIMUM_US_DEFAULT_PRIVATE_KEY,
     sealedPublicKey:  process.env.MINIMUM_US_SEALED_PUBLIC_KEY,
@@ -8,7 +8,7 @@ const accounts = {
     sealedEncryptionKey:  process.env.MINIMUM_US_SEALED_ENCRYPTION_KEY,
   },
   maximumFeatures: {
-    region: "Global",
+    region: "us",
     publicKey: process.env.MAXIMUM_US_DEFAULT_PUBLIC_KEY,
     privateKey: process.env.MAXIMUM_US_DEFAULT_PRIVATE_KEY,
     deletedPrivateKey: process.env.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY,

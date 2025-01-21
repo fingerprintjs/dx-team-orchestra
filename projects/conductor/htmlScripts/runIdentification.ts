@@ -1,18 +1,25 @@
-import {chromium} from "@playwright/test";
+import {Browser, BrowserContext, chromium, devices} from "@playwright/test";
 import {Agent, ExtendedGetResult, GetOptions} from '@fingerprintjs/fingerprintjs-pro';
 import * as path from "path";
 import * as fs from "fs/promises";
 import {fileURLToPath} from "url";
+import {getRandomElement} from "../utils/array";
 
 
 const serverPath = path.dirname(fileURLToPath(import.meta.url));
 
 export type IdentifyOptions = GetOptions<true> & {
   publicApiKey: string
+  device?: typeof devices[string]
 };
 
+export function getRandomDevice() {
+  return getRandomElement(Object.values(devices))
+}
+
 export async function identify(
-  {publicApiKey, ...options}: Readonly<IdentifyOptions>,
+  browser: Browser,
+  {publicApiKey, device = getRandomDevice(), ...options}: Readonly<IdentifyOptions>,
 ): Promise<ExtendedGetResult> {
   const htmlFile = "/identification.html";
 
@@ -32,9 +39,10 @@ export async function identify(
   );
   await fs.writeFile(tempHtmlPath, htmlContent);
 
+  let context: BrowserContext
+
   try {
-    const browser = await chromium.launch();
-    const context = await browser.newContext();
+    context = await browser.newContext(device)
     const page = await context.newPage();
 
     // Load the temporary HTML file
@@ -64,6 +72,10 @@ export async function identify(
 
     return value;
   } finally {
+    await context?.close().catch(err => {
+      console.error('Failed to close browser context', err)
+    })
+
     await fs.unlink(tempHtmlPath).catch((err) => {
       console.error(`Failed to delete temp file: ${tempHtmlPath}`, err);
     });
@@ -77,7 +89,7 @@ export async function generateIdentificationData(
   key: "requestId" | "visitorId",
   publicApiKey: string
 ): Promise<string> {
-  const result = await identify({
+  const result = await identify(await chromium.launch(), {
     publicApiKey,
   })
 
@@ -85,11 +97,12 @@ export async function generateIdentificationData(
 }
 
 export async function identifyBulk(
+  browser: Browser,
   options: Readonly<IdentifyOptions>,
   size: number
 ) {
   return Promise.all(
-    Array.from({length: size}).map(() => identify(options))
+    Array.from({length: size}).map(() => identify(browser, options))
   )
 }
 
