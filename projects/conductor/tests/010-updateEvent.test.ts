@@ -1,148 +1,172 @@
-import { test, expect } from "@playwright/test";
-import { generateIdentificationData } from "../htmlScripts/runIdentification";
-import { testData } from "../utils/testData";
-import { updateEventApiRequest } from "../utils/musician";
-import {getEvent} from "../utils/api";
+import {expect} from "@playwright/test";
+import {testData} from "../utils/testData";
+import {test} from "../utils/playwright";
+import {delay} from "../utils/delay";
+import {EventsGetResponse} from "@fingerprintjs/fingerprintjs-pro-server-api";
+
+function checkUpdatedEvent(updatedEvent: EventsGetResponse) {
+  const updatedResponseBody = updatedEvent.products.identification.data;
+  const propertiesToValidate = ["linkedId", "tag", "suspect"];
+  propertiesToValidate.forEach((property) => {
+    expect(updatedResponseBody[property]).toStrictEqual(
+      testData.updateEvent[property]
+    );
+  });
+}
+
+test.slow()
+
+async function waitBeforeUpdate() {
+  // delay added before updating to ensure that the requestId is ready to be used
+  await delay(12000);
+}
 
 test.describe("UpdateEvents Suite", () => {
-  test("updateEvents for valid apiKey and requestId with Smart Signals", async ({
-    request,
-  }) => {
-    const requestId = await generateIdentificationData(
-      "requestId",
-      testData.identificationKey.maximumFeaturesUS
+  test("for valid apiKey and requestId with Smart Signals", async ({sdkApi, identify}) => {
+    const {requestId} = await identify(
+      {
+        auth: testData.credentials.maxFeaturesUS
+      }
     );
-     const updateResult = await updateEventApiRequest(
-      request,
+
+    await waitBeforeUpdate()
+
+    const {response} = await sdkApi.updateEvent(
       {
         requestId,
-        apiKey: testData.validSmartSignal.apiKey,
-        region: testData.validSmartSignal.region,
+        apiKey: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.publicKey,
         linkedId: testData.updateEvent.linkedId,
         suspect: testData.updateEvent.suspect,
         tag: testData.updateEvent.tag
       }
     );
-    expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
 
-    const updatedEvent = await getEvent(
-      request,
-      requestId,
-      testData.validSmartSignal.apiKey
+    expect(response.status()).toEqual(200);
+
+    const {data: updatedEvent} = await sdkApi.getEvent(
+      {
+        apiKey: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        requestId
+      }
     );
 
-    // validate fields are updated
-    const updatedResponseBody = updatedEvent.products.identification.data;
-    const propertiesToValidate = ["linkedId", "tag", "suspect"];
-    propertiesToValidate.forEach((property) => {
-      expect(updatedResponseBody[property]).toStrictEqual(
-        testData.updateEvent[property]
-      );
-    });
+    checkUpdatedEvent(updatedEvent);
   });
 
-  test("updateEvents for valid apiKey and requestId without Smart Signals", async ({
-    request,
-  }) => {
-    const requestId = await generateIdentificationData(
-      "requestId",
-      testData.identificationKey.minimumFeaturesUS
+  test("for valid apiKey and requestId without Smart Signals", async ({sdkApi, identify,}) => {
+    const {requestId} = await identify(
+      {
+        auth: testData.credentials.minFeaturesUS
+      }
     );
-    const updateResult = await updateEventApiRequest(
-      request,
+
+    await waitBeforeUpdate()
+
+    const {response} = await sdkApi.updateEvent(
       {
         requestId,
-        apiKey: testData.valid.apiKey,
-        region: testData.valid.region,
+        apiKey: testData.credentials.minFeaturesUS.privateKey,
+        region: testData.credentials.minFeaturesUS.region,
         linkedId: testData.updateEvent.linkedId,
         suspect: testData.updateEvent.suspect,
         tag: testData.updateEvent.tag
       }
     );
-    expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
+    expect(response.status()).toEqual(200);
 
-    const eventByRequestId = await getEvent(
-      request,
-      requestId,
-      testData.valid.apiKey
-    );
-    const ResponseBody = await eventByRequestId.products.identification.data;
-    const propertiesToValidate = ["linkedId", "tag", "suspect"];
-    propertiesToValidate.forEach((property) => {
-      expect(ResponseBody[property]).toStrictEqual(
-        testData.updateEvent[property]
-      );
-    });
-  });
-
-  test("updateEvents for valid compelx tag only", async ({ request }) => {
-    const requestId = await generateIdentificationData(
-      "requestId",
-      testData.identificationKey.maximumFeaturesUS
-    );
-    const initialEvent = await getEvent(
-      request,
-      requestId,
-      testData.validSmartSignal.apiKey
-    );
-    const initialResponseBody = await initialEvent.products.identification.data;
-    const updateResult = await updateEventApiRequest(
-      request,
+    const {data: updatedEvent} = await sdkApi.getEvent(
       {
         requestId,
-        apiKey: testData.validSmartSignal.apiKey,
-        region: testData.validSmartSignal.region,
+        apiKey: testData.credentials.minFeaturesUS.privateKey,
+        region: testData.credentials.minFeaturesUS.region,
+      }
+    );
+    checkUpdatedEvent(updatedEvent);
+  });
+
+  test("for valid complex tag only", async ({sdkApi, identify}) => {
+    const {requestId} = await identify(
+      {
+        auth: testData.credentials.maxFeaturesUS
+      }
+    );
+    const {data: initialEvent} = await sdkApi.getEvent(
+      {
+        apiKey: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        requestId
+      }
+    );
+    const initialResponseBody = initialEvent.products.identification.data;
+
+    await waitBeforeUpdate()
+
+    const {response} = await sdkApi.updateEvent(
+      {
+        requestId,
+        apiKey: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
         tag: testData.updateEventComplexTag.tag
       }
     );
-    expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
+    expect(response.status()).toEqual(200)
 
-    const eventByRequestId = await getEvent(
-      request,
-      requestId,
-      testData.validSmartSignal.apiKey
+    const {data: updatedEvent} = await sdkApi.getEvent(
+      {
+        requestId,
+        apiKey: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+      }
     );
-    const updatedResponseBody = await eventByRequestId.products.identification
-      .data;
-    expect(updatedResponseBody.tag).toStrictEqual(
+    const identificationData = updatedEvent.products.identification.data;
+    expect(identificationData.tag).toStrictEqual(
       testData.updateEventComplexTag.tag
     );
-    expect(updatedResponseBody.linkedId).toStrictEqual(
+    expect(identificationData.linkedId).toStrictEqual(
       initialResponseBody.linkedId
     );
-    expect(updatedResponseBody.suspect).toStrictEqual(
+    expect(identificationData.suspect).toStrictEqual(
       initialResponseBody.suspect
     );
   });
 
-  test("updateEvents for linkedId only", async ({ request }) => {
-    const requestId = await generateIdentificationData(
-      "requestId",
-      testData.identificationKey.maximumFeaturesUS
+  test("for linkedId only", async ({sdkApi, identify}) => {
+    const {requestId} = await identify(
+      {
+        auth: testData.credentials.maxFeaturesUS
+      }
     );
-    const initialEvent = await getEvent(
-      request,
-      requestId,
-      testData.validSmartSignal.apiKey
+    const {data: initialEvent} = await sdkApi.getEvent(
+      {
+        apiKey: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        requestId
+      }
     );
-    const initialResponseBody = await initialEvent.products.identification.data;
-    const updateResult = await updateEventApiRequest(
-      request,
-        {
-          requestId,
-          apiKey: testData.validSmartSignal.apiKey,
-          region: testData.validSmartSignal.region,
-          linkedId: testData.updateEvent.linkedId
-        }
-    );
-    expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
+    const initialResponseBody = initialEvent.products.identification.data;
 
-    const eventByRequestId = await getEvent(
-      request,
-      requestId,
-      testData.validSmartSignal.apiKey
+    await waitBeforeUpdate();
+
+    const {response} = await sdkApi.updateEvent(
+      {
+        requestId,
+        apiKey: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        linkedId: testData.updateEvent.linkedId
+      }
     );
-    const updatedResponseBody = eventByRequestId.products.identification.data;
+    expect(response.status()).toEqual(200)
+
+    const {data: updatedEvent} = await sdkApi.getEvent(
+      {
+        requestId,
+        apiKey: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+      }
+    );
+    const updatedResponseBody = updatedEvent.products.identification.data;
     expect(updatedResponseBody.linkedId).toStrictEqual(
       testData.updateEvent.linkedId
     );
@@ -152,202 +176,170 @@ test.describe("UpdateEvents Suite", () => {
     expect(updatedResponseBody.tag).toStrictEqual(initialResponseBody.tag);
   });
 
-  test("updateEvents for suspect=true only", async ({ request }) => {
-    const requestId = await generateIdentificationData(
-      "requestId",
-      testData.identificationKey.maximumFeaturesUS
-    );
-    const initialEvent = await getEvent(
-      request,
-      requestId,
-      testData.validSmartSignal.apiKey
-    );
-    const initialResponseBody = await initialEvent.products.identification.data;
-
-    const updateResult = await updateEventApiRequest(
-      request,
-      {
-        requestId,
-        apiKey: testData.validSmartSignal.apiKey,
-        region: testData.validSmartSignal.region,
-        suspect: true
-      }
-    );
-    expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
-
-    const updatedEvent = await getEvent(
-      request,
-      requestId,
-      testData.validSmartSignal.apiKey
-    );
-    const updatedResponseBody = await updatedEvent.products.identification.data;
-    expect(updatedResponseBody.suspect).toBe(true);
-
-    expect(updatedResponseBody.linkedId).toStrictEqual(initialResponseBody.linkedId);
-    expect(updatedResponseBody.tag).toStrictEqual(initialResponseBody.tag);
-  });
-
-  test("updateEvents for suspect=false only", async ({ request }) => {
-      const requestId = await generateIdentificationData(
-          "requestId",
-          testData.identificationKey.maximumFeaturesUS
+  for (const suspect of [true, false]) {
+    test(`updateEvents for suspect=${suspect} only`, async ({sdkApi, identify}) => {
+      const {requestId} = await identify(
+        {
+          auth: testData.credentials.maxFeaturesUS
+        }
       );
-      const initialEvent = await getEvent(
-          request,
+      const {data: initialEvent} = await sdkApi.getEvent(
+        {
           requestId,
-          testData.validSmartSignal.apiKey
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+        }
       );
-      const initialResponseBody = await initialEvent.products.identification.data;
+      const initialResponseBody = initialEvent.products.identification.data;
 
-      const updateResult = await updateEventApiRequest(
-          request,
-          {
-              requestId,
-              apiKey: testData.validSmartSignal.apiKey,
-              region: testData.validSmartSignal.region,
-              suspect: false
-          }
-      );
-      expect(updateResult.code, {message: JSON.stringify(updateResult.parsedResponse)}).toBe(200);
+      await waitBeforeUpdate();
 
-      const updatedEvent = await getEvent(
-          request,
+      const {response} = await sdkApi.updateEvent(
+        {
           requestId,
-          testData.validSmartSignal.apiKey
+          apiKey: testData.validSmartSignal.apiKey,
+          region: testData.validSmartSignal.region,
+          suspect
+        }
       );
-      const updatedResponseBody = await updatedEvent.products.identification.data;
-      expect(updatedResponseBody.suspect).toBe(false);
+      expect(response.status()).toEqual(200)
 
-      expect(updatedResponseBody.linkedId).toStrictEqual(initialResponseBody.linkedId);
-      expect(updatedResponseBody.tag).toStrictEqual(initialResponseBody.tag);
-  });
-});
-
-test.describe("UpdateEvents Suite 400 errors", () => {
-  test("updateEvents without sending any parameter to update - RequestCannotBeParsed", async ({
-    request,
-  }) => {
-    const requestId = await generateIdentificationData(
-      "requestId",
-      testData.identificationKey.maximumFeaturesUS
-    );
-    const updateEventResponse = await updateEventApiRequest(
-        request,
+      const {data: updatedEvent} = await sdkApi.getEvent(
         {
           requestId,
           apiKey: testData.validSmartSignal.apiKey,
           region: testData.validSmartSignal.region,
         }
-    );
-    expect(updateEventResponse.code).toBe(400);
-    expect(updateEventResponse.parsedResponse).toEqual(
-      expect.objectContaining({
-        error: expect.objectContaining({
-          code: "RequestCannotBeParsed",
-          message: "must provide one of: linkedId, suspect, tags to be updated",
-        }),
-      })
-    );
+      );
+      const updatedResponseBody = updatedEvent.products.identification.data;
+      expect(updatedResponseBody.suspect).toBe(suspect);
+
+      expect(updatedResponseBody.linkedId).toStrictEqual(initialResponseBody.linkedId);
+      expect(updatedResponseBody.tag).toStrictEqual(initialResponseBody.tag);
+    })
+  }
+});
+
+test.describe("UpdateEvents Suite 400 errors", () => {
+  test("without sending any parameter to update - RequestCannotBeParsed", async ({identify, assert}) => {
+    const {requestId} = await identify({
+      auth: testData.credentials.maxFeaturesUS
+    });
+
+    await assert.thatResponseMatch(
+      {
+        expectedResponse: {
+          error: {
+            code: "RequestCannotBeParsed",
+            message: "must provide one of: linkedId, suspect, tags to be updated",
+          },
+        },
+        expectedStatusCode: 400,
+        callback: api => api.updateEvent({
+          requestId,
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+        })
+      }
+    )
   });
 });
 
 test.describe("UpdateEvents Suite 403 errors", () => {
-  test("updateEvents Auth-API-Key header is missing - TokenRequired", async ({
-    request,
-  }) => {
-    const requestId = await generateIdentificationData(
-      "requestId",
-      testData.identificationKey.minimumFeaturesUS
-    );
-    const updateEventResponse = await updateEventApiRequest(
-      request,
-      {requestId}
-    );
+  test("Auth-API-Key header is missing - TokenRequired", async ({identify, assert}) => {
+    const {requestId} = await identify({
+      auth: testData.credentials.maxFeaturesUS
+    });
 
-    expect(updateEventResponse.code).toBe(403);
-    expect(updateEventResponse.parsedResponse).toEqual(
-      expect.objectContaining({
-        error: expect.objectContaining({
-          code: "TokenRequired",
-          message: "secret key is required",
-        }),
-      })
-    );
-  });
-  test("updateEvents invalid Auth-API-Key - TokenNotFound", async ({
-    request,
-  }) => {
-    const requestId = await generateIdentificationData(
-      "requestId",
-      testData.identificationKey.minimumFeaturesUS
-    );
-    const updateEventResponse = await updateEventApiRequest(
-      request,
+    await assert.thatResponseMatch(
       {
-        requestId,
-        apiKey: testData.invalid.apiKey,
-        region: testData.invalid.region,
+        expectedStatusCode: 403,
+        expectedResponse: {
+          error: {
+            code: "TokenRequired",
+            message: "secret key is required",
+          },
+        },
+        callback: api => api.updateEvent({
+          requestId,
+          region: testData.credentials.maxFeaturesUS.region,
+          linkedId: testData.updateEvent.linkedId,
+          suspect: testData.updateEvent.suspect,
+          tag: testData.updateEvent.tag,
+        })
       }
     );
-    expect(updateEventResponse.code).toBe(403);
-    expect(updateEventResponse.parsedResponse).toEqual(
-      expect.objectContaining({
-        error: expect.objectContaining({
+  });
+
+  test("invalid Auth-API-Key - TokenNotFound", async ({assert, identify}) => {
+    const {requestId} = await identify({
+      auth: testData.credentials.maxFeaturesUS
+    });
+
+    await assert.thatResponseMatch({
+      expectedResponse: {
+        error: {
           code: "TokenNotFound",
           message: "secret key is not found",
-        }),
+        },
+      },
+      expectedStatusCode: 403,
+      callback: api => api.updateEvent({
+        requestId,
+        apiKey: testData.credentials.invalid.privateKey,
+        region: testData.credentials.invalid.region,
+        linkedId: testData.updateEvent.linkedId,
+        suspect: testData.updateEvent.suspect,
+        tag: testData.updateEvent.tag,
       })
-    );
+    })
   });
 });
 
 test.describe("UpdateEvents Suite 404 errors", () => {
-  test("updateEvents invalid requestId - RequestNotFound", async ({
-    request,
-  }) => {
-    const updateEventResponse = await updateEventApiRequest(
-      request,
-      {
-        apiKey: testData.invalid.apiKey,
-        requestId: testData.invalid.requestID
-      }
-    );
-    expect(updateEventResponse.code).toBe(404);
-    expect(updateEventResponse.parsedResponse).toEqual(
-      expect.objectContaining({
-        error: expect.objectContaining({
+  test("invalid requestId - RequestNotFound", async ({assert}) => {
+    await assert.thatResponseMatch({
+      expectedResponse: {
+        error: {
           code: "RequestNotFound",
           message: "request id not found",
-        }),
-      })
-    );
+        },
+      },
+      expectedStatusCode: 404,
+      callback: api => api.updateEvent({
+        requestId: testData.invalid.requestID,
+        apiKey: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        linkedId: testData.updateEvent.linkedId,
+        suspect: testData.updateEvent.suspect,
+        tag: testData.updateEvent.tag,
+      }),
+    })
   });
 });
 
 test.describe("UpdateEvents Suite 409 errors", () => {
-  test("updateEvents Event Not ready - StateNotReady", async ({ request }) => {
-    const requestId = await generateIdentificationData(
-      "requestId",
-      testData.identificationKey.maximumFeaturesUS
-    );
-    const updateEventResponse = await updateEventApiRequest(
-      request,
-      {
-        requestId,
-        apiKey: testData.validSmartSignal.apiKey,
-        region: testData.validSmartSignal.region,
-        linkedId: testData.updateEvent.linkedId
-      },
-      false
-    );
-    expect(updateEventResponse.code).toBe(409);
-    expect(updateEventResponse.parsedResponse).toEqual(
-      expect.objectContaining({
-        error: expect.objectContaining({
+  test("updateEvents Event Not ready - StateNotReady", async ({identify, assert}) => {
+    const {requestId} = await identify({
+      auth: testData.credentials.maxFeaturesUS
+    });
+
+    await assert.thatResponseMatch({
+      expectedStatusCode: 409,
+      expectedResponse: {
+        error: {
           code: "StateNotReady",
           message: "resource is not mutable yet, try again",
-        }),
+        },
+      },
+      callback: api => api.updateEvent({
+        requestId,
+        apiKey: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        linkedId: testData.updateEvent.linkedId,
+        suspect: testData.updateEvent.suspect,
+        tag: testData.updateEvent.tag,
       })
-    );
+    })
   });
 });

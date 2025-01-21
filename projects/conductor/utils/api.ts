@@ -2,7 +2,12 @@ import {APIRequestContext, expect} from "@playwright/test";
 import testData from "./testData";
 import { jsonRequest, JsonResponse, RequestParams } from './http';
 import {GetEventsParams, MusicianResponse} from "./musician";
-import {VisitorsResponse, EventsGetResponse} from '@fingerprintjs/fingerprintjs-pro-server-api'
+import {
+  EventsGetResponse,
+  EventsUpdateRequest,
+  RelatedVisitorsResponse,
+  VisitorsResponse
+} from '@fingerprintjs/fingerprintjs-pro-server-api'
 
 export type GetVisitorParams = {
   apiKey: string;
@@ -21,6 +26,12 @@ export type GetRelatedVisitorsParams = {
   visitorId: string
 };
 
+export type UpdateEventParams = EventsUpdateRequest & {
+  apiKey?: string;
+  requestId: string
+  region?: string
+}
+
 export type UnsealParams = {
   sealedData: string;
   keys: { key: string; algorithm: string }[];
@@ -31,7 +42,9 @@ export interface FingerprintApi {
 
   getVisitor(params: GetVisitorParams): Promise<JsonResponse<VisitorsResponse>>;
 
-  getRelatedVisitors(params: GetRelatedVisitorsParams): Promise<JsonResponse<any>>;
+  getRelatedVisitors(params: GetRelatedVisitorsParams): Promise<JsonResponse<RelatedVisitorsResponse>>;
+
+  updateEvent(params: UpdateEventParams): Promise<JsonResponse<unknown>>;
 }
 
 export class SdkFingerprintApi implements FingerprintApi {
@@ -47,16 +60,28 @@ export class SdkFingerprintApi implements FingerprintApi {
   }
 
   async getRelatedVisitors(params: GetRelatedVisitorsParams) {
-    return this.doRequest('/getRelatedVisitors', params);
+    return this.doRequest<RelatedVisitorsResponse>('/getRelatedVisitors', params);
+  }
+
+  async updateEvent({tag, ...params}: UpdateEventParams): Promise<JsonResponse<void>> {
+    const requestParams = {
+      ...params,
+    } as Omit<UpdateEventParams, 'tag'> & { tag?: string };
+
+    if (tag) {
+      requestParams.tag = JSON.stringify(tag);
+    }
+
+    return this.doRequest<void>('/updateEvent', requestParams)
   }
 
   async unseal(params: UnsealParams) {
     return this.doRequest<EventsGetResponse>('/unseal', params, 'post');
   }
 
-  private async doRequest<T>(path: string, params: RequestParams | any, method?: 'get' | 'post') {
+  private async doRequest<T>(path: string, params: RequestParams): Promise<JsonResponse<T>> {
     const url = `${testData.config.baseURL}${path}`;
-    const resp =  await jsonRequest<MusicianResponse>({
+    const resp = await jsonRequest<MusicianResponse>({
       request: this.request,
       url,
       params,
@@ -77,6 +102,19 @@ export class SdkFingerprintApi implements FingerprintApi {
 
 export class RealFingerprintApi implements FingerprintApi {
   constructor(private request: APIRequestContext) {
+  }
+
+  async updateEvent({requestId, apiKey, region, ...data}: UpdateEventParams): Promise<JsonResponse<void>> {
+    return await jsonRequest<void>(
+      {
+        request: this.request,
+        url: `${testData.config.apiUrl}/events/${requestId}`,
+        data,
+        headers: {
+          "Auth-API-Key": apiKey,
+          "content-type": "application/json",
+        },
+      })
   }
 
   async getRelatedVisitors(params: GetRelatedVisitorsParams) {
