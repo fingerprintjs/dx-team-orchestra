@@ -56,6 +56,23 @@ def update_event():
 
     return jsonify(response)
 
+@app.route('/getRelatedVisitors', methods=['GET'])
+def get_related_visitors():
+    api_key = request.args.get('apiKey')
+    region = request.args.get('region')
+    visitor_id = request.args.get('visitorId', '')
+
+    configuration = Configuration(api_key=api_key, region=region)
+    api_instance = FingerprintApi(configuration=configuration)
+
+    try:
+        (result, code, http_response) = api_instance.get_related_visitors_with_http_info(visitor_id)
+        response = prepare_musician_response(result, code, http_response)
+    except ApiException as e:
+        response = prepare_musician_response_from_error(e)
+
+    return jsonify(response)
+
 @app.route('/getVisits', methods=['GET'])
 def get_visits():
     api_key = request.args.get('apiKey')

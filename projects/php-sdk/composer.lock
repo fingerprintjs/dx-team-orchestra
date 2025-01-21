@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f5c829e83566e9870aab3b3d60033c4e",
+    "content-hash": "9a7a66552e9e7034c3feb34a42c4e2ae",
     "packages": [
         {
             "name": "fingerprint/fingerprint-pro-server-api-sdk",
-            "version": "6.1.0",
+            "version": "6.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk.git",
-                "reference": "096299f1d5350f22a9ae86ba05b99cb3caf3d60f"
+                "reference": "ce259604ce13388bd68607f6c0d2224d769e2017"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fingerprintjs/fingerprint-pro-server-api-php-sdk/zipball/096299f1d5350f22a9ae86ba05b99cb3caf3d60f",
-                "reference": "096299f1d5350f22a9ae86ba05b99cb3caf3d60f",
+                "url": "https://api.github.com/repos/fingerprintjs/fingerprint-pro-server-api-php-sdk/zipball/ce259604ce13388bd68607f6c0d2224d769e2017",
+                "reference": "ce259604ce13388bd68607f6c0d2224d769e2017",
                 "shasum": ""
             },
             "require": {
@@ -72,9 +72,9 @@
             ],
             "support": {
                 "issues": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk/issues",
-                "source": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk/tree/v6.1.0"
+                "source": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk/tree/v6.2.0"
             },
-            "time": "2024-11-26T13:12:39+00:00"
+            "time": "2025-01-14T09:44:25+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1006,12 +1006,12 @@
             },
             "type": "library",
             "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/contracts",
+                    "name": "symfony/contracts"
+                },
                 "branch-alias": {
                     "dev-main": "3.5-dev"
-                },
-                "thanks": {
-                    "name": "symfony/contracts",
-                    "url": "https://github.com/symfony/contracts"
                 }
             },
             "autoload": {
