@@ -3,12 +3,18 @@ const accounts = {
     region: "Global",
     publicKey: process.env.MINIMUM_US_DEFAULT_PUBLIC_KEY,
     privateKey: process.env.MINIMUM_US_DEFAULT_PRIVATE_KEY,
+    sealedPublicKey:  process.env.MINIMUM_US_SEALED_PUBLIC_KEY,
+    sealedPrivateKey:  process.env.MINIMUM_US_SEALED_PRIVATE_KEY,
+    sealedEncryptionKey:  process.env.MINIMUM_US_SEALED_ENCRYPTION_KEY,
   },
   maximumFeatures: {
     region: "Global",
     publicKey: process.env.MAXIMUM_US_DEFAULT_PUBLIC_KEY,
     privateKey: process.env.MAXIMUM_US_DEFAULT_PRIVATE_KEY,
     deletedPrivateKey: process.env.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY,
+    sealedPublicKey:  process.env.MAXIMUM_US_SEALED_PUBLIC_KEY,
+    sealedPrivateKey:  process.env.MAXIMUM_US_SEALED_PRIVATE_KEY,
+    sealedEncryptionKey:  process.env.MAXIMUM_US_SEALED_ENCRYPTION_KEY,
   },
   regular: {
     region: "eu",
@@ -114,6 +120,20 @@ export const testData = {
     minimumFeaturesUS: accounts.minimumFeatures.publicKey,
     maximumFeaturesUS: accounts.maximumFeatures.publicKey,
     regularEU: accounts.regular.publicKey,
+  },
+
+  sealedMaximumFeaturesUs: {
+    region: accounts.maximumFeatures.region,
+    publicKey: accounts.maximumFeatures.sealedPublicKey,
+    privateKey: accounts.maximumFeatures.privateKey,
+    encryptionKey: accounts.maximumFeatures.sealedEncryptionKey,
+  },
+
+  sealedMinimumFeaturesUs: {
+    region: accounts.minimumFeatures.region,
+    publicKey: accounts.minimumFeatures.sealedPublicKey,
+    privateKey: accounts.minimumFeatures.sealedPrivateKey,
+    encryptionKey: accounts.minimumFeatures.sealedEncryptionKey,
   },
 
   updateEvent: {

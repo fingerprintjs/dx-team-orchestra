@@ -15,7 +15,7 @@ namespace dotnet_sdk.Controllers
     [Route("")]
     public class SealedResultsController : ControllerBase
     {
-        [HttpGet("/unseal")]
+        [HttpPost("/unseal")]
         public async Task<IActionResult> Unseal(
             [FromBody] SealedDataRequest body
         )
@@ -24,7 +24,7 @@ namespace dotnet_sdk.Controllers
             {
                 var keysList = body.Keys.Select(dict => new Sealed.DecryptionKey(
                     Convert.FromBase64String(dict["key"]),
-                    Enum.Parse<Sealed.DecryptionAlgorithm>(dict["algorithm"])
+                    getDecryptionAlgorythm(dict["algorithm"])
                 )).ToArray();
 
                 var unsealedData = Sealed.UnsealEventResponse(Convert.FromBase64String(body.SealedData), keysList);
@@ -36,6 +36,15 @@ namespace dotnet_sdk.Controllers
                 return Ok(Utils.ProcessException(e));
             }
 
+        }
+
+        private Sealed.DecryptionAlgorithm getDecryptionAlgorythm(string algorythm) {
+            switch(algorythm) {
+                case "aes-256-gcm":
+                    return Sealed.DecryptionAlgorithm.Aes256Gcm;
+                default:
+                    throw new Exception("Unknown Decryption Algorythm");
+            }
         }
     }
 }

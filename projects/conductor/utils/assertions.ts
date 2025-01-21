@@ -1,6 +1,8 @@
 import {FingerprintApi} from "./api";
 import {expect} from "@playwright/test";
 import {JsonResponse} from "./http";
+import { GetEventsParams } from './musician';
+import { EventsGetResponse } from '@fingerprintjs/fingerprintjs-pro-server-api';
 
 export class Assertions {
   constructor(private readonly fingerprintApi: FingerprintApi, private readonly sdksApi: FingerprintApi) {
@@ -18,5 +20,10 @@ export class Assertions {
     const sdkResponse: JsonResponse<any> = await this.sdksApi[method].call(this.sdksApi, ...params);
 
     expect(sdkResponse.data).toMatchObject(realResponse.data);
+  }
+
+  async thatUnsealedDataMatches(sealedData: EventsGetResponse, params: GetEventsParams) {
+    const {data: originalEvent} = await this.fingerprintApi.getEvent(params);
+    expect(sealedData).toMatchObject(originalEvent);
   }
 }
