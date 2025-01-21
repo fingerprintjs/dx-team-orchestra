@@ -32,6 +32,7 @@ export type Credential = {
 export type Credentials = {
   maxFeaturesUS: Credential
   minFeaturesUS: Credential
+  regularEU: Credential
   invalid: Credential
   deleted: Credential
 }
@@ -57,6 +58,11 @@ const credentials: Credentials = {
     region: accounts.minimumFeatures.region,
     publicKey: accounts.minimumFeatures.publicKey,
     privateKey: accounts.minimumFeatures.privateKey,
+  },
+  regularEU: {
+    region: accounts.regular.region,
+    publicKey: accounts.regular.publicKey,
+    privateKey: accounts.regular.privateKey,
   },
   invalid: {
     publicKey: "ftxPJdxnMlP",
