@@ -3,18 +3,18 @@ const accounts = {
     region: "us",
     publicKey: process.env.MINIMUM_US_DEFAULT_PUBLIC_KEY,
     privateKey: process.env.MINIMUM_US_DEFAULT_PRIVATE_KEY,
-    sealedPublicKey:  process.env.MINIMUM_US_SEALED_PUBLIC_KEY,
-    sealedPrivateKey:  process.env.MINIMUM_US_SEALED_PRIVATE_KEY,
-    sealedEncryptionKey:  process.env.MINIMUM_US_SEALED_ENCRYPTION_KEY,
+    sealedPublicKey: process.env.MINIMUM_US_SEALED_PUBLIC_KEY,
+    sealedPrivateKey: process.env.MINIMUM_US_SEALED_PRIVATE_KEY,
+    sealedEncryptionKey: process.env.MINIMUM_US_SEALED_ENCRYPTION_KEY,
   },
   maximumFeatures: {
     region: "us",
     publicKey: process.env.MAXIMUM_US_DEFAULT_PUBLIC_KEY,
     privateKey: process.env.MAXIMUM_US_DEFAULT_PRIVATE_KEY,
     deletedPrivateKey: process.env.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY,
-    sealedPublicKey:  process.env.MAXIMUM_US_SEALED_PUBLIC_KEY,
-    sealedPrivateKey:  process.env.MAXIMUM_US_SEALED_PRIVATE_KEY,
-    sealedEncryptionKey:  process.env.MAXIMUM_US_SEALED_ENCRYPTION_KEY,
+    sealedPublicKey: process.env.MAXIMUM_US_SEALED_PUBLIC_KEY,
+    sealedPrivateKey: process.env.MAXIMUM_US_SEALED_PRIVATE_KEY,
+    sealedEncryptionKey: process.env.MAXIMUM_US_SEALED_ENCRYPTION_KEY,
   },
   regular: {
     region: "eu",
@@ -27,6 +27,7 @@ export type Credential = {
   region: string
   publicKey: string
   privateKey: string
+  encryptionKey?: string,
 }
 
 export type Credentials = {
@@ -35,6 +36,8 @@ export type Credentials = {
   regularEU: Credential
   invalid: Credential
   deleted: Credential
+  sealedMaximumFeaturesUs: Credential
+  sealedMinimumFeaturesUs: Credential
 }
 
 export type Mocks = {
@@ -63,6 +66,18 @@ const credentials: Credentials = {
     region: accounts.regular.region,
     publicKey: accounts.regular.publicKey,
     privateKey: accounts.regular.privateKey,
+  },
+  sealedMaximumFeaturesUs: {
+    region: accounts.maximumFeatures.region,
+    publicKey: accounts.maximumFeatures.sealedPublicKey,
+    privateKey: accounts.maximumFeatures.privateKey,
+    encryptionKey: accounts.maximumFeatures.sealedEncryptionKey,
+  },
+  sealedMinimumFeaturesUs: {
+    region: accounts.minimumFeatures.region,
+    publicKey: accounts.minimumFeatures.sealedPublicKey,
+    privateKey: accounts.minimumFeatures.sealedPrivateKey,
+    encryptionKey: accounts.minimumFeatures.sealedEncryptionKey,
   },
   invalid: {
     publicKey: "ftxPJdxnMlP",
@@ -168,13 +183,13 @@ export const testData = {
         notifications: ["email", "slack", "sms"],
       },
       automationTest_users: [
-        { userId: "123", roles: ["admin", "editor"], isActive: true },
-        { userId: "456", roles: ["viewer"], isActive: false },
+        {userId: "123", roles: ["admin", "editor"], isActive: true},
+        {userId: "456", roles: ["viewer"], isActive: false},
       ],
       automationTest_metrics: [
-        { name: "executionTime", value: 120.5, unit: "seconds" },
-        { name: "memoryUsage", value: 256, unit: "MB" },
-        { name: "assertionsPassed", value: 100 },
+        {name: "executionTime", value: 120.5, unit: "seconds"},
+        {name: "memoryUsage", value: 256, unit: "MB"},
+        {name: "assertionsPassed", value: 100},
       ],
       automationTest_logs: [
         {

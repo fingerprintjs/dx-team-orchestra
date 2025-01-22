@@ -5,6 +5,7 @@ import {identify, IdentifyOptions} from "../htmlScripts/runIdentification";
 import {ExtendedGetResult} from "@fingerprintjs/fingerprintjs-pro";
 import {cleanupVisitors, VisitorData} from "./fingerprint";
 import {Credential} from "./testData";
+import {DecryptionAlgorithm, unsealEventsResponse} from "@fingerprintjs/fingerprintjs-pro-server-api";
 
 type Fixture = {
   fingerprintApi: FingerprintApi
@@ -39,8 +40,29 @@ export const test = pwTest.extend<Fixture>({
       })
 
       if (!options?.skipCleanup) {
+        let visitorId: string
+        if (result.sealedResult) {
+          if (!options.auth.encryptionKey) {
+            throw new TypeError('No encryption key provided for unsealing result')
+          }
+
+          const unsealedData = await unsealEventsResponse(
+            Buffer.from(result.sealedResult, 'base64'),
+            [
+              {
+                key: Buffer.from(options.auth.encryptionKey, 'base64'),
+                algorithm: DecryptionAlgorithm.Aes256Gcm
+              }
+            ]
+          )
+
+          visitorId = unsealedData.products.identification.data.visitorId
+        } else {
+          visitorId = result.visitorId
+        }
+
         visitors.push({
-          visitorId: result.visitorId,
+          visitorId,
           auth: options.auth,
         })
       }
