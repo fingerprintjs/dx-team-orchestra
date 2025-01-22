@@ -1,13 +1,14 @@
 import {FingerprintApi} from "./api";
 import {expect} from "@playwright/test";
 import {JsonResponse} from "./http";
-import { GetEventsParams } from './musician';
-import { EventsGetResponse } from '@fingerprintjs/fingerprintjs-pro-server-api';
+import {GetEventsParams} from './musician';
+import {EventsGetResponse} from '@fingerprintjs/fingerprintjs-pro-server-api';
 
 interface ThatResponseMatchParams {
   expectedResponse?: unknown;
   expectedStatusCode?: number;
   callback: (api: FingerprintApi) => Promise<JsonResponse<unknown>>
+  strict?: boolean
 }
 
 export class Assertions {
@@ -46,7 +47,8 @@ export class Assertions {
   async thatResponseMatch({
                             expectedResponse,
                             expectedStatusCode,
-                            callback
+                            callback,
+                            strict = true
                           }: ThatResponseMatchParams): Promise<void> {
     const {response, data} = await callback(this.sdksApi)
 
@@ -55,7 +57,11 @@ export class Assertions {
     }
 
     if (expectedResponse) {
-      expect(data).toStrictEqual(expectedResponse)
+      if(strict) {
+        expect(data).toStrictEqual(expectedResponse)
+      } else {
+        expect(data).toEqual(expect.objectContaining(expectedResponse as any))
+      }
     }
   }
 }

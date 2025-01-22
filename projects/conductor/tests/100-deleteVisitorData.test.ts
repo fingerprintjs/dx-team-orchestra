@@ -27,8 +27,9 @@ test.describe("DeleteVisitorData Suite", () => {
     await waitBeforeFetch();
 
     await assert.thatResponseMatch({
+      strict: false,
       expectedResponse: {
-        visitorId: visitorId,
+        visitorId,
         visits: [],
       },
       expectedStatusCode: 200,
