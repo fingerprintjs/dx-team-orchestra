@@ -91,7 +91,7 @@ export class SdkFingerprintApi implements FingerprintApi {
     return this.doRequest<EventsGetResponse>('/unseal', params, 'post');
   }
 
-  private async doRequest<T>(path: string, params: RequestParams): Promise<JsonResponse<T>> {
+  private async doRequest<T>(path: string, params: RequestParams, method: 'post' | 'get' = 'get'): Promise<JsonResponse<T>> {
     const url = `${testData.config.baseURL}${path}`;
     const resp = await jsonRequest<MusicianResponse>({
       request: this.request,
