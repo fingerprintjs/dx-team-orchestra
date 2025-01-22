@@ -1,6 +1,6 @@
 import {APIRequestContext, expect} from "@playwright/test";
 import testData from "./testData";
-import { jsonRequest, JsonResponse, RequestParams } from './http';
+import {jsonRequest, JsonResponse, RequestParams} from "./http";
 import {GetEventsParams, MusicianResponse} from "./musician";
 import {
   EventsGetResponse,
@@ -37,6 +37,12 @@ export type UnsealParams = {
   keys: { key: string; algorithm: string }[];
 }
 
+export type DeleteVisitorParams = {
+  apiKey?: string;
+  region?: string;
+  visitorId?: string;
+}
+
 export interface FingerprintApi {
   getEvent(params: GetEventsParams): Promise<JsonResponse<EventsGetResponse>>;
 
@@ -45,6 +51,8 @@ export interface FingerprintApi {
   getRelatedVisitors(params: GetRelatedVisitorsParams): Promise<JsonResponse<RelatedVisitorsResponse>>;
 
   updateEvent(params: UpdateEventParams): Promise<JsonResponse<unknown>>;
+
+  deleteVisitor(params: DeleteVisitorParams): Promise<JsonResponse<unknown>>;
 }
 
 export class SdkFingerprintApi implements FingerprintApi {
@@ -61,6 +69,10 @@ export class SdkFingerprintApi implements FingerprintApi {
 
   async getRelatedVisitors(params: GetRelatedVisitorsParams) {
     return this.doRequest<RelatedVisitorsResponse>('/getRelatedVisitors', params);
+  }
+
+  async deleteVisitor(params: DeleteVisitorParams): Promise<JsonResponse<unknown>> {
+    return this.doRequest<unknown>('/deleteVisitorData', params);
   }
 
   async updateEvent({tag, ...params}: UpdateEventParams): Promise<JsonResponse<void>> {
@@ -117,6 +129,17 @@ export class RealFingerprintApi implements FingerprintApi {
       })
   }
 
+  async deleteVisitor(params: DeleteVisitorParams): Promise<JsonResponse<unknown>> {
+    return await jsonRequest<void>({
+      request: this.request,
+      url: `${testData.config.apiUrl}/visitors/${params.visitorId}`,
+      headers: {
+        "Auth-API-Key": params.apiKey,
+        "content-type": "application/json",
+      }
+    })
+  }
+
   async getRelatedVisitors(params: GetRelatedVisitorsParams) {
     return await jsonRequest(
       {
@@ -146,27 +169,25 @@ export class RealFingerprintApi implements FingerprintApi {
   }
 
   async getVisitor(params: GetVisitorParams) {
-    const queryParams: Record<string, string | number> = {
+    const queryParams: Record<string, string | number> = {}
 
-    }
-
-    if(params.requestId) {
+    if (params.requestId) {
       queryParams.request_id = params.requestId;
     }
 
-    if(params.linkedId) {
+    if (params.linkedId) {
       queryParams.linked_id = params.linkedId;
     }
 
-    if(params.limit) {
+    if (params.limit) {
       queryParams.limit = params.limit;
     }
 
-    if(params.paginationKey) {
+    if (params.paginationKey) {
       queryParams.paginationKey = params.paginationKey;
     }
 
-    if(params.before) {
+    if (params.before) {
       queryParams.before = params.before;
     }
 
