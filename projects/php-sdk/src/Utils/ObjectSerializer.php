@@ -86,6 +86,8 @@ class ObjectSerializer
                     } else {
                         $values[$data::attributeMap()[$property]] = self::sanitizeForSerialization($value, $swaggerType, $formats[$property]);
                     }
+                } elseif (in_array($swaggerType, ['\DateTime'])) {
+                    $values[$data::attributeMap()[$property]] = $value;
                 }
             }
 
