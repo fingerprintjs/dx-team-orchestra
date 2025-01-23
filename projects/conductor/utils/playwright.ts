@@ -30,7 +30,7 @@ export const test = pwTest.extend<Fixture>({
 
     await use(identifyBulk)
   },
-  identify: async ({browser, request}, use) => {
+  identify: async ({browser, fingerprintApi}, use) => {
     const visitors: VisitorData[] = []
 
     const wrappedIdentify = async (options: Readonly<TestIdentifyOptions>) => {
@@ -72,7 +72,7 @@ export const test = pwTest.extend<Fixture>({
 
     await use(wrappedIdentify)
 
-    await cleanupVisitors(request, visitors)
+    await cleanupVisitors(fingerprintApi, visitors)
   },
   fingerprintApi: async ({request}, use) => {
     await use(

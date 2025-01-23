@@ -1,6 +1,7 @@
 import {Credential} from "./testData";
 import {delay} from "./delay";
 import {APIRequestContext} from "@playwright/test";
+import {FingerprintApi} from "./api";
 
 const fingerprintApis = {
   us: 'https://api.fpjs.io',
@@ -25,13 +26,13 @@ export type VisitorData = {
   auth: Credential
 }
 
-export async function cleanupVisitors(request: APIRequestContext, visitors: VisitorData[]) {
+export async function cleanupVisitors(api: FingerprintApi, visitors: VisitorData[]) {
   await Promise.all(
-    visitors.map(visitor => cleanupVisitor(request, visitor))
+    visitors.map(visitor => cleanupVisitor(api, visitor))
   )
 }
 
-async function cleanupVisitor(request: APIRequestContext, visitor: VisitorData): Promise<void> {
+async function cleanupVisitor(api: FingerprintApi, visitor: VisitorData): Promise<void> {
   const region = visitor.auth.region ?? 'us';
   assertValidRegion(region);
 
@@ -40,12 +41,12 @@ async function cleanupVisitor(request: APIRequestContext, visitor: VisitorData):
   );
   url.pathname = `visitors/${visitor.visitorId}`;
 
-  const response = await request.delete(url.toString(), {
-    headers: {
-      'Auth-API-Key': visitor.auth.privateKey,
-      'Accept': 'application/json'
-    }
-  });
+  const {response} = await api.deleteVisitor({
+    visitorId: visitor.visitorId,
+    region: visitor.auth.region,
+    apiKey: visitor.auth.privateKey,
+  })
+
 
   if (response.ok()) {
     return
@@ -61,7 +62,7 @@ async function cleanupVisitor(request: APIRequestContext, visitor: VisitorData):
 
     await delay(retryAfter * 1000)
 
-    return cleanupVisitor(request, visitor)
+    return cleanupVisitor(api, visitor)
   }
 
   console.error(`Failed to delete visitor ${visitor.visitorId} with status ${response.status()}.`, {
