@@ -1,7 +1,7 @@
 import {APIRequestContext, expect} from "@playwright/test";
 import testData from "./testData";
 import {jsonRequest, JsonResponse, RequestParams} from "./http";
-import {GetEventsParams, MusicianResponse} from "./musician";
+import {MusicianResponse} from "./musician";
 import {
   EventsGetResponse,
   EventsUpdateRequest,
@@ -42,6 +42,8 @@ export type DeleteVisitorParams = {
   region?: string;
   visitorId?: string;
 }
+
+export type GetEventsParams = { apiKey: string; region: string; requestId: string }
 
 export interface FingerprintApi {
   getEvent(params: GetEventsParams): Promise<JsonResponse<EventsGetResponse>>;

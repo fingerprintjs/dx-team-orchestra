@@ -1,7 +1,6 @@
-import {FingerprintApi} from "./api";
+import {FingerprintApi, GetEventsParams} from "./api";
 import {expect} from "@playwright/test";
 import {JsonResponse} from "./http";
-import {GetEventsParams} from './musician';
 import {EventsGetResponse} from '@fingerprintjs/fingerprintjs-pro-server-api';
 
 interface ThatResponseMatchParams {
