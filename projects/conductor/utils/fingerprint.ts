@@ -67,6 +67,4 @@ async function cleanupVisitor(request: APIRequestContext, visitor: VisitorData):
   console.error(`Failed to delete visitor ${visitor.visitorId} with status ${response.status()}.`, {
     body: await response.json()
   })
-
-  throw new Error(`Failed to delete visitor ${visitor.visitorId} with status ${response.status()}.`)
 }
