@@ -1,7 +1,5 @@
 export type MusicianResponse = {
-  code: number;
-  originalResponse: String,
-  parsedResponse: unknown,
+  code: number
+  originalResponse: String
+  parsedResponse: unknown
 }
-
-
