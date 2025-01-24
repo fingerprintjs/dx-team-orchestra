@@ -1,7 +1,6 @@
-import {Credential} from "./testData";
-import {delay} from "./delay";
-import {APIRequestContext} from "@playwright/test";
-import {FingerprintApi} from "./api";
+import { Credential } from './testData'
+import { delay } from './delay'
+import { FingerprintApi } from './api'
 
 const fingerprintApis = {
   us: 'https://api.fpjs.io',
@@ -27,26 +26,21 @@ export type VisitorData = {
 }
 
 export async function cleanupVisitors(api: FingerprintApi, visitors: VisitorData[]) {
-  await Promise.all(
-    visitors.map(visitor => cleanupVisitor(api, visitor))
-  )
+  await Promise.all(visitors.map((visitor) => cleanupVisitor(api, visitor)))
 }
 
 async function cleanupVisitor(api: FingerprintApi, visitor: VisitorData): Promise<void> {
-  const region = visitor.auth.region ?? 'us';
-  assertValidRegion(region);
+  const region = visitor.auth.region ?? 'us'
+  assertValidRegion(region)
 
-  const url = new URL(
-    getFingerprintEndpoint(region)
-  );
-  url.pathname = `visitors/${visitor.visitorId}`;
+  const url = new URL(getFingerprintEndpoint(region))
+  url.pathname = `visitors/${visitor.visitorId}`
 
-  const {response} = await api.deleteVisitor({
+  const { response } = await api.deleteVisitor({
     visitorId: visitor.visitorId,
     region: visitor.auth.region,
     apiKey: visitor.auth.privateKey,
   })
-
 
   if (response.ok()) {
     return
@@ -66,6 +60,6 @@ async function cleanupVisitor(api: FingerprintApi, visitor: VisitorData): Promis
   }
 
   console.error(`Failed to delete visitor ${visitor.visitorId} with status ${response.status()}.`, {
-    body: await response.json()
+    body: await response.json(),
   })
 }

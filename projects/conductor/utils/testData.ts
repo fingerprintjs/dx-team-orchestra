@@ -1,6 +1,6 @@
 const accounts = {
   minimumFeatures: {
-    region: "us",
+    region: 'us',
     publicKey: process.env.MINIMUM_US_DEFAULT_PUBLIC_KEY,
     privateKey: process.env.MINIMUM_US_DEFAULT_PRIVATE_KEY,
     sealedPublicKey: process.env.MINIMUM_US_SEALED_PUBLIC_KEY,
@@ -8,7 +8,7 @@ const accounts = {
     sealedEncryptionKey: process.env.MINIMUM_US_SEALED_ENCRYPTION_KEY,
   },
   maximumFeatures: {
-    region: "us",
+    region: 'us',
     publicKey: process.env.MAXIMUM_US_DEFAULT_PUBLIC_KEY,
     privateKey: process.env.MAXIMUM_US_DEFAULT_PRIVATE_KEY,
     deletedPrivateKey: process.env.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY,
@@ -17,17 +17,17 @@ const accounts = {
     sealedEncryptionKey: process.env.MAXIMUM_US_SEALED_ENCRYPTION_KEY,
   },
   regular: {
-    region: "eu",
+    region: 'eu',
     publicKey: process.env.DEFAULT_EU_DEFAULT_PUBLIC_KEY,
     privateKey: process.env.DEFAULT_EU_DEFAULT_PRIVATE_KEY,
-  }
+  },
 }
 
 export type Credential = {
   region: string
   publicKey: string
   privateKey: string
-  encryptionKey?: string,
+  encryptionKey?: string
 }
 
 export type Credentials = {
@@ -42,12 +42,12 @@ export type Credentials = {
 
 export type Mocks = {
   invalid: {
-    requestId: string,
-    visitorId: string,
+    requestId: string
+    visitorId: string
   }
   missing: {
-    requestId: string,
-    visitorId: string,
+    requestId: string
+    visitorId: string
   }
 }
 
@@ -80,26 +80,26 @@ const credentials: Credentials = {
     encryptionKey: accounts.minimumFeatures.sealedEncryptionKey,
   },
   invalid: {
-    publicKey: "ftxPJdxnMlP",
+    publicKey: 'ftxPJdxnMlP',
     privateKey: 'fz2%^pvvv',
-    region: "AB",
+    region: 'AB',
   },
   deleted: {
     privateKey: accounts.maximumFeatures.deletedPrivateKey,
     publicKey: accounts.maximumFeatures.publicKey,
     region: accounts.maximumFeatures.region,
-  }
+  },
 }
 
 const mocks: Mocks = {
   invalid: {
-    requestId: "ftxPJdxnMlP.ftxPJdxnMlP",
-    visitorId: "gzm0RjeSe9g2netPpoWz",
+    requestId: 'ftxPJdxnMlP.ftxPJdxnMlP',
+    visitorId: 'gzm0RjeSe9g2netPpoWz',
   },
   missing: {
-    requestId: "",
-    visitorId: "",
-  }
+    requestId: '',
+    visitorId: '',
+  },
 }
 
 export const testData = {
@@ -114,19 +114,19 @@ export const testData = {
     region: accounts.minimumFeatures.region,
   },
   missing: {
-    apiKey: "",
-    region: "",
-    requestID: "",
+    apiKey: '',
+    region: '',
+    requestID: '',
   },
   invalid: {
-    apiKey: "ftxPJdxnMlP",
-    region: "AB",
-    requestID: "ftxPJdxnMlP.ftxPJdxnMlP",
-    visitorId: "gzm0RjeSe9g2netPpoWz",
+    apiKey: 'ftxPJdxnMlP',
+    region: 'AB',
+    requestID: 'ftxPJdxnMlP.ftxPJdxnMlP',
+    visitorId: 'gzm0RjeSe9g2netPpoWz',
   },
   differentRegion: {
     apiKey: accounts.maximumFeatures.privateKey,
-    region: "eu",
+    region: 'eu',
   },
   deletedApiKey: {
     apiKey: accounts.maximumFeatures.deletedPrivateKey,
@@ -134,7 +134,7 @@ export const testData = {
   },
   config: {
     baseURL: `http://localhost:${process.env.MUSICIAN_PORT || 3002}`,
-    apiUrl: "https://api.fpjs.io",
+    apiUrl: 'https://api.fpjs.io',
   },
 
   identificationKey: {
@@ -166,45 +166,43 @@ export const testData = {
   },
   updateEventComplexTag: {
     tag: {
-      automationTest_testName: "Automation Test Scenario 1",
-      automationTest_testId: `test_${Math.random()
-        .toString(36)
-        .substring(2, 8)}`,
+      automationTest_testName: 'Automation Test Scenario 1',
+      automationTest_testId: `test_${Math.random().toString(36).substring(2, 8)}`,
       automationTest_metadata: {
         id: Math.floor(Math.random() * 1000),
-        description: "This is a metadata description for automation testing.",
+        description: 'This is a metadata description for automation testing.',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       },
       automationTest_settings: {
         retries: 3,
         timeout: 5000,
-        environment: "staging",
-        notifications: ["email", "slack", "sms"],
+        environment: 'staging',
+        notifications: ['email', 'slack', 'sms'],
       },
       automationTest_users: [
-        {userId: "123", roles: ["admin", "editor"], isActive: true},
-        {userId: "456", roles: ["viewer"], isActive: false},
+        { userId: '123', roles: ['admin', 'editor'], isActive: true },
+        { userId: '456', roles: ['viewer'], isActive: false },
       ],
       automationTest_metrics: [
-        {name: "executionTime", value: 120.5, unit: "seconds"},
-        {name: "memoryUsage", value: 256, unit: "MB"},
-        {name: "assertionsPassed", value: 100},
+        { name: 'executionTime', value: 120.5, unit: 'seconds' },
+        { name: 'memoryUsage', value: 256, unit: 'MB' },
+        { name: 'assertionsPassed', value: 100 },
       ],
       automationTest_logs: [
         {
           timestamp: new Date().toISOString(),
-          level: "info",
-          message: "Test started.",
+          level: 'info',
+          message: 'Test started.',
         },
         {
           timestamp: new Date().toISOString(),
-          level: "error",
-          message: "Assertion failed.",
+          level: 'error',
+          message: 'Assertion failed.',
         },
       ],
     },
   },
-};
+}
 
-export default testData;
+export default testData

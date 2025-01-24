@@ -1,11 +1,11 @@
-import {test as pwTest} from '@playwright/test'
-import {FingerprintApi, RealFingerprintApi, SdkFingerprintApi} from "./api";
-import {Assertions} from "./assertions";
-import {identify, IdentifyOptions} from "../htmlScripts/runIdentification";
-import {ExtendedGetResult} from "@fingerprintjs/fingerprintjs-pro";
-import {cleanupVisitors, VisitorData} from "./fingerprint";
-import {Credential} from "./testData";
-import {DecryptionAlgorithm, unsealEventsResponse} from "@fingerprintjs/fingerprintjs-pro-server-api";
+import { test as pwTest } from '@playwright/test'
+import { FingerprintApi, RealFingerprintApi, SdkFingerprintApi } from './api'
+import { Assertions } from './assertions'
+import { identify, IdentifyOptions } from '../htmlScripts/runIdentification'
+import { ExtendedGetResult } from '@fingerprintjs/fingerprintjs-pro'
+import { cleanupVisitors, VisitorData } from './fingerprint'
+import { Credential } from './testData'
+import { DecryptionAlgorithm, unsealEventsResponse } from '@fingerprintjs/fingerprintjs-pro-server-api'
 
 type Fixture = {
   fingerprintApi: FingerprintApi
@@ -21,16 +21,14 @@ export type TestIdentifyOptions = Omit<IdentifyOptions, 'publicApiKey'> & {
 }
 
 export const test = pwTest.extend<Fixture>({
-  identifyBulk: async ({identify}, use) => {
+  identifyBulk: async ({ identify }, use) => {
     const identifyBulk = (options: Readonly<TestIdentifyOptions>, size: number) => {
-      return Promise.all(
-        Array.from({length: size}).map(() => identify(options))
-      )
+      return Promise.all(Array.from({ length: size }).map(() => identify(options)))
     }
 
     await use(identifyBulk)
   },
-  identify: async ({browser, fingerprintApi}, use) => {
+  identify: async ({ browser, fingerprintApi }, use) => {
     const visitors: VisitorData[] = []
 
     const wrappedIdentify = async (options: Readonly<TestIdentifyOptions>) => {
@@ -46,15 +44,12 @@ export const test = pwTest.extend<Fixture>({
             throw new TypeError('No encryption key provided for unsealing result')
           }
 
-          const unsealedData = await unsealEventsResponse(
-            Buffer.from(result.sealedResult, 'base64'),
-            [
-              {
-                key: Buffer.from(options.auth.encryptionKey, 'base64'),
-                algorithm: DecryptionAlgorithm.Aes256Gcm
-              }
-            ]
-          )
+          const unsealedData = await unsealEventsResponse(Buffer.from(result.sealedResult, 'base64'), [
+            {
+              key: Buffer.from(options.auth.encryptionKey, 'base64'),
+              algorithm: DecryptionAlgorithm.Aes256Gcm,
+            },
+          ])
 
           visitorId = unsealedData.products.identification.data.visitorId
         } else {
@@ -74,17 +69,13 @@ export const test = pwTest.extend<Fixture>({
 
     await cleanupVisitors(fingerprintApi, visitors)
   },
-  fingerprintApi: async ({request}, use) => {
-    await use(
-      new RealFingerprintApi(request)
-    )
+  fingerprintApi: async ({ request }, use) => {
+    await use(new RealFingerprintApi(request))
   },
-  sdkApi: async ({request}, use) => {
-    await use(
-      new SdkFingerprintApi(request)
-    )
+  sdkApi: async ({ request }, use) => {
+    await use(new SdkFingerprintApi(request))
   },
-  assert: async ({fingerprintApi, sdkApi}, use) => {
+  assert: async ({ fingerprintApi, sdkApi }, use) => {
     await use(new Assertions(fingerprintApi, sdkApi))
-  }
+  },
 })
