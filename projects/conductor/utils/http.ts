@@ -1,6 +1,6 @@
 import {APIRequestContext, APIResponse} from "@playwright/test";
 
-export type RequestParams = Record<string, string | number>;
+export type RequestParams = Record<string, string | number | RequestParams>;
 
 type JsonRequestOptions = {
   request: APIRequestContext;
@@ -8,7 +8,7 @@ type JsonRequestOptions = {
   headers?: Record<string, string>;
 } & (
     | { method?: 'get'; params?: RequestParams }
-    | { method: 'post'; params?: any }
+    | { method: 'post'; params?: any,  data?: unknown }
     );
 
 export type JsonResponse<T> = {

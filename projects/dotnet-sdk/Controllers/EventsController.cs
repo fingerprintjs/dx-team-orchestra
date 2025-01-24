@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using FingerprintPro.ServerSdk.Api;
 using FingerprintPro.ServerSdk.Client;
 using FingerprintPro.ServerSdk.Model;
-using Newtonsoft.Json;
 using dotnet_sdk.Models;
+using FingerprintPro.ServerSdk.Json;
 
 namespace dotnet_sdk.Controllers
 {
@@ -57,7 +57,7 @@ namespace dotnet_sdk.Controllers
                 };
                 var api = new FingerprintApi(configuration);
 
-                var deserializedTag = tag != null ? JsonConvert.DeserializeObject<Tag>(tag) : null;
+                var deserializedTag = tag != null ? JsonUtils.Deserialize<Tag>(tag) : null;
 
                 var updateEventRequest = new EventsUpdateRequest(linkedId, deserializedTag, suspect);
 
