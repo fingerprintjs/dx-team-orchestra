@@ -1,3 +1,8 @@
 {
-  "extends": ["@fingerprintjs/eslint-config-dx-team"]
+  "extends": ["@fingerprintjs/eslint-config-dx-team"],
+  "ignorePatterns": [
+    "build",
+    "dist",
+    "vendor"
+  ]
 }
