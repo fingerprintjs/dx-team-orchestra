@@ -20,3 +20,21 @@ start-python:
 
 start-php:
 	docker-compose up php-sdk --build -d
+
+stop-php:
+	docker-compose kill php-sdk
+
+stop-python:
+	docker-compose kill python-sdk
+
+stop-node:
+	docker-compose kill node-sdk
+
+stop-go:
+	docker-compose kill go-sdk
+
+stop-dotnet:
+	docker-compose kill dotnet-sdk
+
+stop-java:
+	docker-compose kill java-sdk
