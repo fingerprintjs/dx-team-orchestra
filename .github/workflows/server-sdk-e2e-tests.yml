@@ -47,7 +47,7 @@ on:
 
 jobs:
   run-node-sdk-tests:
-    if: ${{ github.event.inputs.run-node-sdk-tests == true }}
+    if: ${{ (github.event_name != 'workflow_dispatch') || github.event.inputs.run-node-sdk-tests == true }}
     runs-on: ubuntu-latest
 
     steps:
@@ -105,7 +105,7 @@ jobs:
         run: pnpm playwright test
 
   run-java-sdk-tests:
-    if: ${{ github.event.inputs.run-java-sdk-tests == true }}
+    if: ${{ (github.event_name != 'workflow_dispatch') || github.event.inputs.run-java-sdk-tests == true }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -181,7 +181,7 @@ jobs:
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
   run-dotnet-sdk-tests:
-    if: ${{ github.event.inputs.run-dotnet-sdk-tests == true }}
+    if: ${{ (github.event_name != 'workflow_dispatch') || github.event.inputs.run-dotnet-sdk-tests == true }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -252,7 +252,7 @@ jobs:
         run: pnpm playwright test
 
   run-go-sdk-tests:
-    if: ${{ github.event.inputs.run-go-sdk-tests == true }}
+    if: ${{ (github.event_name != 'workflow_dispatch') || github.event.inputs.run-go-sdk-tests == true }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -334,7 +334,7 @@ jobs:
         run: pnpm playwright test
 
   run-python-sdk-tests:
-    if: ${{ github.event.inputs.run-python-sdk-tests == true }}
+    if: ${{ (github.event_name != 'workflow_dispatch') || github.event.inputs.run-python-sdk-tests == true }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -401,7 +401,7 @@ jobs:
         run: pnpm playwright test
 
   run-php-sdk-tests:
-    if: ${{ github.event.inputs.run-php-sdk-tests == true }}
+    if: ${{ (github.event_name != 'workflow_dispatch') || github.event.inputs.run-php-sdk-tests == true }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
