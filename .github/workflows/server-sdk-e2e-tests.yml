@@ -3,8 +3,8 @@ name: Run Server SDK e2e tests
 on:
   workflow_dispatch:
     inputs:
-      node-sdk-version:
-        description: "Node SDK version"
+      sdk-version:
+        description: "SDK version to set up"
         required: false
         type: string
         default: ""
@@ -13,51 +13,26 @@ on:
         required: false
         type: boolean
         default: true
-      java-sdk-version:
-        description: "Java SDK version"
-        required: false
-        type: string
-        default: ""
       run-java-sdk-tests:
         description: "Should we run Java SDK tests?"
         required: false
         type: boolean
         default: true
-      dotnet-sdk-version:
-        description: ".NET SDK version"
-        required: false
-        type: string
-        default: ""
       run-dotnet-sdk-tests:
         description: "Should we run .NET SDK tests?"
         required: false
         type: boolean
         default: true
-      go-sdk-version:
-        description: "Go SDK version"
-        required: false
-        type: string
-        default: ""
       run-go-sdk-tests:
         description: "Should we run Go SDK tests?"
         required: false
         type: boolean
         default: true
-      python-sdk-version:
-        description: "Python SDK version"
-        required: false
-        type: string
-        default: ""
       run-python-sdk-tests:
         description: "Should we run Python SDK tests?"
         required: false
         type: boolean
         default: true
-      php-sdk-version:
-        description: "PHP SDK version"
-        required: false
-        type: string
-        default: ""
       run-php-sdk-tests:
         description: "Should we run PHP SDK tests?"
         required: false
@@ -94,11 +69,11 @@ jobs:
         run: pnpm install
 
       - name: Set up Node SDK version
-        if: ${{ github.event.inputs.node-sdk-version != '' }}
+        if: ${{ github.event.inputs.sdk-version != '' }}
         working-directory: ./projects/node-sdk
         run: |
-          echo "Updating @fingerprintjs/fingerprintjs-pro-server-api to version ${{ github.event.inputs.node-sdk-version }}"
-          pnpm install @fingerprintjs/fingerprintjs-pro-server-api@${{ github.event.inputs.node-sdk-version }}
+          echo "Updating @fingerprintjs/fingerprintjs-pro-server-api to version ${{ github.event.inputs.sdk-version }}"
+          pnpm install @fingerprintjs/fingerprintjs-pro-server-api@${{ github.event.inputs.sdk-version }}
 
       - name: Install Playwright browsers
         working-directory: ./projects/conductor
@@ -170,11 +145,11 @@ jobs:
             gradle-${{ runner.os }}-
 
       - name: Set up Java SDK version
-        if: ${{ github.event.inputs.java-sdk-version != '' }}
+        if: ${{ github.event.inputs.sdk-version != '' }}
         working-directory: ./projects/java-sdk
         run: |
-          echo "Updating com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk to version ${{ github.event.inputs.java-sdk-version }}"
-          sed -i 's|com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:[^"]*|com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:${{ github.event.inputs.java-sdk-version }}|g' build.gradle.kts
+          echo "Updating com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk to version ${{ github.event.inputs.sdk-version }}"
+          sed -i 's|com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:[^"]*|com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:${{ github.event.inputs.sdk-version }}|g' build.gradle.kts
           ./gradlew dependencies --refresh-dependencies
 
       - name: Build with Gradle
@@ -240,11 +215,11 @@ jobs:
         run: dotnet restore ./projects/dotnet-sdk
 
       - name: Set up .NET SDK version
-        if: ${{ github.event.inputs.dotnet-sdk-version != '' }}
+        if: ${{ github.event.inputs.sdk-version != '' }}
         working-directory: ./projects/dotnet-sdk
         run: |
-          echo "Updating FingerprintPro.ServerSdk to version ${{ github.event.inputs.dotnet-sdk-version }}"
-          dotnet add package FingerprintPro.ServerSdk --version ${{ github.event.inputs.dotnet-sdk-version }}
+          echo "Updating FingerprintPro.ServerSdk to version ${{ github.event.inputs.sdk-version }}"
+          dotnet add package FingerprintPro.ServerSdk --version ${{ github.event.inputs.sdk-version }}
 
       - name: Build the project
         run: dotnet publish ./projects/dotnet-sdk --configuration Release --output ./projects/dotnet-sdk/out
@@ -318,11 +293,11 @@ jobs:
             ${{ runner.os }}-go-mod-
 
       - name: Set up Go SDK version
-        if: ${{ github.event.inputs.go-sdk-version != '' }}
+        if: ${{ github.event.inputs.sdk-version != '' }}
         working-directory: ./projects/go-sdk
         run: |
-          echo "Updating github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7 to version ${{ github.event.inputs.go-sdk-version }}"
-          go get github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7@${{ github.event.inputs.go-sdk-version }}
+          echo "Updating github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7 to version ${{ github.event.inputs.sdk-version }}"
+          go get github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7@${{ github.event.inputs.sdk-version }}
 
       - name: Install dependencies
         working-directory: ./projects/go-sdk
@@ -395,11 +370,11 @@ jobs:
           pip install -r requirements.txt
 
       - name: Set up Python SDK version
-        if: ${{ github.event.inputs.python-sdk-version != '' }}
+        if: ${{ github.event.inputs.sdk-version != '' }}
         working-directory: ./projects/python-sdk
         run: |
-          echo "Updating fingerprint_pro_server_api_sdk to version ${{ github.event.inputs.python-sdk-version }}"
-          pip install "fingerprint_pro_server_api_sdk==${{ github.event.inputs.python-sdk-version }}"
+          echo "Updating fingerprint_pro_server_api_sdk to version ${{ github.event.inputs.sdk-version }}"
+          pip install "fingerprint_pro_server_api_sdk==${{ github.event.inputs.sdk-version }}"
 
       - name: Run Python application
         working-directory: ./projects/python-sdk
@@ -471,11 +446,11 @@ jobs:
           composer install --no-interaction
 
       - name: Set up PHP SDK version
-        if: ${{ github.event.inputs.php-sdk-version != '' }}
+        if: ${{ github.event.inputs.sdk-version != '' }}
         working-directory: ./projects/php-sdk
         run: |
-          echo "Updating fingerprint/fingerprint-pro-server-api-sdk to version ${{ github.event.inputs.php-sdk-version }}"
-          composer require fingerprint/fingerprint-pro-server-api-sdk:${{ github.event.inputs.php-sdk-version }} --update-with-dependencies
+          echo "Updating fingerprint/fingerprint-pro-server-api-sdk to version ${{ github.event.inputs.sdk-version }}"
+          composer require fingerprint/fingerprint-pro-server-api-sdk:${{ github.event.inputs.sdk-version }} --update-with-dependencies
 
       - name: Run PHP built-in server
         working-directory: ./projects/php-sdk
