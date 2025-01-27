@@ -2,6 +2,11 @@ name: Run Server SDK e2e tests
 
 on:
   workflow_dispatch:
+    inputs:
+      node-sdk-version:
+        description: "Node SDK version"
+        required: false
+        default: ""
   schedule:
     - cron: "0 0 * * *" # Runs daily at midnight UTC
   push:
@@ -15,7 +20,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install pnpm
         uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
@@ -23,13 +28,20 @@ jobs:
           version: 9
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           cache: pnpm
           node-version: 18
 
       - name: Install dependencies
         run: pnpm install
+
+      - name: Set up Node SDK version
+        if: ${{ github.event.inputs.node-sdk-version != '' }}
+        working-directory: ./projects/node-sdk
+        run: |
+          echo "Updating @fingerprintjs/fingerprintjs-pro-server-api to version ${{ github.event.inputs.node-sdk-version }}"
+          pnpm install @fingerprintjs/fingerprintjs-pro-server-api@${{ github.event.inputs.node-sdk-version }}
 
       - name: Install Playwright browsers
         working-directory: ./projects/conductor
@@ -73,7 +85,7 @@ jobs:
           version: 9
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           cache: pnpm
           node-version: 18
@@ -140,7 +152,7 @@ jobs:
           version: 9
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           cache: pnpm
           node-version: 18
@@ -203,7 +215,7 @@ jobs:
           version: 9
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           cache: pnpm
           node-version: 18
@@ -277,7 +289,7 @@ jobs:
           version: 9
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           cache: pnpm
           node-version: 18
