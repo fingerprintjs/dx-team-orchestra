@@ -296,8 +296,9 @@ jobs:
         if: ${{ github.event.inputs.sdk-version != '' }}
         working-directory: ./projects/go-sdk
         run: |
-          echo "Updating github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7 to version ${{ github.event.inputs.sdk-version }}"
-          go get github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7@${{ github.event.inputs.sdk-version }}
+          MAJOR_VERSION=$(echo ${{ github.event.inputs.sdk-version }} | cut -d'.' -f1)
+          echo "Updating github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v$MAJOR_VERSION to version v${{ github.event.inputs.sdk-version }}"
+          go get github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v$MAJOR_VERSION@v${{ github.event.inputs.sdk-version }}
 
       - name: Install dependencies
         working-directory: ./projects/go-sdk
