@@ -44,10 +44,12 @@ on:
     branches:
       - main
   pull_request:
+  repository_dispatch:
+    types: [e2e_tests]
 
 jobs:
   run-node-sdk-tests:
-    if: ${{ (github.event_name != 'workflow_dispatch') || inputs.run-node-sdk-tests }}
+    if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-node-sdk-tests || github.event.client_payload.run-node-sdk-tests }}
     runs-on: ubuntu-latest
 
     steps:
@@ -102,7 +104,7 @@ jobs:
         run: pnpm playwright test
 
   run-java-sdk-tests:
-    if: ${{ (github.event_name != 'workflow_dispatch') || inputs.run-java-sdk-tests }}
+    if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-java-sdk-tests || github.event.client_payload.run-java-sdk-tests }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -174,7 +176,7 @@ jobs:
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
   run-dotnet-sdk-tests:
-    if: ${{ (github.event_name != 'workflow_dispatch') || inputs.run-dotnet-sdk-tests }}
+    if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-dotnet-sdk-tests || github.event.client_payload.run-dotnet-sdk-tests }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -242,7 +244,7 @@ jobs:
         run: pnpm playwright test
 
   run-go-sdk-tests:
-    if: ${{ (github.event_name != 'workflow_dispatch') || inputs.run-go-sdk-tests }}
+    if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-go-sdk-tests || github.event.client_payload.run-go-sdk-tests }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -321,7 +323,7 @@ jobs:
         run: pnpm playwright test
 
   run-python-sdk-tests:
-    if: ${{ (github.event_name != 'workflow_dispatch') || inputs.run-python-sdk-tests }}
+    if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-python-sdk-tests || github.event.client_payload.run-python-sdk-tests }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -385,7 +387,7 @@ jobs:
         run: pnpm playwright test
 
   run-php-sdk-tests:
-    if: ${{ (github.event_name != 'workflow_dispatch') || inputs.run-php-sdk-tests }}
+    if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-php-sdk-tests || github.event.client_payload.run-php-sdk-tests }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
