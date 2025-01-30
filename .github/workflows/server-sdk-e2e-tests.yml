@@ -2,6 +2,42 @@ name: Run Server SDK e2e tests
 
 on:
   workflow_dispatch:
+    inputs:
+      sdk-version:
+        description: "SDK version to set up"
+        required: false
+        type: string
+        default: "latest"
+      run-node-sdk-tests:
+        description: "Should we run Node SDK tests?"
+        required: false
+        type: boolean
+        default: false
+      run-java-sdk-tests:
+        description: "Should we run Java SDK tests?"
+        required: false
+        type: boolean
+        default: false
+      run-dotnet-sdk-tests:
+        description: "Should we run .NET SDK tests?"
+        required: false
+        type: boolean
+        default: false
+      run-go-sdk-tests:
+        description: "Should we run Go SDK tests?"
+        required: false
+        type: boolean
+        default: false
+      run-python-sdk-tests:
+        description: "Should we run Python SDK tests?"
+        required: false
+        type: boolean
+        default: false
+      run-php-sdk-tests:
+        description: "Should we run PHP SDK tests?"
+        required: false
+        type: boolean
+        default: false
   schedule:
     - cron: "0 0 * * *" # Runs daily at midnight UTC
   push:
@@ -11,11 +47,12 @@ on:
 
 jobs:
   run-node-sdk-tests:
+    if: ${{ (github.event_name != 'workflow_dispatch') || inputs.run-node-sdk-tests }}
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install pnpm
         uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
@@ -23,13 +60,17 @@ jobs:
           version: 9
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           cache: pnpm
           node-version: 18
 
       - name: Install dependencies
         run: pnpm install
+
+      - name: Set up Node SDK version
+        working-directory: ./projects/node-sdk
+        run: ../../scripts/setup-sdk.sh node ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
 
       - name: Install Playwright browsers
         working-directory: ./projects/conductor
@@ -61,6 +102,7 @@ jobs:
         run: pnpm playwright test
 
   run-java-sdk-tests:
+    if: ${{ (github.event_name != 'workflow_dispatch') || inputs.run-java-sdk-tests }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -73,7 +115,7 @@ jobs:
           version: 9
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           cache: pnpm
           node-version: 18
@@ -98,6 +140,10 @@ jobs:
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             gradle-${{ runner.os }}-
+
+      - name: Set up Java SDK version
+        working-directory: ./projects/java-sdk
+        run: ../../scripts/setup-sdk.sh java ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
 
       - name: Build with Gradle
         working-directory: ./projects/java-sdk
@@ -128,6 +174,7 @@ jobs:
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
   run-dotnet-sdk-tests:
+    if: ${{ (github.event_name != 'workflow_dispatch') || inputs.run-dotnet-sdk-tests }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -140,7 +187,7 @@ jobs:
           version: 9
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           cache: pnpm
           node-version: 18
@@ -159,6 +206,10 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore ./projects/dotnet-sdk
+
+      - name: Set up .NET SDK version
+        working-directory: ./projects/dotnet-sdk
+        run: ../../scripts/setup-sdk.sh dotnet ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
 
       - name: Build the project
         run: dotnet publish ./projects/dotnet-sdk --configuration Release --output ./projects/dotnet-sdk/out
@@ -191,6 +242,7 @@ jobs:
         run: pnpm playwright test
 
   run-go-sdk-tests:
+    if: ${{ (github.event_name != 'workflow_dispatch') || inputs.run-go-sdk-tests }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -203,7 +255,7 @@ jobs:
           version: 9
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           cache: pnpm
           node-version: 18
@@ -229,6 +281,10 @@ jobs:
           key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-mod-
+
+      - name: Set up Go SDK version
+        working-directory: ./projects/go-sdk
+        run: ../../scripts/setup-sdk.sh go ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
 
       - name: Install dependencies
         working-directory: ./projects/go-sdk
@@ -265,6 +321,7 @@ jobs:
         run: pnpm playwright test
 
   run-python-sdk-tests:
+    if: ${{ (github.event_name != 'workflow_dispatch') || inputs.run-python-sdk-tests }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -277,7 +334,7 @@ jobs:
           version: 9
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           cache: pnpm
           node-version: 18
@@ -298,6 +355,10 @@ jobs:
         working-directory: ./projects/python-sdk
         run: |
           pip install -r requirements.txt
+
+      - name: Set up Python SDK version
+        working-directory: ./projects/python-sdk
+        run: ../../scripts/setup-sdk.sh python ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
 
       - name: Run Python application
         working-directory: ./projects/python-sdk
@@ -324,6 +385,7 @@ jobs:
         run: pnpm playwright test
 
   run-php-sdk-tests:
+    if: ${{ (github.event_name != 'workflow_dispatch') || inputs.run-php-sdk-tests }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -366,6 +428,10 @@ jobs:
         working-directory: ./projects/php-sdk
         run: |
           composer install --no-interaction
+
+      - name: Set up PHP SDK version
+        working-directory: ./projects/php-sdk
+        run: ../../scripts/setup-sdk.sh php ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
 
       - name: Run PHP built-in server
         working-directory: ./projects/php-sdk
