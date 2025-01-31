@@ -15,7 +15,13 @@ type updateEventQueryParams struct {
 }
 
 func UpdateEvent(w http.ResponseWriter, r *http.Request) {
-	suspect, _ := strconv.ParseBool(r.URL.Query().Get("suspect"))
+	var suspectValue *bool
+
+	suspect, suspectErr := strconv.ParseBool(r.URL.Query().Get("suspect"))
+	if suspectErr == nil {
+		suspectValue = &suspect
+	}
+
 	var tag sdk.ModelMap
 	json.Unmarshal([]byte(r.URL.Query().Get("tag")), &tag)
 
@@ -28,7 +34,7 @@ func UpdateEvent(w http.ResponseWriter, r *http.Request) {
 	updateBody := sdk.EventsUpdateRequest{
 		LinkedId: r.URL.Query().Get("linkedId"),
 		Tag:      &tag,
-		Suspect:  suspect,
+		Suspect:  suspectValue,
 	}
 
 	client, auth := utils.InitSdk(queryParams.ApiKey, queryParams.Region)
