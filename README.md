@@ -1,8 +1,9 @@
 # DX Team Orchestra
 
-More info: https://www.notion.so/fingerprintjs/E2E-tests-for-server-SDKs-14302f125ebd80ceadfcf9eafeea1d41
+> **Note**
+> This repository is part of our internal tooling.
+> It is not included in our core product and is provided “as-is” with no guaranteed level of support from Fingerprint.
 
-Work in progress.
 
 ## How to run
 
