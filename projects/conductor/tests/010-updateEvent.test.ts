@@ -20,7 +20,7 @@ async function waitBeforeUpdate() {
 }
 
 test.describe('UpdateEvents Suite', () => {
-  test('for valid apiKey and requestId with Smart Signals', async ({ sdkApi, identify }) => {
+  test('for valid apiKey and requestId with Smart Signals', async ({ sdkApi, fingerprintApi, identify }) => {
     const { requestId } = await identify({
       auth: testData.credentials.maxFeaturesUS,
     })
@@ -38,7 +38,7 @@ test.describe('UpdateEvents Suite', () => {
 
     expect(response.status()).toEqual(200)
 
-    const { data: updatedEvent } = await sdkApi.getEvent({
+    const { data: updatedEvent } = await fingerprintApi.getEvent({
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
       region: testData.credentials.maxFeaturesUS.region,
       requestId,
@@ -47,7 +47,7 @@ test.describe('UpdateEvents Suite', () => {
     checkUpdatedEvent(updatedEvent)
   })
 
-  test('for valid apiKey and requestId without Smart Signals', async ({ sdkApi, identify }) => {
+  test('for valid apiKey and requestId without Smart Signals', async ({ sdkApi, fingerprintApi, identify }) => {
     const { requestId } = await identify({
       auth: testData.credentials.minFeaturesUS,
     })
@@ -64,7 +64,7 @@ test.describe('UpdateEvents Suite', () => {
     })
     expect(response.status()).toEqual(200)
 
-    const { data: updatedEvent } = await sdkApi.getEvent({
+    const { data: updatedEvent } = await fingerprintApi.getEvent({
       requestId,
       apiKey: testData.credentials.minFeaturesUS.privateKey,
       region: testData.credentials.minFeaturesUS.region,
@@ -72,11 +72,11 @@ test.describe('UpdateEvents Suite', () => {
     checkUpdatedEvent(updatedEvent)
   })
 
-  test('for valid complex tag only', async ({ sdkApi, identify }) => {
+  test('for valid complex tag only', async ({ sdkApi, fingerprintApi, identify }) => {
     const { requestId } = await identify({
       auth: testData.credentials.maxFeaturesUS,
     })
-    const { data: initialEvent } = await sdkApi.getEvent({
+    const { data: initialEvent } = await fingerprintApi.getEvent({
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
       region: testData.credentials.maxFeaturesUS.region,
       requestId,
@@ -93,7 +93,7 @@ test.describe('UpdateEvents Suite', () => {
     })
     expect(response.status()).toEqual(200)
 
-    const { data: updatedEvent } = await sdkApi.getEvent({
+    const { data: updatedEvent } = await fingerprintApi.getEvent({
       requestId,
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
       region: testData.credentials.maxFeaturesUS.region,
@@ -104,11 +104,11 @@ test.describe('UpdateEvents Suite', () => {
     expect(identificationData.suspect).toStrictEqual(initialResponseBody.suspect)
   })
 
-  test('for linkedId only', async ({ sdkApi, identify }) => {
+  test('for linkedId only', async ({ sdkApi, fingerprintApi, identify }) => {
     const { requestId } = await identify({
       auth: testData.credentials.maxFeaturesUS,
     })
-    const { data: initialEvent } = await sdkApi.getEvent({
+    const { data: initialEvent } = await fingerprintApi.getEvent({
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
       region: testData.credentials.maxFeaturesUS.region,
       requestId,
@@ -125,7 +125,7 @@ test.describe('UpdateEvents Suite', () => {
     })
     expect(response.status()).toEqual(200)
 
-    const { data: updatedEvent } = await sdkApi.getEvent({
+    const { data: updatedEvent } = await fingerprintApi.getEvent({
       requestId,
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
       region: testData.credentials.maxFeaturesUS.region,
@@ -137,11 +137,11 @@ test.describe('UpdateEvents Suite', () => {
   })
 
   for (const suspect of [true, false]) {
-    test(`updateEvents for suspect=${suspect} only`, async ({ sdkApi, identify }) => {
+    test(`updateEvents for suspect=${suspect} only`, async ({ sdkApi, fingerprintApi, identify }) => {
       const { requestId } = await identify({
         auth: testData.credentials.maxFeaturesUS,
       })
-      const { data: initialEvent } = await sdkApi.getEvent({
+      const { data: initialEvent } = await fingerprintApi.getEvent({
         requestId,
         apiKey: testData.credentials.maxFeaturesUS.privateKey,
         region: testData.credentials.maxFeaturesUS.region,
@@ -158,7 +158,7 @@ test.describe('UpdateEvents Suite', () => {
       })
       expect(response.status()).toEqual(200)
 
-      const { data: updatedEvent } = await sdkApi.getEvent({
+      const { data: updatedEvent } = await fingerprintApi.getEvent({
         requestId,
         apiKey: testData.validSmartSignal.apiKey,
         region: testData.validSmartSignal.region,
@@ -177,6 +177,8 @@ test.describe('UpdateEvents Suite 400 errors', () => {
     const { requestId } = await identify({
       auth: testData.credentials.maxFeaturesUS,
     })
+
+    await waitBeforeUpdate()
 
     await assert.thatResponseMatch({
       expectedResponse: {

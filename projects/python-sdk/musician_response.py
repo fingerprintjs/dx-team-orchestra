@@ -1,10 +1,13 @@
 from datetime import datetime
 
+from fingerprint_pro_server_api_sdk import IdentificationSeenAt
 from fingerprint_pro_server_api_sdk.rest import KnownApiException, ApiException
 
 CUSTOM_RENAME = {
     "public_vpn": "publicVPN"
 }
+
+UNMODIFIED_KEYS = ["tag"]  # List of keys to keep unchanged
 
 def to_camel_case(snake_str):
     if snake_str in CUSTOM_RENAME:
@@ -15,7 +18,13 @@ def to_camel_case(snake_str):
 
 def convert_keys_to_camel_case(obj):
     if isinstance(obj, dict):
-        return {to_camel_case(k): convert_keys_to_camel_case(v) for k, v in obj.items()}
+        return {
+            # Keep the key and its value untouched if it is listed in UNMODIFIED_KEYS
+            (k if k in UNMODIFIED_KEYS else to_camel_case(k)): (
+                v if k in UNMODIFIED_KEYS else convert_keys_to_camel_case(v)
+            )
+            for k, v in obj.items()
+        }
     elif isinstance(obj, list):
         return [convert_keys_to_camel_case(i) for i in obj]
     elif isinstance(obj, datetime):
