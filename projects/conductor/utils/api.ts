@@ -43,6 +43,21 @@ export type DeleteVisitorParams = {
   visitorId?: string
 }
 
+// TODO Once available, use type from Node SDK instead
+export type SearchEventsParams = {
+  apiKey?: string
+  region?: string
+  limit: number
+  visitorId?: string
+  bot?: string
+  ipAddress?: string
+  linkedId?: string
+  start?: number
+  end?: number
+  reverse?: boolean
+  suspect?: boolean
+}
+
 export type GetEventsParams = { apiKey: string; region: string; requestId: string }
 
 export interface FingerprintApi {
@@ -53,6 +68,8 @@ export interface FingerprintApi {
   getRelatedVisitors(params: GetRelatedVisitorsParams): Promise<JsonResponse<RelatedVisitorsResponse>>
 
   updateEvent(params: UpdateEventParams): Promise<JsonResponse<unknown>>
+
+  searchEvents(params: SearchEventsParams): Promise<JsonResponse<unknown>>
 
   deleteVisitor(params: DeleteVisitorParams): Promise<JsonResponse<unknown>>
 }
@@ -74,6 +91,10 @@ export class SdkFingerprintApi implements FingerprintApi {
 
   async deleteVisitor(params: DeleteVisitorParams): Promise<JsonResponse<unknown>> {
     return this.doRequest<unknown>('/deleteVisitorData', params)
+  }
+
+  async searchEvents(params: SearchEventsParams): Promise<JsonResponse<unknown>> {
+    return this.doRequest('/searchEvents', params)
   }
 
   async updateEvent({ tag, ...params }: UpdateEventParams): Promise<JsonResponse<void>> {
@@ -127,6 +148,48 @@ export class RealFingerprintApi implements FingerprintApi {
       data,
       headers: {
         'Auth-API-Key': apiKey,
+        'content-type': 'application/json',
+      },
+    })
+  }
+
+  async searchEvents(params: SearchEventsParams): Promise<JsonResponse<unknown>> {
+    const queryParams: Record<string, string | number | boolean> = {}
+
+    if (typeof params.limit === 'number') {
+      queryParams.limit = params.limit
+    }
+    if (params.visitorId) {
+      queryParams.visitor_id = params.visitorId
+    }
+    if (params.bot) {
+      queryParams.bot = params.bot
+    }
+    if (params.ipAddress) {
+      queryParams.ip_address = params.ipAddress
+    }
+    if (params.linkedId) {
+      queryParams.linked_id = params.linkedId
+    }
+    if (typeof params.start === 'number') {
+      queryParams.start = params.start
+    }
+    if (typeof params.end === 'number') {
+      queryParams.end = params.end
+    }
+    if (typeof params.reverse === 'boolean') {
+      queryParams.reverse = params.reverse
+    }
+    if (typeof params.suspect === 'boolean') {
+      queryParams.suspect = params.suspect
+    }
+
+    return await jsonRequest<void>({
+      request: this.request,
+      url: `${testData.config.apiUrl}/events/search`,
+      params: queryParams,
+      headers: {
+        'Auth-API-Key': params.apiKey,
         'content-type': 'application/json',
       },
     })
