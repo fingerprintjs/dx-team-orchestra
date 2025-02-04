@@ -48,13 +48,17 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 
 	searchEventsOpts := sdk.FingerprintApiSearchEventsOpts{
 		VisitorId: &visitorId,
-		Bot:       &bot,
-		IpAddress: &ipAddress,
 		LinkedId:  &linkedId,
 		Start:     &start,
 		End:       &end,
 		Reverse:   &reverse,
 		Suspect:   &suspect,
+	}
+	if bot != "" {
+		searchEventsOpts.Bot = &bot
+	}
+	if ipAddress != "" {
+		searchEventsOpts.IpAddress = &ipAddress
 	}
 	queryParams := searchEventsQueryParams{
 		ApiKey:    query.Get("apiKey"),
