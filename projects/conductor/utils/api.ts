@@ -6,6 +6,7 @@ import {
   EventsGetResponse,
   EventsUpdateRequest,
   RelatedVisitorsResponse,
+  SearchEventsResponse,
   VisitorsResponse,
 } from '@fingerprintjs/fingerprintjs-pro-server-api'
 
@@ -43,7 +44,6 @@ export type DeleteVisitorParams = {
   visitorId?: string
 }
 
-// TODO Once available, use type from Node SDK instead
 export type SearchEventsParams = {
   apiKey?: string
   region?: string
@@ -60,11 +60,6 @@ export type SearchEventsParams = {
 
 export type GetEventsParams = { apiKey: string; region: string; requestId: string }
 
-export type SearchEventsResponse = {
-  events: EventsGetResponse[]
-  paginationKey?: string
-}
-
 export interface FingerprintApi {
   getEvent(params: GetEventsParams): Promise<JsonResponse<EventsGetResponse>>
 
@@ -74,7 +69,7 @@ export interface FingerprintApi {
 
   updateEvent(params: UpdateEventParams): Promise<JsonResponse<unknown>>
 
-  searchEvents(params: SearchEventsParams): Promise<JsonResponse<SearchEventsResponse | undefined>>
+  searchEvents(params: SearchEventsParams): Promise<JsonResponse<SearchEventsResponse>>
 
   deleteVisitor(params: DeleteVisitorParams): Promise<JsonResponse<unknown>>
 }
@@ -98,7 +93,7 @@ export class SdkFingerprintApi implements FingerprintApi {
     return this.doRequest<unknown>('/deleteVisitorData', params)
   }
 
-  async searchEvents(params: SearchEventsParams): Promise<JsonResponse<SearchEventsResponse | undefined>> {
+  async searchEvents(params: SearchEventsParams): Promise<JsonResponse<SearchEventsResponse>> {
     return this.doRequest('/searchEvents', params)
   }
 
@@ -158,7 +153,7 @@ export class RealFingerprintApi implements FingerprintApi {
     })
   }
 
-  async searchEvents(params: SearchEventsParams): Promise<JsonResponse<SearchEventsResponse | undefined>> {
+  async searchEvents(params: SearchEventsParams): Promise<JsonResponse<SearchEventsResponse>> {
     const queryParams: Record<string, string | number | boolean> = {}
 
     if (typeof params.limit === 'number') {
