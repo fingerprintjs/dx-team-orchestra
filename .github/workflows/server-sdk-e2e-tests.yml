@@ -71,6 +71,7 @@ jobs:
         run: pnpm install
 
       - name: Set up Node SDK version
+        if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/node-sdk
         run: ../../scripts/setup-sdk.sh node ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
 
@@ -144,6 +145,7 @@ jobs:
             gradle-${{ runner.os }}-
 
       - name: Set up Java SDK version
+        if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/java-sdk
         run: ../../scripts/setup-sdk.sh java ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
 
@@ -210,6 +212,7 @@ jobs:
         run: dotnet restore ./projects/dotnet-sdk
 
       - name: Set up .NET SDK version
+        if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/dotnet-sdk
         run: ../../scripts/setup-sdk.sh dotnet ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
 
@@ -285,6 +288,7 @@ jobs:
             ${{ runner.os }}-go-mod-
 
       - name: Set up Go SDK version
+        if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/go-sdk
         run: ../../scripts/setup-sdk.sh go ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
 
@@ -359,6 +363,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Set up Python SDK version
+        if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/python-sdk
         run: ../../scripts/setup-sdk.sh python ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
 
@@ -432,6 +437,7 @@ jobs:
           composer install --no-interaction
 
       - name: Set up PHP SDK version
+        if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/php-sdk
         run: ../../scripts/setup-sdk.sh php ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
 
