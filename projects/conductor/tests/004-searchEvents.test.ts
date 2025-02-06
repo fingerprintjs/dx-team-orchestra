@@ -5,12 +5,18 @@ import { delay } from '../utils/delay'
 
 test.describe('SearchEvents suite', () => {
   test('with valid api key and limit', async ({ assert, identify }) => {
+    const linkedId = `test_${Date.now()}`
+
     const { visitorId } = await identify({
       auth: testData.credentials.maxFeaturesUS,
+      linkedId,
     })
 
     await assert.thatResponsesMatch('searchEvents', {
       visitorId,
+      linkedId,
+      start: new Date().getTime() - 10_000,
+      end: new Date().getTime() + 10_000,
       limit: 10,
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
       region: testData.credentials.maxFeaturesUS.region,
