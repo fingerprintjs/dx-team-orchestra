@@ -47,7 +47,7 @@ export type DeleteVisitorParams = {
 export type SearchEventsParams = {
   apiKey?: string
   region?: string
-  limit: number
+  limit?: number
   visitorId?: string
   bot?: string
   ipAddress?: string

@@ -96,6 +96,28 @@ test.describe('SearchEvents suite', () => {
     })
   })
 
+  test('with reverse params', async ({ sdkApi }) => {
+    const { data: normalData } = await sdkApi.searchEvents({
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      region: testData.credentials.maxFeaturesUS.region,
+      limit: 10,
+      reverse: false,
+    })
+    const { data: reversedData } = await sdkApi.searchEvents({
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      region: testData.credentials.maxFeaturesUS.region,
+      limit: 10,
+      reverse: true,
+    })
+
+    expect(normalData.events).toHaveLength(10)
+    expect(reversedData.events).toHaveLength(10)
+
+    expect(normalData.events[0].products.identification.data.timestamp).toBeGreaterThanOrEqual(
+      reversedData.events[0].products.identification.data.timestamp
+    )
+  })
+
   test('with invalid bot', async ({ assert }) => {
     await assert.thatResponseMatch({
       expectedStatusCode: 400,
