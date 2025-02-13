@@ -47,12 +47,42 @@ on:
   repository_dispatch:
     types: [e2e_tests]
 
+env:
+  TRIGGER_REPOSITORY: ${{ github.event.client_payload.repository }}
+  COMMIT_SHA: ${{ github.event.client_payload.sha }}
+
 jobs:
+  get-token:
+    outputs:
+      token: ${{ steps.app-token.outputs.token }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Get token for the GitHub App'
+        uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
+        id: app-token
+        with:
+          app-id: ${{ vars.RUNNER_APP_ID }}
+          private-key: ${{ secrets.RUNNER_APP_PRIVATE_KEY }}
+          owner: fingerprintjs
+          # TODO Add remaining SDK repos
+          repositories: fingerprintjs-pro-server-api-node-sdk,dx-team-toolkit
   run-node-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-node-sdk-tests || github.event.client_payload.run-node-sdk-tests }}
     runs-on: ubuntu-latest
+    needs: get-token
 
     steps:
+      - name: Set status
+        if: ${{ github.event_name == 'repository_dispatch' }}
+        uses: Sibz/github-status-action@650dd1a882a76dbbbc4576fb5974b8d22f29847f
+        with:
+          authToken: ${{ needs.get-token.outputs.token }}
+          context: 'Node SDK E2E Tests'
+          description: 'Pending'
+          repository: ${{ env.TRIGGER_REPOSITORY }}
+          state: 'pending'
+          sha: ${{ env.COMMIT_SHA }}
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -102,6 +132,28 @@ jobs:
           DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
+
+      - name: Set failed status
+        if: ${{ github.event_name == 'repository_dispatch' && failure() }}
+        uses: Sibz/github-status-action@650dd1a882a76dbbbc4576fb5974b8d22f29847f
+        with:
+          authToken: ${{ needs.get-token.outputs.token }}
+          context: 'Node SDK E2E Tests'
+          description: 'Failure'
+          repository: ${{ env.TRIGGER_REPOSITORY }}
+          state: 'failure'
+          sha: ${{ env.COMMIT_SHA }}
+
+      - name: Set succeeded status
+        if: ${{ github.event_name == 'repository_dispatch' && success() }}
+        uses: Sibz/github-status-action@650dd1a882a76dbbbc4576fb5974b8d22f29847f
+        with:
+          authToken: ${{ needs.get-token.outputs.token }}
+          context: 'Node SDK E2E Tests'
+          description: 'Success'
+          repository: ${{ env.TRIGGER_REPOSITORY }}
+          state: 'success'
+          sha: ${{ env.COMMIT_SHA }}
 
   run-java-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-java-sdk-tests || github.event.client_payload.run-java-sdk-tests }}
