@@ -1,50 +1,6 @@
 name: Run Server SDK e2e tests
 
 on:
-  workflow_call:
-    inputs:
-      # Needs to be set to true when called via `workflow_call` because the github.event_name is equal to parent trigger, and we have no other way of figuring out if it's as workflow_call
-      is-workflow-call:
-        description: "Is this a workflow call?"
-        required: false
-        type: boolean
-        default: false
-      sdk-version:
-        description: "SDK version to set up"
-        required: false
-        type: string
-        default: "latest"
-      run-node-sdk-tests:
-        description: "Should we run Node SDK tests?"
-        required: false
-        type: boolean
-        default: false
-      run-java-sdk-tests:
-        description: "Should we run Java SDK tests?"
-        required: false
-        type: boolean
-        default: false
-      run-dotnet-sdk-tests:
-        description: "Should we run .NET SDK tests?"
-        required: false
-        type: boolean
-        default: false
-      run-go-sdk-tests:
-        description: "Should we run Go SDK tests?"
-        required: false
-        type: boolean
-        default: false
-      run-python-sdk-tests:
-        description: "Should we run Python SDK tests?"
-        required: false
-        type: boolean
-        default: false
-      run-php-sdk-tests:
-        description: "Should we run PHP SDK tests?"
-        required: false
-        type: boolean
-        default: false
-
   workflow_dispatch:
     inputs:
       sdk-version:
@@ -88,23 +44,47 @@ on:
     branches:
       - main
   pull_request:
+  repository_dispatch:
+    types: [e2e_tests]
+
+env:
+  TRIGGER_REPOSITORY: ${{ github.event.client_payload.repository }}
+  COMMIT_SHA: ${{ github.event.client_payload.sha }}
 
 jobs:
-  print-github-event:
+  get-token:
+    outputs:
+      token: ${{ steps.app-token.outputs.token }}
     runs-on: ubuntu-latest
     steps:
-      - name: Print GitHub event
-        run: |
-          echo "Event name: ${{ github.event_name }}"
-          echo "Event inputs: ${{ toJson(inputs) }}"
+      - name: 'Get token for the GitHub App'
+        uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
+        id: app-token
+        with:
+          app-id: ${{ vars.RUNNER_APP_ID }}
+          private-key: ${{ secrets.RUNNER_APP_PRIVATE_KEY }}
+          owner: fingerprintjs
+          # TODO Add remaining SDK repos
+          repositories: fingerprintjs-pro-server-api-node-sdk,dx-team-toolkit
   run-node-sdk-tests:
-    if: ${{ (github.event_name != 'workflow_dispatch' && !inputs.is-workflow-call) || inputs.run-node-sdk-tests }}
+    if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-node-sdk-tests || github.event.client_payload.run-node-sdk-tests }}
     runs-on: ubuntu-latest
+    needs: get-token
+
     steps:
+      - name: Set status
+        if: ${{ github.event_name == 'repository_dispatch' }}
+        uses: Sibz/github-status-action@650dd1a882a76dbbbc4576fb5974b8d22f29847f
+        with:
+          authToken: ${{ needs.get-token.outputs.token }}
+          context: 'Node SDK E2E Tests'
+          description: 'Pending'
+          repository: ${{ env.TRIGGER_REPOSITORY }}
+          state: 'pending'
+          sha: ${{ env.COMMIT_SHA }}
+
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          repository: fingerprintjs/dx-team-orchestra
 
       - name: Install pnpm
         uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
@@ -153,15 +133,35 @@ jobs:
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
 
+      - name: Set failed status
+        if: ${{ github.event_name == 'repository_dispatch' && failure() }}
+        uses: Sibz/github-status-action@650dd1a882a76dbbbc4576fb5974b8d22f29847f
+        with:
+          authToken: ${{ needs.get-token.outputs.token }}
+          context: 'Node SDK E2E Tests'
+          description: 'Failure'
+          repository: ${{ env.TRIGGER_REPOSITORY }}
+          state: 'failure'
+          sha: ${{ env.COMMIT_SHA }}
+
+      - name: Set succeeded status
+        if: ${{ github.event_name == 'repository_dispatch' && success() }}
+        uses: Sibz/github-status-action@650dd1a882a76dbbbc4576fb5974b8d22f29847f
+        with:
+          authToken: ${{ needs.get-token.outputs.token }}
+          context: 'Node SDK E2E Tests'
+          description: 'Success'
+          repository: ${{ env.TRIGGER_REPOSITORY }}
+          state: 'success'
+          sha: ${{ env.COMMIT_SHA }}
+
   run-java-sdk-tests:
-    if: ${{ (github.event_name != 'workflow_dispatch' && !inputs.is-workflow-call) || inputs.run-java-sdk-tests }}
+    if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-java-sdk-tests || github.event.client_payload.run-java-sdk-tests }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          repository: fingerprintjs/dx-team-orchestra
 
       - name: Install pnpm
         uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
@@ -228,14 +228,12 @@ jobs:
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
   run-dotnet-sdk-tests:
-    if: ${{ (github.event_name != 'workflow_dispatch' && !inputs.is-workflow-call) || inputs.run-dotnet-sdk-tests }}
+    if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-dotnet-sdk-tests || github.event.client_payload.run-dotnet-sdk-tests }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          repository: fingerprintjs/dx-team-orchestra
 
       - name: Install pnpm
         uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
@@ -298,14 +296,12 @@ jobs:
         run: pnpm playwright test
 
   run-go-sdk-tests:
-    if: ${{ (github.event_name != 'workflow_dispatch' && !inputs.is-workflow-call) || inputs.run-go-sdk-tests }}
+    if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-go-sdk-tests || github.event.client_payload.run-go-sdk-tests }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          repository: fingerprintjs/dx-team-orchestra
 
       - name: Install pnpm
         uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
@@ -379,14 +375,12 @@ jobs:
         run: pnpm playwright test
 
   run-python-sdk-tests:
-    if: ${{ (github.event_name != 'workflow_dispatch' && !inputs.is-workflow-call) || inputs.run-python-sdk-tests }}
+    if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-python-sdk-tests || github.event.client_payload.run-python-sdk-tests }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          repository: fingerprintjs/dx-team-orchestra
 
       - name: Install pnpm
         uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
@@ -445,14 +439,12 @@ jobs:
         run: pnpm playwright test
 
   run-php-sdk-tests:
-    if: ${{ (github.event_name != 'workflow_dispatch' && !inputs.is-workflow-call) || inputs.run-php-sdk-tests }}
+    if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-php-sdk-tests || github.event.client_payload.run-php-sdk-tests }}
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          repository: fingerprintjs/dx-team-orchestra
 
       - name: Install pnpm
         uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
