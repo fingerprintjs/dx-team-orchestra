@@ -64,7 +64,9 @@ jobs:
           private-key: ${{ secrets.RUNNER_APP_PRIVATE_KEY }}
           owner: fingerprintjs
           # TODO Add remaining SDK repos
-          repositories: fingerprintjs-pro-server-api-node-sdk,dx-team-toolkit
+          repositories: | 
+            fingerprintjs-pro-server-api-node-sdk
+            dx-team-toolkit
       - name: Set status
         if: ${{ github.event_name == 'repository_dispatch' }}
         uses: Sibz/github-status-action@650dd1a882a76dbbbc4576fb5974b8d22f29847f
