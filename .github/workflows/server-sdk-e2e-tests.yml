@@ -382,218 +382,263 @@ jobs:
           sha: ${{ env.COMMIT_SHA }}
           target_url: ${{ env.TARGET_URL }}
 
-    run-go-sdk-tests:
-      if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-go-sdk-tests || github.event.client_payload.run-go-sdk-tests }}
-      runs-on: ubuntu-latest
-      continue-on-error: true
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
+  run-go-sdk-tests:
+    if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-go-sdk-tests || github.event.client_payload.run-go-sdk-tests }}
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: 'Get token for the GitHub App'
+        uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
+        id: generate-token
+        with:
+          app-id: ${{ vars.RUNNER_APP_ID }}
+          private-key: ${{ secrets.RUNNER_APP_PRIVATE_KEY }}
+          owner: fingerprintjs
+          repositories: fingerprint-pro-server-api-go-sdk,dx-team-toolkit
 
-        - name: Install pnpm
-          uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
-          with:
-            version: 9
+      - name: Set status
+        if: ${{ github.event_name == 'repository_dispatch' }}
+        uses: Sibz/github-status-action@650dd1a882a76dbbbc4576fb5974b8d22f29847f
+        with:
+          authToken: ${{ steps.generate-token.outputs.token }}
+          context: 'Go SDK E2E Tests'
+          description: 'Pending'
+          repository: ${{ env.TRIGGER_REPOSITORY }}
+          state: 'pending'
+          sha: ${{ env.COMMIT_SHA }}
+          target_url: ${{ env.TARGET_URL }}
 
-        - name: Set up Node.js
-          uses: actions/setup-node@v4
-          with:
-            cache: pnpm
-            node-version: 18
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        - name: Install dependencies
-          run: pnpm install
+      - name: Install pnpm
+        uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
+        with:
+          version: 9
 
-        - name: Install Playwright browsers
-          working-directory: ./projects/conductor
-          run: pnpm playwright install --with-deps
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: 18
 
-        - name: Set up Go
-          uses: actions/setup-go@v5
-          with:
-            go-version: '1.23'
+      - name: Install dependencies
+        run: pnpm install
 
-        - name: Cache Go modules
-          uses: actions/cache@v4
-          with:
-            path: |
-              ~/.cache/go-build
-              ~/go/pkg/mod
-            key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
-            restore-keys: |
-              ${{ runner.os }}-go-mod-
+      - name: Install Playwright browsers
+        working-directory: ./projects/conductor
+        run: pnpm playwright install --with-deps
 
-        - name: Set up Go SDK version
-          working-directory: ./projects/go-sdk
-          run: ../../scripts/setup-sdk.sh go ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
 
-        - name: Install dependencies
-          working-directory: ./projects/go-sdk
-          run: |
-            go mod tidy
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-mod-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-mod-
 
-        - name: Build Go app
-          working-directory: ./projects/go-sdk
-          run: |
-            go build -o myapp .
+      - name: Set up Go SDK version
+        working-directory: ./projects/go-sdk
+        run: ../../scripts/setup-sdk.sh go ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
 
-        - name: Run Go application
-          working-directory: ./projects/go-sdk
-          run: |
-            nohup ./myapp &
+      - name: Install dependencies
+        working-directory: ./projects/go-sdk
+        run: |
+          go mod tidy
 
-        - name: Run tests
-          working-directory: ./projects/conductor
-          env:
-            MUSICIAN_PORT: 8081
-            MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
-            MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
-            MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
-            MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
-            MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
-            MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
-            MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
-            MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
-            MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
-            MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
-            MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
-            DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
-            DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
-          run: pnpm playwright test
+      - name: Build Go app
+        working-directory: ./projects/go-sdk
+        run: |
+          go build -o myapp .
 
-    run-python-sdk-tests:
-      if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-python-sdk-tests || github.event.client_payload.run-python-sdk-tests }}
-      runs-on: ubuntu-latest
-      continue-on-error: true
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
+      - name: Run Go application
+        working-directory: ./projects/go-sdk
+        run: |
+          nohup ./myapp &
 
-        - name: Install pnpm
-          uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
-          with:
-            version: 9
+      - name: Run tests
+        working-directory: ./projects/conductor
+        env:
+          MUSICIAN_PORT: 8081
+          MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
+          MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
+          MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
+          MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
+          DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
+          DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
+        run: pnpm playwright test
 
-        - name: Set up Node.js
-          uses: actions/setup-node@v4
-          with:
-            cache: pnpm
-            node-version: 18
+      - name: Set failed status
+        if: ${{ github.event_name == 'repository_dispatch' && failure() }}
+        uses: Sibz/github-status-action@650dd1a882a76dbbbc4576fb5974b8d22f29847f
+        with:
+          authToken: ${{ steps.generate-token.outputs.token }}
+          context: 'Go SDK E2E Tests'
+          description: 'Failure'
+          repository: ${{ env.TRIGGER_REPOSITORY }}
+          state: 'failure'
+          sha: ${{ env.COMMIT_SHA }}
+          target_url: ${{ env.TARGET_URL }}
 
-        - name: Install dependencies
-          run: pnpm install
+      - name: Set succeeded status
+        if: ${{ github.event_name == 'repository_dispatch' && success() }}
+        uses: Sibz/github-status-action@650dd1a882a76dbbbc4576fb5974b8d22f29847f
+        with:
+          authToken: ${{ steps.generate-token.outputs.token }}
+          context: 'Go SDK E2E Tests'
+          description: 'Success'
+          repository: ${{ env.TRIGGER_REPOSITORY }}
+          state: 'success'
+          sha: ${{ env.COMMIT_SHA }}
+          target_url: ${{ env.TARGET_URL }}
 
-        - name: Install Playwright browsers
-          working-directory: ./projects/conductor
-          run: pnpm playwright install --with-deps
+  run-python-sdk-tests:
+    if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-python-sdk-tests || github.event.client_payload.run-python-sdk-tests }}
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        - name: Set up Python
-          uses: actions/setup-python@v5
-          with:
-            python-version: 3.9
+      - name: Install pnpm
+        uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
+        with:
+          version: 9
 
-        - name: Install dependencies
-          working-directory: ./projects/python-sdk
-          run: |
-            pip install -r requirements.txt
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: pnpm
+          node-version: 18
 
-        - name: Set up Python SDK version
-          working-directory: ./projects/python-sdk
-          run: ../../scripts/setup-sdk.sh python ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
+      - name: Install dependencies
+        run: pnpm install
 
-        - name: Run Python application
-          working-directory: ./projects/python-sdk
-          run: |
-            nohup python main.py &
+      - name: Install Playwright browsers
+        working-directory: ./projects/conductor
+        run: pnpm playwright install --with-deps
 
-        - name: Run tests
-          working-directory: ./projects/conductor
-          env:
-            MUSICIAN_PORT: 3003
-            MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
-            MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
-            MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
-            MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
-            MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
-            MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
-            MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
-            MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
-            MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
-            MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
-            MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
-            DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
-            DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
-          run: pnpm playwright test
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
 
-    run-php-sdk-tests:
-      if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-php-sdk-tests || github.event.client_payload.run-php-sdk-tests }}
-      runs-on: ubuntu-latest
-      continue-on-error: true
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
+      - name: Install dependencies
+        working-directory: ./projects/python-sdk
+        run: |
+          pip install -r requirements.txt
 
-        - name: Install pnpm
-          uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
-          with:
-            version: 9
+      - name: Set up Python SDK version
+        working-directory: ./projects/python-sdk
+        run: ../../scripts/setup-sdk.sh python ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
 
-        - name: Set up Node.js
-          uses: actions/setup-node@v3
-          with:
-            cache: pnpm
-            node-version: 18
+      - name: Run Python application
+        working-directory: ./projects/python-sdk
+        run: |
+          nohup python main.py &
 
-        - name: Install dependencies
-          run: pnpm install
+      - name: Run tests
+        working-directory: ./projects/conductor
+        env:
+          MUSICIAN_PORT: 3003
+          MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
+          MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
+          MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
+          MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
+          DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
+          DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
+        run: pnpm playwright test
 
-        - name: Install Playwright browsers
-          working-directory: ./projects/conductor
-          run: pnpm playwright install --with-deps
+  run-php-sdk-tests:
+    if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-php-sdk-tests || github.event.client_payload.run-php-sdk-tests }}
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        - name: Set up PHP
-          uses: shivammathur/setup-php@9e72090525849c5e82e596468b86eb55e9cc5401
-          with:
-            php-version: '8.1'
-            tools: composer:v2
+      - name: Install pnpm
+        uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
+        with:
+          version: 9
 
-        - name: Cache dependencies
-          uses: actions/cache@v4
-          with:
-            path: ~/.composer/cache
-            key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-            restore-keys: |
-              ${{ runner.os }}-composer-
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          cache: pnpm
+          node-version: 18
 
-        - name: Install dependencies
-          working-directory: ./projects/php-sdk
-          run: |
-            composer install --no-interaction
+      - name: Install dependencies
+        run: pnpm install
 
-        - name: Set up PHP SDK version
-          working-directory: ./projects/php-sdk
-          run: ../../scripts/setup-sdk.sh php ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
+      - name: Install Playwright browsers
+        working-directory: ./projects/conductor
+        run: pnpm playwright install --with-deps
 
-        - name: Run PHP built-in server
-          working-directory: ./projects/php-sdk
-          run: |
-            nohup php -S 0.0.0.0:3004 -t public/ &
+      - name: Set up PHP
+        uses: shivammathur/setup-php@9e72090525849c5e82e596468b86eb55e9cc5401
+        with:
+          php-version: '8.1'
+          tools: composer:v2
 
-        - name: Run tests
-          working-directory: ./projects/conductor
-          env:
-            MUSICIAN_PORT: 3004
-            MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
-            MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
-            MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
-            MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
-            MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
-            MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
-            MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
-            MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
-            MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
-            MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
-            MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
-            DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
-            DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
-          run: pnpm playwright test
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        working-directory: ./projects/php-sdk
+        run: |
+          composer install --no-interaction
+
+      - name: Set up PHP SDK version
+        working-directory: ./projects/php-sdk
+        run: ../../scripts/setup-sdk.sh php ${{ github.event_name }} ${{ github.event.inputs.sdk-version }}
+
+      - name: Run PHP built-in server
+        working-directory: ./projects/php-sdk
+        run: |
+          nohup php -S 0.0.0.0:3004 -t public/ &
+
+      - name: Run tests
+        working-directory: ./projects/conductor
+        env:
+          MUSICIAN_PORT: 3004
+          MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
+          MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
+          MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
+          MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
+          DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
+          DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
+        run: pnpm playwright test
