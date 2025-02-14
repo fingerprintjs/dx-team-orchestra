@@ -732,3 +732,63 @@ jobs:
           state: 'success'
           sha: ${{ env.COMMIT_SHA }}
           target_url: ${{ env.TARGET_URL }}
+
+  report-node-status:
+    needs: run-node-sdk-tests
+    if: ${{ github.event_name == 'repository_dispatch' && always() }}
+    uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
+    with:
+      notification_title: 'Node SDK E2E Tests has {status_message}'
+      job_status: ${{ needs.run-node-sdk-tests.result }}
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  report-java-status:
+    needs: run-java-sdk-tests
+    if: ${{ github.event_name == 'repository_dispatch' && always() }}
+    uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
+    with:
+      notification_title: 'Java SDK E2E Tests has {status_message}'
+      job_status: ${{ needs.run-java-sdk-tests.result }}
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  report-dotnet-status:
+    needs: run-dotnet-sdk-tests
+    if: ${{ github.event_name == 'repository_dispatch' && always() }}
+    uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
+    with:
+      notification_title: '.NET SDK E2E Tests has {status_message}'
+      job_status: ${{ needs.run-dotnet-sdk-tests.result }}
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  report-go-status:
+    needs: run-go-sdk-tests
+    if: ${{ github.event_name == 'repository_dispatch' && always() }}
+    uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
+    with:
+      notification_title: 'Go SDK E2E Tests has {status_message}'
+      job_status: ${{ needs.run-go-sdk-tests.result }}
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  report-python-status:
+    needs: run-python-sdk-tests
+    if: ${{ github.event_name == 'repository_dispatch' && always() }}
+    uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
+    with:
+      notification_title: 'Python SDK E2E Tests has {status_message}'
+      job_status: ${{ needs.run-python-sdk-tests.result }}
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  report-php-status:
+    needs: run-php-sdk-tests
+    if: ${{ github.event_name == 'repository_dispatch' && always() }}
+    uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
+    with:
+      notification_title: 'PHP SDK E2E Tests has {status_message}'
+      job_status: ${{ needs.run-php-sdk-tests.result }}
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
