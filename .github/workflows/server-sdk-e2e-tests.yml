@@ -620,6 +620,27 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
+      - name: 'Get token for the GitHub App'
+        uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
+        id: generate-token
+        with:
+          app-id: ${{ vars.RUNNER_APP_ID }}
+          private-key: ${{ secrets.RUNNER_APP_PRIVATE_KEY }}
+          owner: fingerprintjs
+          repositories: fingerprint-pro-server-api-php-sdk,dx-team-toolkit
+
+      - name: Set status
+        if: ${{ github.event_name == 'repository_dispatch' }}
+        uses: Sibz/github-status-action@650dd1a882a76dbbbc4576fb5974b8d22f29847f
+        with:
+          authToken: ${{ steps.generate-token.outputs.token }}
+          context: 'PHP SDK E2E Tests'
+          description: 'Pending'
+          repository: ${{ env.TRIGGER_REPOSITORY }}
+          state: 'pending'
+          sha: ${{ env.COMMIT_SHA }}
+          target_url: ${{ env.TARGET_URL }}
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -687,3 +708,27 @@ jobs:
           DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
+
+      - name: Set failed status
+        if: ${{ github.event_name == 'repository_dispatch' && failure() }}
+        uses: Sibz/github-status-action@650dd1a882a76dbbbc4576fb5974b8d22f29847f
+        with:
+          authToken: ${{ steps.generate-token.outputs.token }}
+          context: 'PHP SDK E2E Tests'
+          description: 'Failure'
+          repository: ${{ env.TRIGGER_REPOSITORY }}
+          state: 'failure'
+          sha: ${{ env.COMMIT_SHA }}
+          target_url: ${{ env.TARGET_URL }}
+
+      - name: Set succeeded status
+        if: ${{ github.event_name == 'repository_dispatch' && success() }}
+        uses: Sibz/github-status-action@650dd1a882a76dbbbc4576fb5974b8d22f29847f
+        with:
+          authToken: ${{ steps.generate-token.outputs.token }}
+          context: 'PHP SDK E2E Tests'
+          description: 'Success'
+          repository: ${{ env.TRIGGER_REPOSITORY }}
+          state: 'success'
+          sha: ${{ env.COMMIT_SHA }}
+          target_url: ${{ env.TARGET_URL }}
