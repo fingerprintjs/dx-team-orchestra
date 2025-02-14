@@ -75,6 +75,7 @@ jobs:
           repository: ${{ env.TRIGGER_REPOSITORY }}
           state: 'pending'
           sha: ${{ env.COMMIT_SHA }}
+          target_url: https://github.com/fingerprintjs/dx-team-orchestra/actions/runs/${{github.run_id}}/job/${{github.job}}
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -136,6 +137,7 @@ jobs:
           repository: ${{ env.TRIGGER_REPOSITORY }}
           state: 'failure'
           sha: ${{ env.COMMIT_SHA }}
+          target_url: https://github.com/fingerprintjs/dx-team-orchestra/actions/runs/${{github.run_id}}/job/${{github.job}}
 
       - name: Set succeeded status
         if: ${{ github.event_name == 'repository_dispatch' && success() }}
@@ -147,6 +149,7 @@ jobs:
           repository: ${{ env.TRIGGER_REPOSITORY }}
           state: 'success'
           sha: ${{ env.COMMIT_SHA }}
+          target_url: https://github.com/fingerprintjs/dx-team-orchestra/actions/runs/${{github.run_id}}/job/${{github.job}}
 
   run-java-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-java-sdk-tests || github.event.client_payload.run-java-sdk-tests }}
