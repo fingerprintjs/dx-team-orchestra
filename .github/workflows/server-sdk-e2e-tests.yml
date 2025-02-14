@@ -792,3 +792,20 @@ jobs:
       job_status: ${{ needs.run-php-sdk-tests.result }}
     secrets:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  report-scheduled:
+    needs:
+      - run-node-sdk-tests
+      - run-java-sdk-tests
+      - run-dotnet-sdk-tests
+      - run-go-sdk-tests
+      - run-python-sdk-tests
+      - run-php-sdk-tests
+    if: ${{ github.event_name == 'schedule' && always() }}
+    uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
+    with:
+      notification_title: 'Scheduled SDK E2E Tests has {status_message}'
+      job_status: ${{ (needs.run-node-sdk-tests.result == 'success' && needs.run-java-sdk-tests.result == 'success' && needs.run-dotnet-sdk-tests.result == 'success' && needs.run-go-sdk-tests.result == 'success' && needs.run-python-sdk-tests.result == 'success' && needs.run-php-sdk-tests.result == 'success' && 'success') || 'failure' }}
+
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
