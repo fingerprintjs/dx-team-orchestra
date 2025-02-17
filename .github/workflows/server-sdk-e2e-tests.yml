@@ -50,7 +50,7 @@ on:
 env:
   TRIGGER_REPOSITORY: ${{ github.event.client_payload.repository }}
   COMMIT_SHA: ${{ github.event.client_payload.sha }}
-  TARGET_URL: https://github.com/fingerprintjs/dx-team-orchestra/actions/runs/${{github.run_id}}/job/${{github.job}}
+  TARGET_URL: https://github.com/fingerprintjs/dx-team-orchestra/actions/runs/${{github.run_id}}
 
 jobs:
   run-node-sdk-tests:
