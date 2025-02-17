@@ -735,7 +735,7 @@ jobs:
 
   report-node-status:
     needs: run-node-sdk-tests
-    if: ${{ github.event_name == 'repository_dispatch' && inputs.run-node-sdk-tests && always()}}
+    if: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.run-node-sdk-tests && always()}}
     uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
     with:
       notification_title: 'Node SDK E2E Tests has {status_message}'
@@ -745,7 +745,7 @@ jobs:
 
   report-java-status:
     needs: run-java-sdk-tests
-    if: ${{ github.event_name == 'repository_dispatch' && inputs.run-java-sdk-tests && always() }}
+    if: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.run-java-sdk-tests && always() }}
     uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
     with:
       notification_title: 'Java SDK E2E Tests has {status_message}'
@@ -755,7 +755,7 @@ jobs:
 
   report-dotnet-status:
     needs: run-dotnet-sdk-tests
-    if: ${{ github.event_name == 'repository_dispatch' && inputs.run-dotnet-sdk-tests && always()}}
+    if: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.run-dotnet-sdk-tests && always()}}
     uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
     with:
       notification_title: '.NET SDK E2E Tests has {status_message}'
@@ -765,7 +765,7 @@ jobs:
 
   report-go-status:
     needs: run-go-sdk-tests
-    if: ${{ github.event_name == 'repository_dispatch' && inputs.run-go-sdk-tests && always() }}
+    if: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.run-go-sdk-tests && always() }}
     uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
     with:
       notification_title: 'Go SDK E2E Tests has {status_message}'
@@ -775,7 +775,7 @@ jobs:
 
   report-python-status:
     needs: run-python-sdk-tests
-    if: ${{ github.event_name == 'repository_dispatch' && inputs.run-python-sdk-tests && always() }}
+    if: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.run-python-sdk-tests && always() }}
     uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
     with:
       notification_title: 'Python SDK E2E Tests has {status_message}'
@@ -785,7 +785,7 @@ jobs:
 
   report-php-status:
     needs: run-php-sdk-tests
-    if: ${{ github.event_name == 'repository_dispatch' && inputs.run-php-sdk-tests && always() }}
+    if: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.run-php-sdk-tests && always() }}
     uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
     with:
       notification_title: 'PHP SDK E2E Tests has {status_message}'
