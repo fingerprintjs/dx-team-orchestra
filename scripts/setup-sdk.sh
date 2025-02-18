@@ -22,7 +22,7 @@ esac
 
 echo "Setting up $LANGUAGE SDK..."
 
-if [[ "$EVENT_NAME" != "workflow_dispatch" || -z "$SDK_VERSION" || "$SDK_VERSION" == "latest" ]]; then
+if [[ "$EVENT_NAME" != "workflow_dispatch" && "$EVENT_NAME" != "repository_dispatch" || -z "$SDK_VERSION" || "$SDK_VERSION" == "latest" ]]; then
     echo "Fetching latest release from GitHub for $REPO_NAME..."
 
     SDK_VERSION=$(curl -s "https://api.github.com/repos/$GITHUB_REPO/$REPO_NAME/releases/latest" | jq -r '.tag_name')
