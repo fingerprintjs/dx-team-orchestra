@@ -97,7 +97,7 @@ jobs:
 
       - name: Set up Node SDK version
         working-directory: ./projects/node-sdk
-        run: ../../scripts/setup-sdk.sh node ${{ github.event_name }} ${{ github.event.client_payload.sdkVersion || github.event.inputs.sdk-version }}
+        run: ../../scripts/setup-sdk.sh node ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }}
 
       - name: Install Playwright browsers
         working-directory: ./projects/conductor
@@ -215,7 +215,7 @@ jobs:
 
       - name: Set up Java SDK version
         working-directory: ./projects/java-sdk
-        run: ../../scripts/setup-sdk.sh java ${{ github.event_name }} ${{ github.event.client_payload.sdkVersion || github.event.inputs.sdk-version }}
+        run: ../../scripts/setup-sdk.sh java ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }}
 
       - name: Build with Gradle
         working-directory: ./projects/java-sdk
@@ -327,7 +327,7 @@ jobs:
 
       - name: Set up .NET SDK version
         working-directory: ./projects/dotnet-sdk
-        run: ../../scripts/setup-sdk.sh dotnet ${{ github.event_name }} ${{ github.event.client_payload.sdkVersion || github.event.inputs.sdk-version }}
+        run: ../../scripts/setup-sdk.sh dotnet ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }}
 
       - name: Build the project
         run: dotnet publish ./projects/dotnet-sdk --configuration Release --output ./projects/dotnet-sdk/out
@@ -446,7 +446,7 @@ jobs:
 
       - name: Set up Go SDK version
         working-directory: ./projects/go-sdk
-        run: ../../scripts/setup-sdk.sh go ${{ github.event_name }} ${{ github.event.client_payload.sdkVersion || github.event.inputs.sdk-version }}
+        run: ../../scripts/setup-sdk.sh go ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }}
 
       - name: Install dependencies
         working-directory: ./projects/go-sdk
@@ -565,7 +565,7 @@ jobs:
 
       - name: Set up Python SDK version
         working-directory: ./projects/python-sdk
-        run: ../../scripts/setup-sdk.sh python ${{ github.event_name }} ${{ github.event.client_payload.sdkVersion || github.event.inputs.sdk-version }}
+        run: ../../scripts/setup-sdk.sh python ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }}
 
       - name: Run Python application
         working-directory: ./projects/python-sdk
@@ -683,7 +683,7 @@ jobs:
 
       - name: Set up PHP SDK version
         working-directory: ./projects/php-sdk
-        run: ../../scripts/setup-sdk.sh php ${{ github.event_name }} ${{ github.event.client_payload.sdkVersion || github.event.inputs.sdk-version }}
+        run: ../../scripts/setup-sdk.sh php ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }}
 
       - name: Run PHP built-in server
         working-directory: ./projects/php-sdk
