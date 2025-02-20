@@ -1,2 +1,2 @@
-fingerprint_pro_server_api_sdk==8.2.1
+fingerprint_pro_server_api_sdk==8.3.0-rc.0
 flask>=3.1

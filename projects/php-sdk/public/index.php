@@ -12,6 +12,7 @@ $app = AppFactory::create();
 $app->addErrorMiddleware(true, true, true);
 
 $app->get('/getEvents', [EventsController::class, 'getEvents']);
+$app->get('/searchEvents', [EventsController::class, 'searchEvents']);
 $app->get('/updateEvent', [EventsController::class, 'updateEvent']);
 
 $app->get('/getVisits', [VisitsController::class, 'getVisits']);
