@@ -129,16 +129,11 @@ jobs:
           DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
-    
-      - name: Set output on failure
-        id: result
-        if: failure()
-        run: echo "test_result=failure" >> $GITHUB_OUTPUT
 
-      - name: Set output on success
+      - name: Set test result
         id: result
-        if: success()
-        run: echo "test_result=success" >> $GITHUB_OUTPUT
+        if: always()
+        run: echo "test_result=${{ success() && 'success' || 'failure' }}" >> $GITHUB_OUTPUT
 
       - name: Set failed status
         if: ${{ github.event_name == 'repository_dispatch' && failure() }}
@@ -260,15 +255,10 @@ jobs:
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
 
-      - name: Set output on failure
+      - name: Set test result
         id: result
-        if: failure()
-        run: echo "test_result=failure" >> $GITHUB_OUTPUT
-
-      - name: Set output on success
-        id: result
-        if: success()
-        run: echo "test_result=success" >> $GITHUB_OUTPUT
+        if: always()
+        run: echo "test_result=${{ success() && 'success' || 'failure' }}" >> $GITHUB_OUTPUT
 
       - name: Set failed status
         if: ${{ github.event_name == 'repository_dispatch' && failure() }}
@@ -384,15 +374,10 @@ jobs:
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
 
-      - name: Set output on failure
+      - name: Set test result
         id: result
-        if: failure()
-        run: echo "test_result=failure" >> $GITHUB_OUTPUT
-
-      - name: Set output on success
-        id: result
-        if: success()
-        run: echo "test_result=success" >> $GITHUB_OUTPUT
+        if: always()
+        run: echo "test_result=${{ success() && 'success' || 'failure' }}" >> $GITHUB_OUTPUT
 
       - name: Set failed status
         if: ${{ github.event_name == 'repository_dispatch' && failure() }}
@@ -520,15 +505,10 @@ jobs:
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
 
-      - name: Set output on failure
+      - name: Set test result
         id: result
-        if: failure()
-        run: echo "test_result=failure" >> $GITHUB_OUTPUT
-
-      - name: Set output on success
-        id: result
-        if: success()
-        run: echo "test_result=success" >> $GITHUB_OUTPUT
+        if: always()
+        run: echo "test_result=${{ success() && 'success' || 'failure' }}" >> $GITHUB_OUTPUT
 
       - name: Set failed status
         if: ${{ github.event_name == 'repository_dispatch' && failure() }}
@@ -641,15 +621,10 @@ jobs:
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
 
-      - name: Set output on failure
+      - name: Set test result
         id: result
-        if: failure()
-        run: echo "test_result=failure" >> $GITHUB_OUTPUT
-
-      - name: Set output on success
-        id: result
-        if: success()
-        run: echo "test_result=success" >> $GITHUB_OUTPUT
+        if: always()
+        run: echo "test_result=${{ success() && 'success' || 'failure' }}" >> $GITHUB_OUTPUT
 
       - name: Set failed status
         if: ${{ github.event_name == 'repository_dispatch' && failure() }}
@@ -771,15 +746,10 @@ jobs:
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
 
-      - name: Set output on failure
+      - name: Set test result
         id: result
-        if: failure()
-        run: echo "test_result=failure" >> $GITHUB_OUTPUT
-
-      - name: Set output on success
-        id: result
-        if: success()
-        run: echo "test_result=success" >> $GITHUB_OUTPUT
+        if: always()
+        run: echo "test_result=${{ success() && 'success' || 'failure' }}" >> $GITHUB_OUTPUT
 
       - name: Set failed status
         if: ${{ github.event_name == 'repository_dispatch' && failure() }}
