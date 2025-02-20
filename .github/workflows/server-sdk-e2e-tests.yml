@@ -57,7 +57,7 @@ jobs:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-node-sdk-tests || github.event.client_payload.run-node-sdk-tests }}
     runs-on: ubuntu-latest
     outputs:
-      test_result: ${{ steps.result.outputs.test_result }}
+      test_failed: ${{ steps.result.outputs.test_failed }}
     steps:
       - name: 'Get token for the GitHub App'
         uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
@@ -130,10 +130,10 @@ jobs:
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
 
-      - name: Set test result
+      - name: Set test result on failure
         id: result
-        if: always()
-        run: echo "test_result=${{ success() && 'success' || 'failure' }}" >> $GITHUB_OUTPUT
+        if: failure()
+        run: echo "test_failed=true" >> $GITHUB_OUTPUT
 
       - name: Set failed status
         if: ${{ github.event_name == 'repository_dispatch' && failure() }}
@@ -164,7 +164,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     outputs:
-      test_result: ${{ steps.result.outputs.test_result }}
+      test_failed: ${{ steps.result.outputs.test_failed }}
     steps:
       - name: 'Get token for the GitHub App'
         uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
@@ -255,10 +255,10 @@ jobs:
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
 
-      - name: Set test result
+      - name: Set test result on failure
         id: result
-        if: always()
-        run: echo "test_result=${{ success() && 'success' || 'failure' }}" >> $GITHUB_OUTPUT
+        if: failure()
+        run: echo "test_failed=true" >> $GITHUB_OUTPUT
 
       - name: Set failed status
         if: ${{ github.event_name == 'repository_dispatch' && failure() }}
@@ -289,7 +289,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     outputs:
-      test_result: ${{ steps.result.outputs.test_result }}
+      test_failed: ${{ steps.result.outputs.test_failed }}
     steps:
       - name: 'Get token for the GitHub App'
         uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
@@ -374,10 +374,10 @@ jobs:
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
 
-      - name: Set test result
+      - name: Set test result on failure
         id: result
-        if: always()
-        run: echo "test_result=${{ success() && 'success' || 'failure' }}" >> $GITHUB_OUTPUT
+        if: failure()
+        run: echo "test_failed=true" >> $GITHUB_OUTPUT
 
       - name: Set failed status
         if: ${{ github.event_name == 'repository_dispatch' && failure() }}
@@ -408,7 +408,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     outputs:
-      test_result: ${{ steps.result.outputs.test_result }}
+      test_failed: ${{ steps.result.outputs.test_failed }}
     steps:
       - name: 'Get token for the GitHub App'
         uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
@@ -505,10 +505,10 @@ jobs:
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
 
-      - name: Set test result
+      - name: Set test result on failure
         id: result
-        if: always()
-        run: echo "test_result=${{ success() && 'success' || 'failure' }}" >> $GITHUB_OUTPUT
+        if: failure()
+        run: echo "test_failed=true" >> $GITHUB_OUTPUT
 
       - name: Set failed status
         if: ${{ github.event_name == 'repository_dispatch' && failure() }}
@@ -539,7 +539,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     outputs:
-      test_result: ${{ steps.result.outputs.test_result }}
+      test_failed: ${{ steps.result.outputs.test_failed }}
     steps:
       - name: 'Get token for the GitHub App'
         uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
@@ -621,10 +621,10 @@ jobs:
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
 
-      - name: Set test result
+      - name: Set test result on failure
         id: result
-        if: always()
-        run: echo "test_result=${{ success() && 'success' || 'failure' }}" >> $GITHUB_OUTPUT
+        if: failure()
+        run: echo "test_failed=true" >> $GITHUB_OUTPUT
 
       - name: Set failed status
         if: ${{ github.event_name == 'repository_dispatch' && failure() }}
@@ -655,7 +655,7 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     outputs:
-      test_result: ${{ steps.result.outputs.test_result }}
+      test_failed: ${{ steps.result.outputs.test_failed }}
     steps:
       - name: 'Get token for the GitHub App'
         uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
@@ -746,10 +746,10 @@ jobs:
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
         run: pnpm playwright test
 
-      - name: Set test result
+      - name: Set test result on failure
         id: result
-        if: always()
-        run: echo "test_result=${{ success() && 'success' || 'failure' }}" >> $GITHUB_OUTPUT
+        if: failure()
+        run: echo "test_failed=true" >> $GITHUB_OUTPUT
 
       - name: Set failed status
         if: ${{ github.event_name == 'repository_dispatch' && failure() }}
@@ -781,7 +781,7 @@ jobs:
     uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
     with:
       notification_title: 'Node SDK E2E Tests has {status_message} for release ${{ github.event.client_payload.sdk-version }}'
-      job_status: ${{ needs.run-node-sdk-tests.outputs.test_result }}
+      job_status: ${{ needs.run-node-sdk-tests.outputs.test_failed == 'true' && 'failure' || 'success' }}
     secrets:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -791,7 +791,7 @@ jobs:
     uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
     with:
       notification_title: 'Java SDK E2E Tests has {status_message} for release ${{ github.event.client_payload.sdk-version }}'
-      job_status: ${{ needs.run-java-sdk-tests.outputs.test_result }}
+      job_status: ${{ needs.run-java-sdk-tests.outputs.test_failed == 'true' && 'failure' || 'success' }}
     secrets:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -801,7 +801,7 @@ jobs:
     uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
     with:
       notification_title: '.NET SDK E2E Tests has {status_message} for release ${{ github.event.client_payload.sdk-version }}'
-      job_status: ${{ needs.run-dotnet-sdk-tests.outputs.test_result }}
+      job_status: ${{ needs.run-dotnet-sdk-tests.outputs.test_failed == 'true' && 'failure' || 'success' }}
     secrets:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -811,7 +811,7 @@ jobs:
     uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
     with:
       notification_title: 'Go SDK E2E Tests has {status_message} for release ${{ github.event.client_payload.sdk-version }}'
-      job_status: ${{ needs.run-go-sdk-tests.outputs.test_result }}
+      job_status: ${{ needs.run-go-sdk-tests.outputs.test_failed == 'true' && 'failure' || 'success' }}
     secrets:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -821,7 +821,7 @@ jobs:
     uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
     with:
       notification_title: 'Python SDK E2E Tests has {status_message} for release ${{ github.event.client_payload.sdk-version }}'
-      job_status: ${{ needs.run-python-sdk-tests.outputs.test_result }}
+      job_status: ${{ needs.run-python-sdk-tests.outputs.test_failed == 'true' && 'failure' || 'success' }}
     secrets:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -831,7 +831,7 @@ jobs:
     uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
     with:
       notification_title: 'PHP SDK E2E Tests has {status_message} for release ${{ github.event.client_payload.sdk-version }}'
-      job_status: ${{ needs.run-php-sdk-tests.outputs.test_result }}
+      job_status: ${{ needs.run-php-sdk-tests.outputs.test_failed == 'true' && 'failure' || 'success' }}
     secrets:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -847,7 +847,7 @@ jobs:
     uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
     with:
       notification_title: 'Scheduled SDK E2E Tests has {status_message} for release ${{ github.event.client_payload.sdk-version }}'
-      job_status: ${{ (needs.run-node-sdk-tests.outputs.test_result == 'success' && needs.run-java-sdk-tests.outputs.test_result == 'success' && needs.run-dotnet-sdk-tests.outputs.test_result == 'success' && needs.run-go-sdk-tests.outputs.test_result == 'success' && needs.run-python-sdk-tests.outputs.test_result == 'success' && needs.run-php-sdk-tests.outputs.test_result == 'success' && 'success') || 'failure' }}
+      job_status: ${{ (needs.run-node-sdk-tests.outputs.test_failed != 'true' && needs.run-java-sdk-tests.outputs.test_failed != 'true' && needs.run-dotnet-sdk-tests.outputs.test_failed != 'true' && needs.run-go-sdk-tests.outputs.test_failed != 'true' && needs.run-python-sdk-tests.outputs.test_failed != 'true' && needs.run-php-sdk-tests.outputs.test_failed != 'true' && 'success') || 'failure' }}
 
     secrets:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
