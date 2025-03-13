@@ -10,6 +10,7 @@ interface QueryParams {
   apiKey?: string
   region?: string
   limit: SearchEventsFilter['limit']
+  paginationKey?: SearchEventsFilter['pagination_key']
   visitorId?: SearchEventsFilter['visitor_id']
   bot?: SearchEventsFilter['bot']
   ipAddress?: SearchEventsFilter['ip_address']
@@ -25,6 +26,7 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     apiKey = '',
     region = '',
     limit,
+    paginationKey,
     visitorId,
     bot,
     ipAddress,
@@ -37,6 +39,10 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
 
   const filter: SearchEventsFilter = {
     limit,
+  }
+
+  if (paginationKey) {
+    filter.pagination_key = paginationKey
   }
 
   if (visitorId) {

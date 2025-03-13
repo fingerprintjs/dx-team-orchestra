@@ -2,6 +2,7 @@ import { test } from '../utils/playwright'
 import testData from '../utils/testData'
 import { expect } from '@playwright/test'
 import { delay } from '../utils/delay'
+import * as assert from 'node:assert';
 
 test.describe('SearchEvents suite', () => {
   test('with valid api key and limit', async ({ assert, identify }) => {
@@ -116,6 +117,50 @@ test.describe('SearchEvents suite', () => {
     expect(normalData.events[0].products.identification.data.timestamp).toBeGreaterThanOrEqual(
       reversedData.events[0].products.identification.data.timestamp
     )
+  })
+
+  test('with paginationKey', async ({ fingerprintApi, assert }) => {
+    const {data: originalResult} = await fingerprintApi.searchEvents({
+      limit: 1,
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      region: testData.credentials.maxFeaturesUS.region,
+    })
+
+    expect(originalResult.events.length).toBe(1)
+
+    const paginatedResult = await assert.thatResponsesMatch('searchEvents', {
+      paginationKey: originalResult.paginationKey,
+      limit: 1,
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      region: testData.credentials.maxFeaturesUS.region,
+    })
+
+    expect(originalResult.events.length).toBe(1)
+    expect(paginatedResult.events[0].products.identification.data.requestId)
+        .not.toEqual(originalResult.events[0].products.identification.data.requestId);
+  })
+
+  test('with paginationKey reversed', async ({ fingerprintApi, assert }) => {
+    const {data: originalResult} = await fingerprintApi.searchEvents({
+      limit: 1,
+      reverse: true,
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      region: testData.credentials.maxFeaturesUS.region,
+    })
+
+    expect(originalResult.events.length).toBe(1)
+
+    const paginatedResult = await assert.thatResponsesMatch('searchEvents', {
+      paginationKey: originalResult.paginationKey,
+      limit: 1,
+      reverse: true,
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      region: testData.credentials.maxFeaturesUS.region,
+    })
+
+    expect(originalResult.events.length).toBe(1)
+    expect(paginatedResult.events[0].products.identification.data.requestId)
+        .not.toEqual(originalResult.events[0].products.identification.data.requestId);
   })
 
   test('with invalid bot', async ({ assert }) => {

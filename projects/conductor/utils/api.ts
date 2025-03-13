@@ -48,6 +48,7 @@ export type SearchEventsParams = {
   apiKey?: string
   region?: string
   limit?: number
+  paginationKey?: string
   visitorId?: string
   bot?: string
   ipAddress?: string
@@ -59,6 +60,11 @@ export type SearchEventsParams = {
 }
 
 export type GetEventsParams = { apiKey: string; region: string; requestId: string }
+
+export type ExtractFingerprintApiReturnType<Method extends keyof FingerprintApi> =
+    FingerprintApi[Method] extends (...args: any[]) => Promise<JsonResponse<infer Data>>
+        ? Data
+        : never;
 
 export interface FingerprintApi {
   getEvent(params: GetEventsParams): Promise<JsonResponse<EventsGetResponse>>
@@ -158,6 +164,9 @@ export class RealFingerprintApi implements FingerprintApi {
 
     if (typeof params.limit === 'number') {
       queryParams.limit = params.limit
+    }
+    if (params.paginationKey) {
+      queryParams.pagination_key = params.paginationKey
     }
     if (params.visitorId) {
       queryParams.visitor_id = params.visitorId
