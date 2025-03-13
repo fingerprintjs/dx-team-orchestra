@@ -20,6 +20,7 @@ class EventsController
         $region = $queryParams['region'] ?? '';
         $limit = $queryParams['limit'] ?? null;
 
+        $paginationKey = $queryParams['paginationKey'] ?? null;
         $visitorId = $queryParams['visitorId'] ?? null;
         $bot = $queryParams['bot'] ?? null;
         $ipAddress = $queryParams['ipAddress'] ?? null;
@@ -38,14 +39,15 @@ class EventsController
         try {
             list($model, $apiResponse) = $client->searchEvents(
                 $limit,
-                $visitorId,
-                $bot,
-                $ipAddress,
-                $linkedId,
-                $start,
-                $end,
-                $reverse,
-                $suspect
+                pagination_key: $paginationKey,
+                visitor_id: $visitorId,
+                bot: $bot,
+                ip_address: $ipAddress,
+                linked_id: $linkedId,
+                start: $start,
+                end: $end,
+                reverse: $reverse,
+                suspect: $suspect
             );
 
             $result = new MusicianResponse($apiResponse->getStatusCode(), $apiResponse, $model);

@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk.git",
-                "reference": "48287ba48cc45f128b49c080c7531029be0298ae"
+                "reference": "aa2eac3799f91e402a4f912689399f99a9c9215c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fingerprintjs/fingerprint-pro-server-api-php-sdk/zipball/48287ba48cc45f128b49c080c7531029be0298ae",
-                "reference": "48287ba48cc45f128b49c080c7531029be0298ae",
+                "url": "https://api.github.com/repos/fingerprintjs/fingerprint-pro-server-api-php-sdk/zipball/aa2eac3799f91e402a4f912689399f99a9c9215c",
+                "reference": "aa2eac3799f91e402a4f912689399f99a9c9215c",
                 "shasum": ""
             },
             "require": {
@@ -73,9 +73,9 @@
             ],
             "support": {
                 "issues": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk/issues",
-                "source": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk/tree/v6.3.0-develop.0"
+                "source": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk/tree/v6.3.0-develop.1"
             },
-            "time": "2025-02-11T09:05:47+00:00"
+            "time": "2025-03-06T16:24:15+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
