@@ -33,6 +33,7 @@ def search_events():
     limit = request.args.get('limit')
 
     additional_params = {
+        "pagination_key": request.args.get('paginationKey'),
         "visitor_id": request.args.get('visitorId'),
         "bot": request.args.get('bot'),
         "ip_address": request.args.get('ipAddress'),
