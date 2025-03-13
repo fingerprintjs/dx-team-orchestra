@@ -41,18 +41,20 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 		suspect, _ = strconv.ParseBool(query.Get("suspect"))
 	}
 
+	paginationKey := query.Get("paginationKey")
 	visitorId := query.Get("visitorId")
 	bot := query.Get("bot")
 	ipAddress := query.Get("ipAddress")
 	linkedId := query.Get("linkedId")
 
 	searchEventsOpts := sdk.FingerprintApiSearchEventsOpts{
-		VisitorId: &visitorId,
-		LinkedId:  &linkedId,
-		Start:     &start,
-		End:       &end,
-		Reverse:   &reverse,
-		Suspect:   &suspect,
+		PaginationKey: &paginationKey,
+		VisitorId:     &visitorId,
+		LinkedId:      &linkedId,
+		Start:         &start,
+		End:           &end,
+		Reverse:       &reverse,
+		Suspect:       &suspect,
 	}
 	if bot != "" {
 		searchEventsOpts.Bot = &bot
