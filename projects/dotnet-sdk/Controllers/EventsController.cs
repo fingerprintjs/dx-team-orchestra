@@ -43,6 +43,7 @@ namespace dotnet_sdk.Controllers
             [FromQuery] string? apiKey,
             [FromQuery] string? region,
             [FromQuery] int? limit,
+            [FromQuery] string? paginationKey,
             [FromQuery] string? visitorId,
             [FromQuery] string? bot,
             [FromQuery] string? ipAddress,
@@ -62,7 +63,7 @@ namespace dotnet_sdk.Controllers
                 };
                 var api = new FingerprintApi(configuration);
 
-                var apiResponse = api.SearchEventsWithHttpInfo(limit, visitorId:visitorId, bot:bot, ipAddress:ipAddress, linkedId:linkedId, 
+                var apiResponse = api.SearchEventsWithHttpInfo(limit, paginationKey: paginationKey, visitorId:visitorId, bot:bot, ipAddress:ipAddress, linkedId:linkedId, 
                                                                start:start, end:end, reverse:reverse, suspect:suspect);
                 var eventResponse = apiResponse.Response;
                 var rawResponse = await eventResponse.Content.ReadAsStringAsync();
