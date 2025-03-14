@@ -17,11 +17,11 @@ type searchEventsQueryParams struct {
 func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 
-	var start int64 = 0
-	var end int64 = 0
+	var start *int64
+	var end *int64
 	var limit int32 = 10
-	reverse := false
-	suspect := false
+	var reverse *bool
+	var suspect *bool
 
 	if query.Has("limit") {
 		limitInt64, _ :=
@@ -29,16 +29,24 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 		limit = int32(limitInt64)
 	}
 	if query.Has("start") {
-		start, _ = strconv.ParseInt(query.Get("start"), 10, 64)
+		if startInt64, err := strconv.ParseInt(query.Get("start"), 10, 64); err == nil {
+			start = &startInt64
+		}
 	}
 	if query.Has("end") {
-		end, _ = strconv.ParseInt(query.Get("end"), 10, 64)
+		if endInt64, err := strconv.ParseInt(query.Get("end"), 10, 64); err == nil {
+			end = &endInt64
+		}
 	}
 	if query.Has("reverse") {
-		reverse, _ = strconv.ParseBool(query.Get("reverse"))
+		if val, err := strconv.ParseBool(query.Get("reverse")); err == nil {
+			reverse = &val
+		}
 	}
 	if query.Has("suspect") {
-		suspect, _ = strconv.ParseBool(query.Get("suspect"))
+		if val, err := strconv.ParseBool(query.Get("suspect")); err == nil {
+			suspect = &val
+		}
 	}
 
 	paginationKey := query.Get("paginationKey")
@@ -51,10 +59,10 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 		PaginationKey: &paginationKey,
 		VisitorId:     &visitorId,
 		LinkedId:      &linkedId,
-		Start:         &start,
-		End:           &end,
-		Reverse:       &reverse,
-		Suspect:       &suspect,
+		Start:         start,
+		End:           end,
+		Reverse:       reverse,
+		Suspect:       suspect,
 	}
 	if bot != "" {
 		searchEventsOpts.Bot = &bot
