@@ -31,6 +31,7 @@ public class EventsController {
             @RequestParam(required = false) String apiKey,
             @RequestParam(required = false) String region,
             @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) String paginationKey,
             @RequestParam(required = false) String visitorId,
             @RequestParam(required = false) String bot,
             @RequestParam(required = false) String ipAddress,
@@ -44,7 +45,17 @@ public class EventsController {
         FingerprintApi api = new FingerprintApi(client);
         try {
             final ApiResponse<SearchEventsResponse> apiResponse =
-                    api.searchEventsWithHttpInfo(limit, visitorId, bot, ipAddress, linkedId, start, end, reverse, suspect);
+                    api.searchEventsWithHttpInfo(limit, new FingerprintApi.SearchEventsOptionalParams()
+                            .setPaginationKey(paginationKey)
+                            .setVisitorId(visitorId)
+                            .setBot(bot)
+                            .setIpAddress(ipAddress)
+                            .setLinkedId(linkedId)
+                            .setStart(start)
+                            .setEnd(end)
+                            .setReverse(reverse)
+                            .setSuspect(suspect)
+                    );
             final SearchEventsResponse events = apiResponse.getData();
             final int code = apiResponse.getStatusCode();
             final MusicianResponse response = new MusicianResponse(code, events, events);
