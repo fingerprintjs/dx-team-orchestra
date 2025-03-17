@@ -1,6 +1,6 @@
 {
   "require": {
-    "fingerprint/fingerprint-pro-server-api-sdk": "dev-main",
+    "fingerprint/fingerprint-pro-server-api-sdk": "6.3.0",
     "slim/slim": "^4.0"
   },
   "autoload": {
