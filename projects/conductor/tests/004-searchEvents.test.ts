@@ -2,7 +2,6 @@ import { test } from '../utils/playwright'
 import testData from '../utils/testData'
 import { expect } from '@playwright/test'
 import { delay } from '../utils/delay'
-import * as assert from 'node:assert';
 
 test.describe('SearchEvents suite', () => {
   test('with valid api key and limit', async ({ assert, identify }) => {
