@@ -21,8 +21,8 @@ importers:
         specifier: ^3.11.6
         version: 3.11.6
       '@fingerprintjs/fingerprintjs-pro-server-api':
-        specifier: ^6.3.0-test.0
-        version: 6.3.0-test.0
+        specifier: ^6.3.0
+        version: 6.3.0
       '@playwright/test':
         specifier: ^1.49.1
         version: 1.49.1
@@ -36,8 +36,8 @@ importers:
   projects/node-sdk:
     dependencies:
       '@fingerprintjs/fingerprintjs-pro-server-api':
-        specifier: ^6.3.0-test.0
-        version: 6.3.0-test.0
+        specifier: ^6.3.0
+        version: 6.3.0
       express:
         specifier: ^5.0.1
         version: 5.0.1
@@ -90,8 +90,8 @@ packages:
     peerDependencies:
       prettier: '>=3'
 
-  '@fingerprintjs/fingerprintjs-pro-server-api@6.3.0-test.0':
-    resolution: {integrity: sha512-RGrvVDKH/5V8YGkhcB/yH7BBmUribK/xlLt5VM3esyLgLPbkIpuodTSMU5ajsMGeTEQBP2MtOuv6klIRigcd1g==}
+  '@fingerprintjs/fingerprintjs-pro-server-api@6.3.0':
+    resolution: {integrity: sha512-Kig3A+sEBoTvOXqgj+MvND2prF6WId/bO/vCz4ZMUhW8s4FRRv5SUohcH+k5npdwTJy3t6qSZP7DUPYNM/PEsg==}
     engines: {node: '>=18.17.0'}
 
   '@fingerprintjs/fingerprintjs-pro@3.11.6':
@@ -1102,7 +1102,7 @@ snapshots:
       - supports-color
       - typescript
 
-  '@fingerprintjs/fingerprintjs-pro-server-api@6.3.0-test.0': {}
+  '@fingerprintjs/fingerprintjs-pro-server-api@6.3.0': {}
 
   '@fingerprintjs/fingerprintjs-pro@3.11.6':
     dependencies:
