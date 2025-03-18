@@ -14,6 +14,54 @@ use Psr\Http\Message\MessageInterface;
 
 class EventsController
 {
+    public function searchEvents(ServerRequest $request, Response $response): MessageInterface {
+        $queryParams = $request->getQueryParams();
+        $apiKey = $queryParams['apiKey'] ?? '';
+        $region = $queryParams['region'] ?? '';
+        $limit = $queryParams['limit'] ?? null;
+
+        $paginationKey = $queryParams['paginationKey'] ?? null;
+        $visitorId = $queryParams['visitorId'] ?? null;
+        $bot = $queryParams['bot'] ?? null;
+        $ipAddress = $queryParams['ipAddress'] ?? null;
+        $linkedId = $queryParams['linkedId'] ?? null;
+        $start = isset($queryParams['start']) ? (int) $queryParams['start'] : null;
+        $end = isset($queryParams['end']) ? (int) $queryParams['end'] : null;
+        $reverse = isset($queryParams['reverse']) ? filter_var($queryParams['reverse'], FILTER_VALIDATE_BOOLEAN) : null;
+        $suspect = isset($queryParams['suspect']) ? filter_var($queryParams['suspect'], FILTER_VALIDATE_BOOLEAN) : null;
+
+        $config = Configuration::getDefaultConfiguration($apiKey, $region);
+        $client = new FingerprintApi(
+            new Client(),
+            $config
+        );
+
+        try {
+            list($model, $apiResponse) = $client->searchEvents(
+                $limit,
+                pagination_key: $paginationKey,
+                visitor_id: $visitorId,
+                bot: $bot,
+                ip_address: $ipAddress,
+                linked_id: $linkedId,
+                start: $start,
+                end: $end,
+                reverse: $reverse,
+                suspect: $suspect
+            );
+
+            $result = new MusicianResponse($apiResponse->getStatusCode(), $apiResponse, $model);
+        } catch (ApiException $e) {
+            $result = MusicianResponse::BuildForApiException($e);
+        } catch (\Throwable $e) {
+            $result = new MusicianResponse(500, $e->getMessage(), $e->getMessage());
+        }
+
+        $response->getBody()->write(json_encode($result));
+
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
     public function getEvents(ServerRequest $request, Response $response): MessageInterface
     {
         $queryParams = $request->getQueryParams();

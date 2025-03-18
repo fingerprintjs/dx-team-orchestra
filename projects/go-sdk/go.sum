@@ -1,2 +1,9 @@
 github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7 v7.1.2 h1:SShZriTpSem5rtjDhZnxXKx90cldzkr7Hswn+Jl1BFI=
 github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7 v7.1.2/go.mod h1:MY0RfGfaWe6G4tyU8jEy/X+wbi0LIP0TSwDd4qudN9M=
+github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7 v7.2.0-test.0 h1:m6eiU1XUeHx/wwU1mV2oDb6BX7tWbE1E1/YnLCdUUPU=
+github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7 v7.2.0-test.0/go.mod h1:MY0RfGfaWe6G4tyU8jEy/X+wbi0LIP0TSwDd4qudN9M=
+github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7 v7.2.0-test.1 h1:5L8in8cxdQfD9X7q8+ZjnXRQUkGuEP+7cCL4cd141go=
+github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7 v7.2.0-test.1/go.mod h1:MY0RfGfaWe6G4tyU8jEy/X+wbi0LIP0TSwDd4qudN9M=
+github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7 v7.2.0-test.2 h1:nAQPeNi+KLWjVak8WCvPVXKP+XnVrbt1T5/e+r3hyOM=
+github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7 v7.2.0-test.2/go.mod h1:MY0RfGfaWe6G4tyU8jEy/X+wbi0LIP0TSwDd4qudN9M=
+github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7 v7.2.0/go.mod h1:MY0RfGfaWe6G4tyU8jEy/X+wbi0LIP0TSwDd4qudN9M=

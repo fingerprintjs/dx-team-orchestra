@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fingerprint.api.FingerprintApi;
 import com.fingerprint.model.EventsGetResponse;
 import com.fingerprint.model.EventsUpdateRequest;
+import com.fingerprint.model.SearchEventsResponse;
 import com.fingerprint.sdk.ApiClient;
 import com.fingerprint.sdk.ApiException;
 import com.fingerprint.sdk.ApiResponse;
@@ -23,6 +24,46 @@ public class EventsController {
 
     public EventsController(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+    }
+
+    @GetMapping("/searchEvents")
+    public ResponseEntity<MusicianResponse> searchEvents(
+            @RequestParam(required = false) String apiKey,
+            @RequestParam(required = false) String region,
+            @RequestParam(required = false) Integer limit,
+            @RequestParam(required = false) String paginationKey,
+            @RequestParam(required = false) String visitorId,
+            @RequestParam(required = false) String bot,
+            @RequestParam(required = false) String ipAddress,
+            @RequestParam(required = false) String linkedId,
+            @RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end,
+            @RequestParam(required = false) Boolean reverse,
+            @RequestParam(required = false) Boolean suspect
+    ) {
+        ApiClient client = Configuration.getDefaultApiClient(apiKey, Utils.getRegion(region));
+        FingerprintApi api = new FingerprintApi(client);
+        try {
+            final ApiResponse<SearchEventsResponse> apiResponse =
+                    api.searchEventsWithHttpInfo(limit, new FingerprintApi.SearchEventsOptionalParams()
+                            .setPaginationKey(paginationKey)
+                            .setVisitorId(visitorId)
+                            .setBot(bot)
+                            .setIpAddress(ipAddress)
+                            .setLinkedId(linkedId)
+                            .setStart(start)
+                            .setEnd(end)
+                            .setReverse(reverse)
+                            .setSuspect(suspect)
+                    );
+            final SearchEventsResponse events = apiResponse.getData();
+            final int code = apiResponse.getStatusCode();
+            final MusicianResponse response = new MusicianResponse(code, events, events);
+            return ResponseEntity.ok(response);
+        } catch (ApiException e) {
+            final MusicianResponse response = new MusicianResponse(e);
+            return ResponseEntity.ok(response);
+        }
     }
 
     @GetMapping("/getEvents")

@@ -10,6 +10,7 @@ import (
 func main() {
 	http.HandleFunc("/getEvents", handlers.GetEvents)
 	http.HandleFunc("/updateEvent", handlers.UpdateEvent)
+	http.HandleFunc("/searchEvents", handlers.SearchEvents)
 
 	http.HandleFunc("/getVisits", handlers.GetVisits)
 	http.HandleFunc("/deleteVisitorData", handlers.DeleteVisitorData)

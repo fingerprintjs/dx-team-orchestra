@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "252489a6d35399690f3eb6873513e971",
+    "content-hash": "4a06628311ae5d08cc5f2153adc16063",
     "packages": [
         {
             "name": "fingerprint/fingerprint-pro-server-api-sdk",
-            "version": "6.2.1",
+            "version": "6.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk.git",
-                "reference": "62594af9dc8422e433265ac9a5bddd0a9e7a2c08"
+                "reference": "8fc29a99d51f03338011c2b100dbc4d81d68d1e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fingerprintjs/fingerprint-pro-server-api-php-sdk/zipball/62594af9dc8422e433265ac9a5bddd0a9e7a2c08",
-                "reference": "62594af9dc8422e433265ac9a5bddd0a9e7a2c08",
+                "url": "https://api.github.com/repos/fingerprintjs/fingerprint-pro-server-api-php-sdk/zipball/8fc29a99d51f03338011c2b100dbc4d81d68d1e2",
+                "reference": "8fc29a99d51f03338011c2b100dbc4d81d68d1e2",
                 "shasum": ""
             },
             "require": {
@@ -30,7 +30,7 @@
                 "php": ">=8.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "9.3.0",
+                "phpunit/phpunit": "^11.5",
                 "vlucas/phpdotenv": "^5.6"
             },
             "type": "library",
@@ -72,9 +72,9 @@
             ],
             "support": {
                 "issues": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk/issues",
-                "source": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk/tree/v6.2.1"
+                "source": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk/tree/v6.3.0"
             },
-            "time": "2025-01-23T16:32:49+00:00"
+            "time": "2025-03-17T15:42:06+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",

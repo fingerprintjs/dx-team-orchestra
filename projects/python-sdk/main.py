@@ -26,6 +26,37 @@ def get_events():
 
     return jsonify(response)
 
+@app.route('/searchEvents', methods=['GET'])
+def search_events():
+    api_key = request.args.get('apiKey')
+    region = request.args.get('region')
+    limit = request.args.get('limit')
+
+    additional_params = {
+        "pagination_key": request.args.get('paginationKey'),
+        "visitor_id": request.args.get('visitorId'),
+        "bot": request.args.get('bot'),
+        "ip_address": request.args.get('ipAddress'),
+        "linked_id": request.args.get('linkedId'),
+        "start": request.args.get('start'),
+        "end": request.args.get('end'),
+        "reverse": request.args.get('reverse'),
+        "suspect": request.args.get('suspect'),
+    }
+
+    filtered_additional_params = {key: value for key, value in additional_params.items() if value is not None}
+
+    configuration = Configuration(api_key=api_key, region=region)
+    api_instance = FingerprintApi(configuration=configuration)
+
+    try:
+        (result, code, http_response) = api_instance.search_events_with_http_info(limit, **filtered_additional_params)
+        response = prepare_musician_response(result, code, http_response)
+    except ApiException as e:
+        response = prepare_musician_response_from_error(e)
+
+    return jsonify(response)
+
 @app.route('/updateEvent', methods=['GET'])
 def update_event():
     api_key = request.args.get('apiKey')

@@ -38,6 +38,44 @@ namespace dotnet_sdk.Controllers
             }
         }
 
+        [HttpGet("/searchEvents")]
+        public async Task<IActionResult> SearchEvents(
+            [FromQuery] string? apiKey,
+            [FromQuery] string? region,
+            [FromQuery] int? limit,
+            [FromQuery] string? paginationKey,
+            [FromQuery] string? visitorId,
+            [FromQuery] string? bot,
+            [FromQuery] string? ipAddress,
+            [FromQuery] string? linkedId,
+            [FromQuery] long? start,
+            [FromQuery] long? end,
+            [FromQuery] bool? reverse,
+            [FromQuery] bool? suspect
+            )
+        {
+            try
+            {
+                var parsedRegion = Utils.GetRegion(region);
+                var configuration = new Configuration(apiKey)
+                {
+                    Region = parsedRegion
+                };
+                var api = new FingerprintApi(configuration);
+
+                var apiResponse = api.SearchEventsWithHttpInfo(limit, paginationKey: paginationKey, visitorId:visitorId, bot:bot, ipAddress:ipAddress, linkedId:linkedId, 
+                                                               start:start, end:end, reverse:reverse, suspect:suspect);
+                var eventResponse = apiResponse.Response;
+                var rawResponse = await eventResponse.Content.ReadAsStringAsync();
+
+                var response = new MusicianResponse<SearchEventsResponse>(eventResponse.StatusCode, rawResponse, apiResponse.Data);
+                return Ok(response);
+            }
+            catch (Exception e) {
+                return Ok(Utils.ProcessException(e));
+            }
+        }
+
         [HttpGet("/updateEvent")]
         public async Task<IActionResult> UpdateEvent(
             [FromQuery] string? apiKey,

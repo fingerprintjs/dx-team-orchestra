@@ -1,4 +1,4 @@
-import { FingerprintApi, GetEventsParams } from './api'
+import { ExtractFingerprintApiReturnType, FingerprintApi, GetEventsParams } from './api';
 import { expect } from '@playwright/test'
 import { JsonResponse } from './http'
 import { EventsGetResponse } from '@fingerprintjs/fingerprintjs-pro-server-api'
@@ -26,11 +26,12 @@ export class Assertions {
   async thatResponsesMatch<Method extends keyof FingerprintApi>(
     method: Method,
     ...params: Parameters<FingerprintApi[Method]>
-  ): Promise<void> {
+  ): Promise<ExtractFingerprintApiReturnType<Method>> {
     const realResponse: JsonResponse<any> = await this.fingerprintApi[method].call(this.fingerprintApi, ...params)
     const sdkResponse: JsonResponse<any> = await this.sdksApi[method].call(this.sdksApi, ...params)
 
     expect(sdkResponse.data).toMatchObject(realResponse.data)
+    return sdkResponse.data
   }
 
   async thatUnsealedDataMatches(sealedData: EventsGetResponse, params: GetEventsParams) {
