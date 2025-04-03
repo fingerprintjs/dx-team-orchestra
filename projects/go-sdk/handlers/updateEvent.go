@@ -33,8 +33,10 @@ func UpdateEvent(w http.ResponseWriter, r *http.Request) {
 
 	updateBody := sdk.EventsUpdateRequest{
 		LinkedId: r.URL.Query().Get("linkedId"),
-		Tag:      &tag,
 		Suspect:  suspectValue,
+	}
+	if tag != nil {
+		updateBody.Tag = &tag
 	}
 
 	client, auth := utils.InitSdk(queryParams.ApiKey, queryParams.Region)
