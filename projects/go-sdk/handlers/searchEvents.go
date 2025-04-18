@@ -22,6 +22,19 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	var limit int32 = 10
 	var reverse *bool
 	var suspect *bool
+	var vpn *bool
+	var virtualMachine *bool
+	var tampering *bool
+	var antiDetectBrowser *bool
+	var incognito *bool
+	var privacySettings *bool
+	var jailbroken *bool
+	var frida *bool
+	var factoryReset *bool
+	var clonedApp *bool
+	var emulator *bool
+	var rootApps *bool
+	var minSuspectScore *float32
 
 	if query.Has("limit") {
 		limitInt64, _ :=
@@ -48,27 +61,110 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 			suspect = &val
 		}
 	}
+	if query.Has("vpn") {
+		if val, err := strconv.ParseBool(query.Get("vpn")); err == nil {
+			vpn = &val
+		}
+	}
+	if query.Has("virtualMachine") {
+		if val, err := strconv.ParseBool(query.Get("virtualMachine")); err == nil {
+			virtualMachine = &val
+		}
+	}
+	if query.Has("tampering") {
+		if val, err := strconv.ParseBool(query.Get("tampering")); err == nil {
+			tampering = &val
+		}
+	}
+	if query.Has("antiDetectBrowser") {
+		if val, err := strconv.ParseBool(query.Get("antiDetectBrowser")); err == nil {
+			antiDetectBrowser = &val
+		}
+	}
+	if query.Has("incognito") {
+		if val, err := strconv.ParseBool(query.Get("incognito")); err == nil {
+			incognito = &val
+		}
+	}
+	if query.Has("privacySettings") {
+		if val, err := strconv.ParseBool(query.Get("privacySettings")); err == nil {
+			privacySettings = &val
+		}
+	}
+	if query.Has("jailbroken") {
+		if val, err := strconv.ParseBool(query.Get("jailbroken")); err == nil {
+			jailbroken = &val
+		}
+	}
+	if query.Has("frida") {
+		if val, err := strconv.ParseBool(query.Get("frida")); err == nil {
+			frida = &val
+		}
+	}
+	if query.Has("factoryReset") {
+		if val, err := strconv.ParseBool(query.Get("factoryReset")); err == nil {
+			factoryReset = &val
+		}
+	}
+	if query.Has("clonedApp") {
+		if val, err := strconv.ParseBool(query.Get("clonedApp")); err == nil {
+			clonedApp = &val
+		}
+	}
+	if query.Has("emulator") {
+		if val, err := strconv.ParseBool(query.Get("emulator")); err == nil {
+			emulator = &val
+		}
+	}
+	if query.Has("rootApps") {
+		if val, err := strconv.ParseBool(query.Get("rootApps")); err == nil {
+			rootApps = &val
+		}
+	}
+	if query.Has("minSuspectScore") {
+		if score, err := strconv.ParseFloat(query.Get("minSuspectScore"), 32); err == nil {
+			scoreFloat32 := float32(score)
+			minSuspectScore = &scoreFloat32
+		}
+	}
 
 	paginationKey := query.Get("paginationKey")
 	visitorId := query.Get("visitorId")
 	bot := query.Get("bot")
 	ipAddress := query.Get("ipAddress")
 	linkedId := query.Get("linkedId")
+	vpnConfidence := query.Get("vpnConfidence")
 
 	searchEventsOpts := sdk.FingerprintApiSearchEventsOpts{
-		PaginationKey: &paginationKey,
-		VisitorId:     &visitorId,
-		LinkedId:      &linkedId,
-		Start:         start,
-		End:           end,
-		Reverse:       reverse,
-		Suspect:       suspect,
+		PaginationKey:     &paginationKey,
+		VisitorId:         &visitorId,
+		LinkedId:          &linkedId,
+		Start:             start,
+		End:               end,
+		Reverse:           reverse,
+		Suspect:           suspect,
+		Vpn:               vpn,
+		VirtualMachine:    virtualMachine,
+		Tampering:         tampering,
+		AntiDetectBrowser: antiDetectBrowser,
+		Incognito:         incognito,
+		PrivacySettings:   privacySettings,
+		Jailbroken:        jailbroken,
+		Frida:             frida,
+		FactoryReset:      factoryReset,
+		ClonedApp:         clonedApp,
+		Emulator:          emulator,
+		RootApps:          rootApps,
+		MinSuspectScore:   minSuspectScore,
 	}
 	if bot != "" {
 		searchEventsOpts.Bot = &bot
 	}
 	if ipAddress != "" {
 		searchEventsOpts.IpAddress = &ipAddress
+	}
+	if vpnConfidence != "" {
+		searchEventsOpts.VpnConfidence = &vpnConfidence
 	}
 	queryParams := searchEventsQueryParams{
 		ApiKey:    query.Get("apiKey"),
