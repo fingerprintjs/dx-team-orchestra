@@ -35,6 +35,8 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	var emulator *bool
 	var rootApps *bool
 	var minSuspectScore *float32
+	var ipBlocklist *bool
+	var datacenter *bool
 
 	if query.Has("limit") {
 		limitInt64, _ :=
@@ -127,6 +129,16 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 			minSuspectScore = &scoreFloat32
 		}
 	}
+    if query.Has("ipBlocklist") {
+        if val, err := strconv.ParseBool(query.Get("ipBlocklist")); err == nil {
+            ipBlocklist = &val
+        }
+    }
+    if query.Has("datacenter") {
+        if val, err := strconv.ParseBool(query.Get("datacenter")); err == nil {
+            datacenter = &val
+        }
+    }
 
 	paginationKey := query.Get("paginationKey")
 	visitorId := query.Get("visitorId")
@@ -156,6 +168,8 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 		Emulator:          emulator,
 		RootApps:          rootApps,
 		MinSuspectScore:   minSuspectScore,
+		IpBlocklist:       ipBlocklist,
+		Datacenter:        datacenter,
 	}
 	if bot != "" {
 		searchEventsOpts.Bot = &bot
