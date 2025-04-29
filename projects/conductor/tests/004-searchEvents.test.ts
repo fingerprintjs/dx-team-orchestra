@@ -75,7 +75,7 @@ test.describe('SearchEvents suite', () => {
     const timestamp = event.products.identification.data.timestamp || Date.now()
     const start = timestamp - (60 * 60 * 1000) // 1 hour before
     const end = timestamp + (60 * 60 * 1000)   // 1 hour after
-  
+
     // Get values from event if available
     const botValue = event.products.botd?.data?.bot?.result
     const ipValue = `${event.products.identification.data.ip || '127.0.0.1'}/24`
@@ -88,7 +88,9 @@ test.describe('SearchEvents suite', () => {
     const virtualMachine = event.products.virtualMachine?.data?.result === true
     const vpnConfidence = event.products.vpn?.data?.confidence || 'high'
     const suspectScore = event.products.suspectScore?.data?.result || 0.5
-  
+    const ipBlocklist = event.products.ipBlocklist?.data?.result === true
+    const datacenter = event.products.ipInfo?.data?.v4?.datacenter?.result === true
+
     await assert.thatResponseMatch({
       expectedStatusCode: 200,
       callback: (api) =>
@@ -119,7 +121,9 @@ test.describe('SearchEvents suite', () => {
           rootApps: false,
           vpnConfidence,
           minSuspectScore: suspectScore,
-          paginationKey: ''
+          paginationKey: '',
+          ipBlocklist,
+          datacenter,
         }),
     })
   })
