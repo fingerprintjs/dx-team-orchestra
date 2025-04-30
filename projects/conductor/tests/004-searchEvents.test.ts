@@ -106,7 +106,6 @@ test.describe('SearchEvents suite', () => {
           ipAddress: ipValue,
           reverse: false,
           suspect: false,
-          // @ts-expect-error These fields are not exposed in Node SDK yet, from which we use types
           vpn: vpnValue,
           virtualMachine,
           tampering,
