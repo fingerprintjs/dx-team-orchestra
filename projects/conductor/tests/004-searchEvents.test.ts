@@ -71,11 +71,25 @@ test.describe('SearchEvents suite', () => {
       requestId,
     })
 
-    const start = new Date()
-    start.setHours(start.getHours() - 1)
+    // Use timestamp from the event to create start and end times
+    const timestamp = event.products.identification.data.timestamp || Date.now()
+    const start = timestamp - (60 * 60 * 1000) // 1 hour before
+    const end = timestamp + (60 * 60 * 1000)   // 1 hour after
 
-    const end = new Date()
-    end.setHours(end.getHours() + 1)
+    // Get values from event if available
+    const botValue = event.products.botd?.data?.bot?.result
+    const ipValue = `${event.products.identification.data.ip || '127.0.0.1'}/24`
+    const vpnValue = event.products.vpn?.data?.result === true
+    const tampering = event.products.tampering?.data?.result === true
+    const antiDetectBrowser = event.products.tampering?.data?.antiDetectBrowser === true
+    const incognito = event.products.incognito?.data?.result === true
+    const privacySettings = event.products.privacySettings?.data?.result === true
+    const jailbroken = event.products.jailbroken?.data?.result === true
+    const virtualMachine = event.products.virtualMachine?.data?.result === true
+    const vpnConfidence = event.products.vpn?.data?.confidence || 'high'
+    const suspectScore = event.products.suspectScore?.data?.result || 0.5
+    const ipBlocklist = event.products.ipBlocklist?.data?.result === true
+    const datacenter = event.products.ipInfo?.data?.v4?.datacenter?.result === true
 
     await assert.thatResponseMatch({
       expectedStatusCode: 200,
@@ -84,14 +98,31 @@ test.describe('SearchEvents suite', () => {
           apiKey: testData.credentials.maxFeaturesUS.privateKey,
           region: testData.credentials.maxFeaturesUS.region,
           limit: 10,
-          bot: 'good',
+          bot: botValue,
           visitorId,
           linkedId: 'test',
-          start: start.getTime(),
-          end: end.getTime(),
-          ipAddress: `${event.products.identification.data.ip}/24`,
+          start,
+          end,
+          ipAddress: ipValue,
           reverse: false,
           suspect: false,
+          vpn: vpnValue,
+          virtualMachine,
+          tampering,
+          antiDetectBrowser,
+          incognito,
+          privacySettings,
+          jailbroken,
+          frida: false,
+          factoryReset: false,
+          clonedApp: false,
+          emulator: false,
+          rootApps: false,
+          vpnConfidence,
+          minSuspectScore: suspectScore,
+          paginationKey: '',
+          ipBlocklist,
+          datacenter,
         }),
     })
   })

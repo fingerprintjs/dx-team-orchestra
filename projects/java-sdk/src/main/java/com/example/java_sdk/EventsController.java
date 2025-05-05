@@ -39,7 +39,22 @@ public class EventsController {
             @RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end,
             @RequestParam(required = false) Boolean reverse,
-            @RequestParam(required = false) Boolean suspect
+            @RequestParam(required = false) Boolean suspect,
+            @RequestParam(required = false) Boolean vpn,
+            @RequestParam(required = false) Boolean virtualMachine,
+            @RequestParam(required = false) Boolean tampering,
+            @RequestParam(required = false) Boolean antiDetectBrowser,
+            @RequestParam(required = false) Boolean incognito,
+            @RequestParam(required = false) Boolean privacySettings,
+            @RequestParam(required = false) Boolean jailbroken,
+            @RequestParam(required = false) Boolean frida,
+            @RequestParam(required = false) Boolean factoryReset,
+            @RequestParam(required = false) Boolean clonedApp,
+            @RequestParam(required = false) Boolean emulator,
+            @RequestParam(required = false) Boolean rootApps,
+            @RequestParam(required = false) Float minSuspectScore,
+            @RequestParam(required = false) Boolean ipBlocklist,
+            @RequestParam(required = false) Boolean datacenter
     ) {
         ApiClient client = Configuration.getDefaultApiClient(apiKey, Utils.getRegion(region));
         FingerprintApi api = new FingerprintApi(client);
@@ -55,6 +70,21 @@ public class EventsController {
                             .setEnd(end)
                             .setReverse(reverse)
                             .setSuspect(suspect)
+                            .setVpn(vpn)
+                            .setVirtualMachine(virtualMachine)
+                            .setTampering(tampering)
+                            .setAntiDetectBrowser(antiDetectBrowser)
+                            .setIncognito(incognito)
+                            .setPrivacySettings(privacySettings)
+                            .setJailbroken(jailbroken)
+                            .setFrida(frida)
+                            .setFactoryReset(factoryReset)
+                            .setClonedApp(clonedApp)
+                            .setEmulator(emulator)
+                            .setRootApps(rootApps)
+                            .setMinSuspectScore(minSuspectScore)
+                            .setIpBlocklist(ipBlocklist)
+                            .setDatacenter(datacenter)
                     );
             final SearchEventsResponse events = apiResponse.getData();
             final int code = apiResponse.getStatusCode();

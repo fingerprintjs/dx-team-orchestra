@@ -57,6 +57,22 @@ export type SearchEventsParams = {
   end?: number
   reverse?: boolean
   suspect?: boolean
+  vpn?: boolean
+  virtualMachine?: boolean
+  tampering?: boolean
+  antiDetectBrowser?: boolean
+  incognito?: boolean
+  privacySettings?: boolean
+  jailbroken?: boolean
+  frida?: boolean
+  factoryReset?: boolean
+  clonedApp?: boolean
+  emulator?: boolean
+  rootApps?: boolean
+  vpnConfidence?: string
+  minSuspectScore?: number
+  ipBlocklist?: boolean
+  datacenter?: boolean
 }
 
 export type GetEventsParams = { apiKey: string; region: string; requestId: string }
@@ -191,6 +207,54 @@ export class RealFingerprintApi implements FingerprintApi {
     }
     if (typeof params.suspect === 'boolean') {
       queryParams.suspect = params.suspect
+    }
+    if (typeof params.vpn === 'boolean') {
+      queryParams.vpn = params.vpn
+    }
+    if (typeof params.virtualMachine === 'boolean') {
+      queryParams.virtualMachine = params.virtualMachine
+    }
+    if (typeof params.tampering === 'boolean') {
+      queryParams.tampering = params.tampering
+    }
+    if (typeof params.antiDetectBrowser === 'boolean') {
+      queryParams.antiDetectBrowser = params.antiDetectBrowser
+    }
+    if (typeof params.incognito === 'boolean') {
+      queryParams.incognito = params.incognito
+    }
+    if (typeof params.privacySettings === 'boolean') {
+      queryParams.privacySettings = params.privacySettings
+    }
+    if (typeof params.jailbroken === 'boolean') {
+      queryParams.jailbroken = params.jailbroken
+    }
+    if (typeof params.frida === 'boolean') {
+      queryParams.frida = params.frida
+    }
+    if (typeof params.factoryReset === 'boolean') {
+      queryParams.factoryReset = params.factoryReset
+    }
+    if (typeof params.clonedApp === 'boolean') {
+      queryParams.clonedApp = params.clonedApp
+    }
+    if (typeof params.emulator === 'boolean') {
+      queryParams.emulator = params.emulator
+    }
+    if (typeof params.rootApps === 'boolean') {
+      queryParams.rootApps = params.rootApps
+    }
+    if (params.vpnConfidence) {
+      queryParams.vpnConfidence = params.vpnConfidence
+    }
+    if (typeof params.minSuspectScore === 'number') {
+      queryParams.minSuspectScore = params.minSuspectScore
+    }
+    if (typeof params.ipBlocklist === 'boolean') {
+      queryParams.ipBlocklist = params.ipBlocklist
+    }
+    if (typeof params.datacenter === 'boolean') {
+      queryParams.datacenter = params.datacenter
     }
 
     return await jsonRequest<SearchEventsResponse>({

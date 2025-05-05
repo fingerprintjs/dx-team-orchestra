@@ -42,6 +42,21 @@ def search_events():
         "end": request.args.get('end'),
         "reverse": request.args.get('reverse'),
         "suspect": request.args.get('suspect'),
+        "vpn": request.args.get('vpn'),
+        "virtual_machine": request.args.get('virtualMachine'),
+        "tampering": request.args.get('tampering'),
+        "anti_detect_browser": request.args.get('antiDetectBrowser'),
+        "incognito": request.args.get('incognito'),
+        "privacy_settings": request.args.get('privacySettings'),
+        "jailbroken": request.args.get('jailbroken'),
+        "frida": request.args.get('frida'),
+        "factory_reset": request.args.get('factoryReset'),
+        "cloned_app": request.args.get('clonedApp'),
+        "emulator": request.args.get('emulator'),
+        "root_apps": request.args.get('rootApps'),
+        "min_suspect_score": request.args.get('minSuspectScore'),
+        "ip_blocklist": request.args.get('ipBlocklist'),
+        "datacenter": request.args.get('datacenter'),
     }
 
     filtered_additional_params = {key: value for key, value in additional_params.items() if value is not None}

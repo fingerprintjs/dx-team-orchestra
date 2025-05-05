@@ -29,6 +29,21 @@ class EventsController
         $end = isset($queryParams['end']) ? (int) $queryParams['end'] : null;
         $reverse = isset($queryParams['reverse']) ? filter_var($queryParams['reverse'], FILTER_VALIDATE_BOOLEAN) : null;
         $suspect = isset($queryParams['suspect']) ? filter_var($queryParams['suspect'], FILTER_VALIDATE_BOOLEAN) : null;
+        $vpn = isset($queryParams['vpn']) ? filter_var($queryParams['vpn'], FILTER_VALIDATE_BOOLEAN) : null;
+        $virtualMachine = isset($queryParams['virtualMachine']) ? filter_var($queryParams['virtualMachine'], FILTER_VALIDATE_BOOLEAN) : null;
+        $tampering = isset($queryParams['tampering']) ? filter_var($queryParams['tampering'], FILTER_VALIDATE_BOOLEAN) : null;
+        $antiDetectBrowser = isset($queryParams['antiDetectBrowser']) ? filter_var($queryParams['antiDetectBrowser'], FILTER_VALIDATE_BOOLEAN) : null;
+        $incognito = isset($queryParams['incognito']) ? filter_var($queryParams['incognito'], FILTER_VALIDATE_BOOLEAN) : null;
+        $privacySettings = isset($queryParams['privacySettings']) ? filter_var($queryParams['privacySettings'], FILTER_VALIDATE_BOOLEAN) : null;
+        $jailbroken = isset($queryParams['jailbroken']) ? filter_var($queryParams['jailbroken'], FILTER_VALIDATE_BOOLEAN) : null;
+        $frida = isset($queryParams['frida']) ? filter_var($queryParams['frida'], FILTER_VALIDATE_BOOLEAN) : null;
+        $factoryReset = isset($queryParams['factoryReset']) ? filter_var($queryParams['factoryReset'], FILTER_VALIDATE_BOOLEAN) : null;
+        $clonedApp = isset($queryParams['clonedApp']) ? filter_var($queryParams['clonedApp'], FILTER_VALIDATE_BOOLEAN) : null;
+        $emulator = isset($queryParams['emulator']) ? filter_var($queryParams['emulator'], FILTER_VALIDATE_BOOLEAN) : null;
+        $rootApps = isset($queryParams['rootApps']) ? filter_var($queryParams['rootApps'], FILTER_VALIDATE_BOOLEAN) : null;
+        $minSuspectScore = isset($queryParams['minSuspectScore']) ? (float) $queryParams['minSuspectScore'] : null;
+        $ipBlocklist = isset($queryParams['ipBlocklist']) ? filter_var($queryParams['ipBlocklist'], FILTER_VALIDATE_BOOLEAN) : null;
+        $datacenter = isset($queryParams['datacenter']) ? filter_var($queryParams['datacenter'], FILTER_VALIDATE_BOOLEAN) : null;
 
         $config = Configuration::getDefaultConfiguration($apiKey, $region);
         $client = new FingerprintApi(
@@ -47,7 +62,22 @@ class EventsController
                 start: $start,
                 end: $end,
                 reverse: $reverse,
-                suspect: $suspect
+                suspect: $suspect,
+                vpn: $vpn,
+                virtual_machine: $virtualMachine,
+                tampering: $tampering,
+                anti_detect_browser: $antiDetectBrowser,
+                incognito: $incognito,
+                privacy_settings: $privacySettings,
+                jailbroken: $jailbroken,
+                frida: $frida,
+                factory_reset: $factoryReset,
+                cloned_app: $clonedApp,
+                emulator: $emulator,
+                root_apps: $rootApps,
+                min_suspect_score: $minSuspectScore,
+                ip_blocklist: $ipBlocklist,
+                datacenter: $datacenter
             );
 
             $result = new MusicianResponse($apiResponse->getStatusCode(), $apiResponse, $model);

@@ -19,6 +19,21 @@ interface QueryParams {
   end?: SearchEventsFilter['end']
   reverse?: SearchEventsFilter['reverse']
   suspect?: SearchEventsFilter['suspect']
+  vpn?: SearchEventsFilter['vpn']
+  virtualMachine?: SearchEventsFilter['virtual_machine']
+  tampering?: SearchEventsFilter['tampering']
+  antiDetectBrowser?: SearchEventsFilter['anti_detect_browser']
+  incognito?: SearchEventsFilter['incognito']
+  privacySettings?: SearchEventsFilter['privacy_settings']
+  jailbroken?: SearchEventsFilter['jailbroken']
+  frida?: SearchEventsFilter['frida']
+  factoryReset?: SearchEventsFilter['factory_reset']
+  clonedApp?: SearchEventsFilter['cloned_app']
+  emulator?: SearchEventsFilter['emulator']
+  rootApps?: SearchEventsFilter['root_apps']
+  minSuspectScore?: SearchEventsFilter['min_suspect_score']
+  ipBlocklist?: SearchEventsFilter['ip_blocklist']
+  datacenter?: SearchEventsFilter['datacenter']
 }
 
 export const searchEvents: Handler<QueryParams> = async (req, res) => {
@@ -35,6 +50,21 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     end,
     reverse,
     suspect,
+    vpn,
+    virtualMachine,
+    tampering,
+    antiDetectBrowser,
+    incognito,
+    privacySettings,
+    jailbroken,
+    frida,
+    factoryReset,
+    clonedApp,
+    emulator,
+    rootApps,
+    minSuspectScore,
+    ipBlocklist,
+    datacenter,
   } = req.query
 
   const filter: SearchEventsFilter = {
@@ -68,6 +98,51 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
   }
   if (suspect !== undefined) {
     filter.suspect = suspect
+  }
+  if (vpn !== undefined) {
+    filter.vpn = vpn
+  }
+  if (virtualMachine !== undefined) {
+    filter.virtual_machine = virtualMachine
+  }
+  if (tampering !== undefined) {
+    filter.tampering = tampering
+  }
+  if (antiDetectBrowser !== undefined) {
+    filter.anti_detect_browser = antiDetectBrowser
+  }
+  if (incognito !== undefined) {
+    filter.incognito = incognito
+  }
+  if (privacySettings !== undefined) {
+    filter.privacy_settings = privacySettings
+  }
+  if (jailbroken !== undefined) {
+    filter.jailbroken = jailbroken
+  }
+  if (frida !== undefined) {
+    filter.frida = frida
+  }
+  if (factoryReset !== undefined) {
+    filter.factory_reset = factoryReset
+  }
+  if (clonedApp !== undefined) {
+    filter.cloned_app = clonedApp
+  }
+  if (emulator !== undefined) {
+    filter.emulator = emulator
+  }
+  if (rootApps !== undefined) {
+    filter.root_apps = rootApps
+  }
+  if (minSuspectScore) {
+    filter.min_suspect_score = minSuspectScore
+  }
+  if (ipBlocklist !== undefined) {
+    filter.ip_blocklist = ipBlocklist
+  }
+  if (datacenter !== undefined) {
+    filter.datacenter = datacenter
   }
 
   let result: MusicianResponse<SearchEventsResponse>
