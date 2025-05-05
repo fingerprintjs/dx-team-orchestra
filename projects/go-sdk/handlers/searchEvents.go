@@ -129,16 +129,16 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 			minSuspectScore = &scoreFloat32
 		}
 	}
-    if query.Has("ipBlocklist") {
-        if val, err := strconv.ParseBool(query.Get("ipBlocklist")); err == nil {
-            ipBlocklist = &val
-        }
-    }
-    if query.Has("datacenter") {
-        if val, err := strconv.ParseBool(query.Get("datacenter")); err == nil {
-            datacenter = &val
-        }
-    }
+	if query.Has("ipBlocklist") {
+		if val, err := strconv.ParseBool(query.Get("ipBlocklist")); err == nil {
+			ipBlocklist = &val
+		}
+	}
+	if query.Has("datacenter") {
+		if val, err := strconv.ParseBool(query.Get("datacenter")); err == nil {
+			datacenter = &val
+		}
+	}
 
 	paginationKey := query.Get("paginationKey")
 	visitorId := query.Get("visitorId")
