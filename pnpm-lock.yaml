@@ -36,8 +36,8 @@ importers:
   projects/node-sdk:
     dependencies:
       '@fingerprintjs/fingerprintjs-pro-server-api':
-        specifier: 6.5.0-test.1
-        version: 6.5.0-test.1
+        specifier: 6.5.0
+        version: 6.5.0
       express:
         specifier: ^5.0.1
         version: 5.0.1
@@ -94,8 +94,8 @@ packages:
     resolution: {integrity: sha512-Kig3A+sEBoTvOXqgj+MvND2prF6WId/bO/vCz4ZMUhW8s4FRRv5SUohcH+k5npdwTJy3t6qSZP7DUPYNM/PEsg==}
     engines: {node: '>=18.17.0'}
 
-  '@fingerprintjs/fingerprintjs-pro-server-api@6.5.0-test.1':
-    resolution: {integrity: sha512-aOlVqMNTZbEq5CpLJFVCktUnEHEpj2XRNqSX9S6nFxsKpS1cH3KPss4MmjicWpVNaArpe1qqkmeW0yh1tvdJ1Q==}
+  '@fingerprintjs/fingerprintjs-pro-server-api@6.5.0':
+    resolution: {integrity: sha512-jhIzsDfrbLvZzT88UdRjhUGJX98VAceWoYP9qA8EdaPKoEKI3EePqhSClKmyL5F19+RF4qAyq9wdohw15Iqvug==}
     engines: {node: '>=18.17.0'}
 
   '@fingerprintjs/fingerprintjs-pro@3.11.6':
@@ -1108,7 +1108,7 @@ snapshots:
 
   '@fingerprintjs/fingerprintjs-pro-server-api@6.3.0': {}
 
-  '@fingerprintjs/fingerprintjs-pro-server-api@6.5.0-test.1': {}
+  '@fingerprintjs/fingerprintjs-pro-server-api@6.5.0': {}
 
   '@fingerprintjs/fingerprintjs-pro@3.11.6':
     dependencies:
