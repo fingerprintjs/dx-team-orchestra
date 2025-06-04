@@ -31,6 +31,34 @@ public class VPNConfidenceConverter : JsonConverter<VPNConfidence>
     }
 }
 
+public class ProxyConfidenceConverter : JsonConverter<ProxyConfidence>
+{
+    public override ProxyConfidence Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        string value = reader.GetString();
+        return value switch
+        {
+            "low" => ProxyConfidence.Low,
+            "medium" => ProxyConfidence.Medium,
+            "high" => ProxyConfidence.High,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    public override void Write(Utf8JsonWriter writer, ProxyConfidence value, JsonSerializerOptions options)
+    {
+        string stringValue = value switch
+        {
+            ProxyConfidence.Low => "low",
+            ProxyConfidence.Medium => "medium",
+            ProxyConfidence.High => "high",
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        writer.WriteStringValue(stringValue);
+    }
+}
+
 public class BotdBotResultConverter : JsonConverter<BotdBotResult>
 {
     public override BotdBotResult Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
