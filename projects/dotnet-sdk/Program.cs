@@ -8,6 +8,7 @@ builder.Services.AddControllers()
         {
             // By default .NET serializes enums capitalized
             options.JsonSerializerOptions.Converters.Add(new VPNConfidenceConverter());
+            options.JsonSerializerOptions.Converters.Add(new ProxyConfidenceConverter());
             options.JsonSerializerOptions.Converters.Add(new BotdBotResultConverter());
         });
 
