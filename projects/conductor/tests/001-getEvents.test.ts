@@ -30,7 +30,7 @@ test.describe('GetEvents Suite', () => {
 
   test('for missing parameters', async ({ assert }) => {
     await assert.thatResponseMatch({
-      expectedStatusCode: 404,
+      expectedStatusCode: 403,
       callback: (api) =>
         api.getEvent({
           apiKey: '',
@@ -44,11 +44,11 @@ test.describe('GetEvents Suite', () => {
     await assert.thatResponseMatch({
       expectedResponse: {
         error: {
-          code: 'RequestNotFound',
-          message: 'request id not found',
+          code: 'TokenNotFound',
+          message: 'secret key is not found',
         },
       },
-      expectedStatusCode: 404,
+      expectedStatusCode: 403,
       callback: (api) =>
         api.getEvent({
           apiKey: testData.credentials.invalid.privateKey,
@@ -106,7 +106,7 @@ test.describe('GetEvents Suite', () => {
       },
       callback: (api) =>
         api.getEvent({
-          apiKey: testData.credentials.maxFeaturesUS.publicKey,
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
           region: testData.credentials.maxFeaturesUS.region,
           requestId: testData.invalid.requestID,
         }),
