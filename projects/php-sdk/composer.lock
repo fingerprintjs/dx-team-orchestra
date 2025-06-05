@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5044d508e5f31719085d838b874f57c6",
+    "content-hash": "fc51c3a42786574dc280447a2cccd2f8",
     "packages": [
         {
             "name": "fingerprint/fingerprint-pro-server-api-sdk",
-            "version": "6.5.0",
+            "version": "6.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk.git",
-                "reference": "05ec8714e7ac69abc2352600b92dff5e13d152b9"
+                "reference": "3757ac3a917c5728b8b8f47a58cdb597ff665bee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fingerprintjs/fingerprint-pro-server-api-php-sdk/zipball/05ec8714e7ac69abc2352600b92dff5e13d152b9",
-                "reference": "05ec8714e7ac69abc2352600b92dff5e13d152b9",
+                "url": "https://api.github.com/repos/fingerprintjs/fingerprint-pro-server-api-php-sdk/zipball/3757ac3a917c5728b8b8f47a58cdb597ff665bee",
+                "reference": "3757ac3a917c5728b8b8f47a58cdb597ff665bee",
                 "shasum": ""
             },
             "require": {
@@ -49,7 +49,7 @@
                     "homepage": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk"
                 }
             ],
-            "description": "Fingerprint Pro Server API provides a way for validating visitors’ data issued by Fingerprint Pro.",
+            "description": "Fingerprint Server API provides a way for validating visitors’ data issued by Fingerprint Pro.",
             "homepage": "https://www.fingerprint.com",
             "keywords": [
                 "Fingerprint",
@@ -72,9 +72,9 @@
             ],
             "support": {
                 "issues": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk/issues",
-                "source": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk/tree/v6.5.0"
+                "source": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk/tree/v6.6.0"
             },
-            "time": "2025-05-06T11:38:29+00:00"
+            "time": "2025-06-04T13:11:13+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
