@@ -43,6 +43,15 @@ export async function unwrapError<Response200Type>(
         },
       }
     }
+    
+    if (error.message === 'Api key is not set') {
+      return {
+        code: 403,
+        originalResponse: error.toString(),
+        parsedResponse: JSON.stringify(error),
+      }
+    }
+    
     return {
       code: 404,
       originalResponse: error.toString(),
