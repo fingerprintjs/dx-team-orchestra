@@ -53,6 +53,14 @@ env:
   TARGET_URL: https://github.com/fingerprintjs/dx-team-orchestra/actions/runs/${{github.run_id}}
 
 jobs:
+  set_datadog_team:
+    name: 'Set Datadog team'
+    uses: fingerprintjs/dx-team-toolkit/.github/workflows/set-datadog-team.yml@v1
+    with:
+      additionalTags: ${{ (github.event.client_payload && format('release-tag-name:{0},trigger-repository:{1}', github.event.client_payload.sdk-version, github.event.client_payload.repository)) || '' }}
+    secrets:
+      DD_API_KEY: ${{ secrets.INTEGRATIONS_DATADOG_API_KEY }}
+
   run-node-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-node-sdk-tests || github.event.client_payload.run-node-sdk-tests }}
     runs-on: ubuntu-latest
@@ -781,67 +789,7 @@ jobs:
           sha: ${{ env.COMMIT_SHA }}
           target_url: ${{ env.TARGET_URL }}
 
-  report-node-status:
-    needs: run-node-sdk-tests
-    if: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.run-node-sdk-tests && always()}}
-    uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
-    with:
-      notification_title: 'Node SDK E2E Tests has {status_message} for release ${{ github.event.client_payload.sdk-version }}'
-      job_status: ${{ needs.run-node-sdk-tests.outputs.test_failed == 'true' && 'failure' || 'success' }}
-    secrets:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-  report-java-status:
-    needs: run-java-sdk-tests
-    if: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.run-java-sdk-tests && always() }}
-    uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
-    with:
-      notification_title: 'Java SDK E2E Tests has {status_message} for release ${{ github.event.client_payload.sdk-version }}'
-      job_status: ${{ needs.run-java-sdk-tests.outputs.test_failed == 'true' && 'failure' || 'success' }}
-    secrets:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-  report-dotnet-status:
-    needs: run-dotnet-sdk-tests
-    if: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.run-dotnet-sdk-tests && always()}}
-    uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
-    with:
-      notification_title: '.NET SDK E2E Tests has {status_message} for release ${{ github.event.client_payload.sdk-version }}'
-      job_status: ${{ needs.run-dotnet-sdk-tests.outputs.test_failed == 'true' && 'failure' || 'success' }}
-    secrets:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-  report-go-status:
-    needs: run-go-sdk-tests
-    if: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.run-go-sdk-tests && always() }}
-    uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
-    with:
-      notification_title: 'Go SDK E2E Tests has {status_message} for release ${{ github.event.client_payload.sdk-version }}'
-      job_status: ${{ needs.run-go-sdk-tests.outputs.test_failed == 'true' && 'failure' || 'success' }}
-    secrets:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-  report-python-status:
-    needs: run-python-sdk-tests
-    if: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.run-python-sdk-tests && always() }}
-    uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
-    with:
-      notification_title: 'Python SDK E2E Tests has {status_message} for release ${{ github.event.client_payload.sdk-version }}'
-      job_status: ${{ needs.run-python-sdk-tests.outputs.test_failed == 'true' && 'failure' || 'success' }}
-    secrets:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-  report-php-status:
-    needs: run-php-sdk-tests
-    if: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.run-php-sdk-tests && always() }}
-    uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
-    with:
-      notification_title: 'PHP SDK E2E Tests has {status_message} for release ${{ github.event.client_payload.sdk-version }}'
-      job_status: ${{ needs.run-php-sdk-tests.outputs.test_failed == 'true' && 'failure' || 'success' }}
-    secrets:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-  report-scheduled:
+  check-test-results:
     needs:
       - run-node-sdk-tests
       - run-java-sdk-tests
@@ -849,11 +797,45 @@ jobs:
       - run-go-sdk-tests
       - run-python-sdk-tests
       - run-php-sdk-tests
-    if: ${{ github.event_name == 'schedule' && always() }}
-    uses: fingerprintjs/dx-team-toolkit/.github/workflows/report-workflow-status.yml@v1
-    with:
-      notification_title: 'Scheduled SDK E2E Tests has {status_message} for release ${{ github.event.client_payload.sdk-version }}'
-      job_status: ${{ (needs.run-node-sdk-tests.outputs.test_failed != 'true' && needs.run-java-sdk-tests.outputs.test_failed != 'true' && needs.run-dotnet-sdk-tests.outputs.test_failed != 'true' && needs.run-go-sdk-tests.outputs.test_failed != 'true' && needs.run-python-sdk-tests.outputs.test_failed != 'true' && needs.run-php-sdk-tests.outputs.test_failed != 'true' && 'success') || 'failure' }}
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checks the statuses from each job
+        run: |
+          failed=false
+          if [ "${{ needs.run-node-sdk-tests.outputs.test_failed }}" = "true" ]; then
+            echo "Node SDK tests failed"
+            failed=true
+          fi
 
-    secrets:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          if [ "${{ needs.run-java-sdk-tests.outputs.test_failed }}" = "true" ]; then
+            echo "Java SDK tests failed"
+            failed=true
+          fi
+
+          if [ "${{ needs.run-dotnet-sdk-tests.outputs.test_failed }}" = "true" ]; then
+            echo ".NET SDK tests failed"
+            failed=true
+          fi
+
+          if [ "${{ needs.run-go-sdk-tests.outputs.test_failed }}" = "true" ]; then
+            echo "Go SDK tests failed"
+            failed=true
+          fi
+
+          if [ "${{ needs.run-python-sdk-tests.outputs.test_failed }}" = "true" ]; then
+            echo "Python SDK tests failed"
+            failed=true
+          fi
+
+          if [ "${{ needs.run-php-sdk-tests.outputs.test_failed }}" = "true" ]; then
+            echo "PHP SDK tests failed"
+            failed=true
+          fi
+
+          if [ "$failed" = "true" ]; then
+            echo "Jobs failed"
+            exit 1
+          else
+            echo "All jobs succeeded"
+          fi
