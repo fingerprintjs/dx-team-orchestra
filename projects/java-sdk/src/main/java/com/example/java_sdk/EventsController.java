@@ -61,7 +61,7 @@ public class EventsController {
             @RequestParam(required = false) Boolean proxy,
             @RequestParam(required = false) String sdkVersion,
             @RequestParam(required = false) String sdkPlatform,
-            @RequestParam(required = false) List<String> environment,
+            @RequestParam(required = false) List<String> environment
     ) {
         ApiClient client = Configuration.getDefaultApiClient(apiKey, Utils.getRegion(region));
         FingerprintApi api = new FingerprintApi(client);
