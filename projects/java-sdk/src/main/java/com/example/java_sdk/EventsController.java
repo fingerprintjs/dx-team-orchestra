@@ -54,7 +54,14 @@ public class EventsController {
             @RequestParam(required = false) Boolean rootApps,
             @RequestParam(required = false) Float minSuspectScore,
             @RequestParam(required = false) Boolean ipBlocklist,
-            @RequestParam(required = false) Boolean datacenter
+            @RequestParam(required = false) Boolean datacenter,
+            @RequestParam(required = false) Boolean developerTools,
+            @RequestParam(required = false) Boolean locationSpoofing,
+            @RequestParam(required = false) Boolean mitmAttack,
+            @RequestParam(required = false) Boolean proxy,
+            @RequestParam(required = false) String sdkVersion,
+            @RequestParam(required = false) String sdkPlatform,
+            @RequestParam(required = false) List<String> environment,
     ) {
         ApiClient client = Configuration.getDefaultApiClient(apiKey, Utils.getRegion(region));
         FingerprintApi api = new FingerprintApi(client);
@@ -85,6 +92,13 @@ public class EventsController {
                             .setMinSuspectScore(minSuspectScore)
                             .setIpBlocklist(ipBlocklist)
                             .setDatacenter(datacenter)
+                            .setDeveloperTools(developerTools)
+                            .setLocationSpoofing(locationSpoofing)
+                            .setMitmAttack(mitmAttack)
+                            .setProxy(proxy)
+                            .setSdkVersion(sdkVersion)
+                            .setSdkPlatform(sdkPlatform)
+                            .setEnvironment(environment)
                     );
             final SearchEventsResponse events = apiResponse.getData();
             final int code = apiResponse.getStatusCode();
