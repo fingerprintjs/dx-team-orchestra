@@ -37,6 +37,13 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	var minSuspectScore *float32
 	var ipBlocklist *bool
 	var datacenter *bool
+	var developerTools *bool
+	var locationSpoofing *bool
+	var mitmAttack *bool
+	var proxy *bool
+	var sdkVersion *string
+	var sdkPlatform *string
+	var environment []string
 
 	if query.Has("limit") {
 		limitInt64, _ :=
@@ -139,6 +146,37 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 			datacenter = &val
 		}
 	}
+	if query.Has("developerTools") {
+		if val, err := strconv.ParseBool(query.Get("developerTools")); err == nil {
+			developerTools = &val
+		}
+	}
+	if query.Has("locationSpoofing") {
+		if val, err := strconv.ParseBool(query.Get("locationSpoofing")); err == nil {
+			locationSpoofing = &val
+		}
+	}
+	if query.Has("mitmAttack") {
+		if val, err := strconv.ParseBool(query.Get("mitmAttack")); err == nil {
+			mitmAttack = &val
+		}
+	}
+	if query.Has("proxy") {
+		if val, err := strconv.ParseBool(query.Get("proxy")); err == nil {
+			proxy = &val
+		}
+	}
+	if query.Has("sdkVersion") {
+		val := query.Get("sdkVersion")
+		sdkVersion = &val
+	}
+	if query.Has("sdkPlatform") {
+		val := query.Get("sdkPlatform")
+		sdkPlatform = &val
+	}
+	if query.Has("environment") {
+		environment = query["environment"]
+	}
 
 	paginationKey := query.Get("paginationKey")
 	visitorId := query.Get("visitorId")
@@ -170,6 +208,13 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 		MinSuspectScore:   minSuspectScore,
 		IpBlocklist:       ipBlocklist,
 		Datacenter:        datacenter,
+		DeveloperTools:    developerTools,
+		LocationSpoofing:  locationSpoofing,
+		MitmAttack:        mitmAttack,
+		Proxy:             proxy,
+		SdkVersion:        sdkVersion,
+		SdkPlatform:       sdkPlatform,
+		Environment:       environment,
 	}
 	if bot != "" {
 		searchEventsOpts.Bot = &bot
