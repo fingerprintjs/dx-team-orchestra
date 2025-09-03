@@ -90,6 +90,13 @@ test.describe('SearchEvents suite', () => {
     const suspectScore = event.products.suspectScore?.data?.result || 0.5
     const ipBlocklist = event.products.ipBlocklist?.data?.result === true
     const datacenter = event.products.ipInfo?.data?.v4?.datacenter?.result === true
+    const developerTools = event.products.developerTools?.data?.result === true
+    const locationSpoofing = event.products.locationSpoofing?.data?.result === true
+    const mitmAttack = event.products.mitmAttack?.data?.result === true
+    const proxy = event.products.proxy?.data?.result === true
+    const sdkVersion = event.products.identification?.data?.sdk?.version
+    const sdkPlatform = event.products.identification?.data?.sdk?.platform
+    const environment = [event.products.identification?.data?.environmentId]
 
     await assert.thatResponseMatch({
       expectedStatusCode: 200,
@@ -123,6 +130,13 @@ test.describe('SearchEvents suite', () => {
           paginationKey: '',
           ipBlocklist,
           datacenter,
+          developerTools,
+          locationSpoofing,
+          mitmAttack,
+          proxy,
+          sdkVersion,
+          sdkPlatform,
+          environment,
         }),
     })
   })

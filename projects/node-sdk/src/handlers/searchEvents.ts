@@ -34,12 +34,12 @@ interface QueryParams {
   minSuspectScore?: SearchEventsFilter['min_suspect_score']
   ipBlocklist?: SearchEventsFilter['ip_blocklist']
   datacenter?: SearchEventsFilter['datacenter']
-  developerTools?: SearchEventsFilter['developerTools']
-  locationSpoofing?: SearchEventsFilter['locationSpoofing']
-  mitmAttack?: SearchEventsFilter['mitmAttack']
+  developerTools?: SearchEventsFilter['developer_tools']
+  locationSpoofing?: SearchEventsFilter['location_spoofing']
+  mitmAttack?: SearchEventsFilter['mitm_attack']
   proxy?: SearchEventsFilter['proxy']
-  sdkVersion?: SearchEventsFilter['sdkVersion']
-  sdkPlatform?: SearchEventsFilter['sdkPlatform']
+  sdkVersion?: SearchEventsFilter['sdk_version']
+  sdkPlatform?: SearchEventsFilter['sdk_platform']
   environment?: SearchEventsFilter['environment']
 }
 
@@ -78,7 +78,7 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     proxy,
     sdkVersion,
     sdkPlatform,
-    environment
+    environment,
   } = req.query
 
   const filter: SearchEventsFilter = {
@@ -176,10 +176,9 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
   if (sdkPlatform !== undefined) {
     filter.sdk_platform = sdkPlatform
   }
-  if(environment !== undefined) {
+  if (environment !== undefined) {
     filter.environment = environment
   }
-
 
   let result: MusicianResponse<SearchEventsResponse>
   try {

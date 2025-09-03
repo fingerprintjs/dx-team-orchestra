@@ -73,6 +73,13 @@ export type SearchEventsParams = {
   minSuspectScore?: number
   ipBlocklist?: boolean
   datacenter?: boolean
+  developerTools?: boolean
+  locationSpoofing?: boolean
+  mitmAttack?: boolean
+  proxy?: boolean
+  sdkVersion?: string
+  sdkPlatform?: string
+  environment?: string[]
 }
 
 export type GetEventsParams = { apiKey: string; region: string; requestId: string }
