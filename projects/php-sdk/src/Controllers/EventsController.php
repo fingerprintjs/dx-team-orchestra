@@ -44,6 +44,13 @@ class EventsController
         $minSuspectScore = isset($queryParams['minSuspectScore']) ? (float) $queryParams['minSuspectScore'] : null;
         $ipBlocklist = isset($queryParams['ipBlocklist']) ? filter_var($queryParams['ipBlocklist'], FILTER_VALIDATE_BOOLEAN) : null;
         $datacenter = isset($queryParams['datacenter']) ? filter_var($queryParams['datacenter'], FILTER_VALIDATE_BOOLEAN) : null;
+        $developerTools = isset($queryParams['developerTools']) ? filter_var($queryParams['developerTools'], FILTER_VALIDATE_BOOLEAN) : null;
+        $locationSpoofing = isset($queryParams['locationSpoofing']) ? filter_var($queryParams['locationSpoofing'], FILTER_VALIDATE_BOOLEAN) : null;
+        $mitmAttack = isset($queryParams['mitmAttack']) ? filter_var($queryParams['mitmAttack'], FILTER_VALIDATE_BOOLEAN) : null;
+        $proxy = isset($queryParams['proxy']) ? filter_var($queryParams['proxy'], FILTER_VALIDATE_BOOLEAN) : null;
+        $sdkVersion = $queryParams['sdkVersion'] ?? null;
+        $sdkPlatform = $queryParams['sdkPlatform'] ?? null;
+        $environment = $queryParams['environment'] ?? null;
 
         $config = Configuration::getDefaultConfiguration($apiKey, $region);
         $client = new FingerprintApi(
@@ -77,7 +84,14 @@ class EventsController
                 root_apps: $rootApps,
                 min_suspect_score: $minSuspectScore,
                 ip_blocklist: $ipBlocklist,
-                datacenter: $datacenter
+                datacenter: $datacenter,
+                developer_tools: $developerTools,
+                location_spoofing: $locationSpoofing,
+                mitm_attack: $mitmAttack,
+                proxy: $proxy,
+                sdk_version: $sdkVersion,
+                sdk_platform: $sdkPlatform,
+                environment: $environment,
             );
 
             $result = new MusicianResponse($apiResponse->getStatusCode(), $apiResponse, $model);
