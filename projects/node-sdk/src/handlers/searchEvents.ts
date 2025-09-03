@@ -34,6 +34,13 @@ interface QueryParams {
   minSuspectScore?: SearchEventsFilter['min_suspect_score']
   ipBlocklist?: SearchEventsFilter['ip_blocklist']
   datacenter?: SearchEventsFilter['datacenter']
+  developerTools?: SearchEventsFilter['developerTools']
+  locationSpoofing?: SearchEventsFilter['locationSpoofing']
+  mitmAttack?: SearchEventsFilter['mitmAttack']
+  proxy?: SearchEventsFilter['proxy']
+  sdkVersion?: SearchEventsFilter['sdkVersion']
+  sdkPlatform?: SearchEventsFilter['sdkPlatform']
+  environment?: SearchEventsFilter['environment']
 }
 
 export const searchEvents: Handler<QueryParams> = async (req, res) => {
@@ -65,6 +72,13 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     minSuspectScore,
     ipBlocklist,
     datacenter,
+    developerTools,
+    locationSpoofing,
+    mitmAttack,
+    proxy,
+    sdkVersion,
+    sdkPlatform,
+    environment
   } = req.query
 
   const filter: SearchEventsFilter = {
@@ -144,6 +158,28 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
   if (datacenter !== undefined) {
     filter.datacenter = datacenter
   }
+  if (developerTools !== undefined) {
+    filter.developer_tools = developerTools
+  }
+  if (locationSpoofing !== undefined) {
+    filter.location_spoofing = locationSpoofing
+  }
+  if (mitmAttack !== undefined) {
+    filter.mitm_attack = mitmAttack
+  }
+  if (proxy !== undefined) {
+    filter.proxy = proxy
+  }
+  if (sdkVersion !== undefined) {
+    filter.sdk_version = sdkVersion
+  }
+  if (sdkPlatform !== undefined) {
+    filter.sdk_platform = sdkPlatform
+  }
+  if(environment !== undefined) {
+    filter.environment = environment
+  }
+
 
   let result: MusicianResponse<SearchEventsResponse>
   try {
