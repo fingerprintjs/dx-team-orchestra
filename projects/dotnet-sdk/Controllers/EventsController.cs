@@ -73,7 +73,7 @@ namespace dotnet_sdk.Controllers
             [FromQuery] bool? proxy,
             [FromQuery] string? sdkVersion,
             [FromQuery] string? sdkPlatform,
-            [FromQuery] List<string>? environment,
+            [FromQuery] List<string>? environment
             )
         {
             try
