@@ -51,6 +51,8 @@ class EventsController
         $sdkVersion = $queryParams['sdkVersion'] ?? null;
         $sdkPlatform = $queryParams['sdkPlatform'] ?? null;
         $environment = $queryParams['environment'] ?? null;
+        $proximityId = $queryParams['proximityId'] ?? null;
+        $proximityPrecisionRadius = $queryParams['proximityPrecisionRadius'] ?? null;
 
         $config = Configuration::getDefaultConfiguration($apiKey, $region);
         $client = new FingerprintApi(
@@ -92,6 +94,8 @@ class EventsController
                 sdk_version: $sdkVersion,
                 sdk_platform: $sdkPlatform,
                 environment: $environment,
+                proximity_id: $proximityId,
+                proximity_precision_radius: $proximityPrecisionRadius
             );
 
             $result = new MusicianResponse($apiResponse->getStatusCode(), $apiResponse, $model);

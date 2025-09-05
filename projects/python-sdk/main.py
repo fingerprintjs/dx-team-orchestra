@@ -64,6 +64,8 @@ def search_events():
         "sdk_version": request.args.get('sdkVersion'),
         "sdk_platform": request.args.get('sdkPlatform'),
         "environment": request.args.getlist('environment'),
+        "proximity_id": request.args.get('proximityId'),
+        "proximity_precision_radius": request.args.get('proximityPrecisionRadius'),
     }
 
     filtered_additional_params = {key: value for key, value in additional_params.items() if value is not None}

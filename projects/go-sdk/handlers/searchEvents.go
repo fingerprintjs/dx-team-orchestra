@@ -44,6 +44,8 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	var sdkVersion *string
 	var sdkPlatform *string
 	var environment []string
+	var proximityId *string
+	var proximityPrecisionRadius *int
 
 	if query.Has("limit") {
 		limitInt64, _ :=
@@ -177,6 +179,15 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	if query.Has("environment") {
 		environment = query["environment"]
 	}
+	if query.Has("proximityId") {
+		val := query.Get("proximityId")
+		proximityId = &val
+	}
+	if query.Has("proximityPrecisionRadius") {
+		if val, err := strconv.ParseInt(query.Get("proximityPrecisionRadius")); err == nil {
+			proximityPrecisionRadius = &val
+		}
+	}
 
 	paginationKey := query.Get("paginationKey")
 	visitorId := query.Get("visitorId")
@@ -186,35 +197,37 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	vpnConfidence := query.Get("vpnConfidence")
 
 	searchEventsOpts := sdk.FingerprintApiSearchEventsOpts{
-		PaginationKey:     &paginationKey,
-		VisitorId:         &visitorId,
-		LinkedId:          &linkedId,
-		Start:             start,
-		End:               end,
-		Reverse:           reverse,
-		Suspect:           suspect,
-		Vpn:               vpn,
-		VirtualMachine:    virtualMachine,
-		Tampering:         tampering,
-		AntiDetectBrowser: antiDetectBrowser,
-		Incognito:         incognito,
-		PrivacySettings:   privacySettings,
-		Jailbroken:        jailbroken,
-		Frida:             frida,
-		FactoryReset:      factoryReset,
-		ClonedApp:         clonedApp,
-		Emulator:          emulator,
-		RootApps:          rootApps,
-		MinSuspectScore:   minSuspectScore,
-		IpBlocklist:       ipBlocklist,
-		Datacenter:        datacenter,
-		DeveloperTools:    developerTools,
-		LocationSpoofing:  locationSpoofing,
-		MitmAttack:        mitmAttack,
-		Proxy:             proxy,
-		SdkVersion:        sdkVersion,
-		SdkPlatform:       sdkPlatform,
-		Environment:       environment,
+		PaginationKey:            &paginationKey,
+		VisitorId:                &visitorId,
+		LinkedId:                 &linkedId,
+		Start:                    start,
+		End:                      end,
+		Reverse:                  reverse,
+		Suspect:                  suspect,
+		Vpn:                      vpn,
+		VirtualMachine:           virtualMachine,
+		Tampering:                tampering,
+		AntiDetectBrowser:        antiDetectBrowser,
+		Incognito:                incognito,
+		PrivacySettings:          privacySettings,
+		Jailbroken:               jailbroken,
+		Frida:                    frida,
+		FactoryReset:             factoryReset,
+		ClonedApp:                clonedApp,
+		Emulator:                 emulator,
+		RootApps:                 rootApps,
+		MinSuspectScore:          minSuspectScore,
+		IpBlocklist:              ipBlocklist,
+		Datacenter:               datacenter,
+		DeveloperTools:           developerTools,
+		LocationSpoofing:         locationSpoofing,
+		MitmAttack:               mitmAttack,
+		Proxy:                    proxy,
+		SdkVersion:               sdkVersion,
+		SdkPlatform:              sdkPlatform,
+		Environment:              environment,
+		ProximityId:              proximityId,
+		ProximityPrecisionRadius: proximityPrecisionRadius,
 	}
 	if bot != "" {
 		searchEventsOpts.Bot = &bot

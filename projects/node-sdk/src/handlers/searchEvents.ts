@@ -41,6 +41,8 @@ interface QueryParams {
   sdkVersion?: SearchEventsFilter['sdk_version']
   sdkPlatform?: SearchEventsFilter['sdk_platform']
   environment?: SearchEventsFilter['environment']
+  proximityId?: SearchEventsFilter['proximity_id']
+  proximityPrecisionRadius?: SearchEventsFilter['proximity_precision_radius']
 }
 
 export const searchEvents: Handler<QueryParams> = async (req, res) => {
@@ -79,6 +81,8 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     sdkVersion,
     sdkPlatform,
     environment,
+    proximityId,
+    proximityPrecisionRadius,
   } = req.query
 
   const filter: SearchEventsFilter = {
@@ -178,6 +182,12 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
   }
   if (environment !== undefined) {
     filter.environment = environment
+  }
+  if (proximityId !== undefined) {
+    filter.proximity_id = proximityId
+  }
+  if (proximityPrecisionRadius !== undefined) {
+    filter.proximity_precision_radius = proximityPrecisionRadius
   }
 
   let result: MusicianResponse<SearchEventsResponse>

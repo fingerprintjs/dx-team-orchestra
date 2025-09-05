@@ -62,7 +62,9 @@ public class EventsController {
             @RequestParam(required = false) Boolean proxy,
             @RequestParam(required = false) String sdkVersion,
             @RequestParam(required = false) String sdkPlatform,
-            @RequestParam(required = false) List<String> environment
+            @RequestParam(required = false) List<String> environment,
+            @RequestParam(required = false) String proximityId,
+            @RequestParam(required = false) Integer proximityPrecisionRadius
     ) {
         ApiClient client = Configuration.getDefaultApiClient(apiKey, Utils.getRegion(region));
         FingerprintApi api = new FingerprintApi(client);
@@ -100,6 +102,8 @@ public class EventsController {
                             .setSdkVersion(sdkVersion)
                             .setSdkPlatform(sdkPlatform)
                             .setEnvironment(environment)
+                            .setProximityId(proximityId)
+                            .setProximityPrecisionRadius(proximityPrecisionRadius)
                     );
             final SearchEventsResponse events = apiResponse.getData();
             final int code = apiResponse.getStatusCode();
