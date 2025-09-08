@@ -45,7 +45,7 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	var sdkPlatform *string
 	var environment []string
 	var proximityId *string
-	var proximityPrecisionRadius *int
+	var proximityPrecisionRadius *int64
 
 	if query.Has("limit") {
 		limitInt64, _ :=
@@ -184,8 +184,8 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 		proximityId = &val
 	}
 	if query.Has("proximityPrecisionRadius") {
-		if val, err := strconv.ParseInt(query.Get("proximityPrecisionRadius")); err == nil {
-			proximityPrecisionRadius = &val
+		if proximityInt64, err := strconv.ParseInt(query.Get("proximityPrecisionRadius"), 10, 64); err == nil {
+			proximityPrecisionRadius = &proximityInt64
 		}
 	}
 
