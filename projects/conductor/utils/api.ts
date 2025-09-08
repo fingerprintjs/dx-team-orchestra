@@ -185,7 +185,7 @@ export class RealFingerprintApi implements FingerprintApi {
   }
 
   async searchEvents(params: SearchEventsParams): Promise<JsonResponse<SearchEventsResponse>> {
-    const queryParams: Record<string, string | number | boolean> = {}
+    const queryParams: RequestParams = {}
 
     if (typeof params.limit === 'number') {
       queryParams.limit = params.limit
@@ -264,6 +264,27 @@ export class RealFingerprintApi implements FingerprintApi {
     }
     if (typeof params.datacenter === 'boolean') {
       queryParams.datacenter = params.datacenter
+    }
+    if (typeof params.developerTools === 'boolean') {
+      queryParams.developerTools = params.developerTools
+    }
+    if (typeof params.locationSpoofing === 'boolean') {
+      queryParams.locationSpoofing = params.locationSpoofing
+    }
+    if (typeof params.mitmAttack === 'boolean') {
+      queryParams.mitmAttack = params.mitmAttack
+    }
+    if (typeof params.proxy === 'boolean') {
+      queryParams.proxy = params.proxy
+    }
+    if (typeof params.sdkVersion === 'string') {
+      queryParams.sdkVersion = params.sdkVersion
+    }
+    if (typeof params.sdkPlatform === 'string') {
+      queryParams.sdkPlatform = params.sdkPlatform
+    }
+    if (Array.isArray(params.environment) && params.environment.every(value => typeof value === 'string')) {
+      queryParams.environment = params.environment
     }
 
     return await jsonRequest<SearchEventsResponse>({
