@@ -2,5 +2,10 @@
     "require": {
         "fingerprint/fingerprint-pro-server-api-sdk": "dev-main",
         "slim/slim": "^4.15"
+    },
+    "autoload": {
+        "psr-4": {
+            "PHP_SDK\\": "src/"
+        }
     }
 }
