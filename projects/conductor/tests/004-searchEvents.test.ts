@@ -97,10 +97,10 @@ test.describe('SearchEvents suite', () => {
     const sdkVersion = event.products.identification?.data?.sdk?.version
     const sdkPlatform = event.products.identification?.data?.sdk?.platform
 
-    const environmentId = event.products.identification?.data?.environmentId
+    const environmentId = event.products.identification?.data?.environmentId || undefined
     const environment = environmentId ? [environmentId] : undefined
-    const proximityId = event.products.proximity?.data?.id
-    const proximityPrecisionRadius = event.products.proximity?.data?.precisionRadius
+    const proximityId = event.products.proximity?.data?.id || undefined
+    const proximityPrecisionRadius = event.products.proximity?.data?.precisionRadius || undefined
 
     await assert.thatResponseMatch({
       expectedStatusCode: 200,
