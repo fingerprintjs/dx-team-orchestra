@@ -59,7 +59,36 @@ test.describe('SearchEvents suite', () => {
     })
   })
 
-  test('with all params', async ({ identify, assert, fingerprintApi }) => {
+  test('with environment as array', async ({ identify, assert, fingerprintApi}) => {
+    const { visitorId, requestId } = await identify({
+      auth: testData.credentials.maxFeaturesUS,
+      linkedId: 'test',
+    })
+
+    const { data: event } = await fingerprintApi.getEvent({
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      region: testData.credentials.maxFeaturesUS.region,
+      requestId,
+    })
+
+    const environment = [event.products.identification?.data?.environmentId]
+
+    await assert.thatResponseMatch({
+      expectedStatusCode: 200,
+      callback: (api) =>
+        api.searchEvents({
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          limit: 10,
+          visitorId,
+          linkedId: 'test',
+          paginationKey: '',
+          environment,
+        }),
+    })
+  })
+
+  test('with all params and environment as string', async ({ identify, assert, fingerprintApi }) => {
     const { visitorId, requestId } = await identify({
       auth: testData.credentials.maxFeaturesUS,
       linkedId: 'test',
@@ -96,7 +125,7 @@ test.describe('SearchEvents suite', () => {
     const proxy = event.products.proxy?.data?.result === true
     const sdkVersion = event.products.identification?.data?.sdk?.version
     const sdkPlatform = event.products.identification?.data?.sdk?.platform
-    const environment = [event.products.identification?.data?.environmentId]
+    const environment = event.products.identification?.data?.environmentId
     const proximityId = event.products.proximity?.data?.id
     const proximityPrecisionRadius = event.products.proximity?.data?.precisionRadius
 

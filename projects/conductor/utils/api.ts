@@ -79,7 +79,9 @@ export type SearchEventsParams = {
   proxy?: boolean
   sdkVersion?: string
   sdkPlatform?: string
-  environment?: string[]
+  environment?: string[] | string
+  proximityId?: string
+  proximityPrecisionRadius?: number
 }
 
 export type GetEventsParams = { apiKey: string; region: string; requestId: string }
