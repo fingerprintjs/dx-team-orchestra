@@ -59,6 +59,42 @@ test.describe('SearchEvents suite', () => {
     })
   })
 
+  test('with environment as empty array param', async ({ identify, assert }) => {
+    const { visitorId } = await identify({
+      auth: testData.credentials.maxFeaturesUS,
+    })
+
+    await assert.thatResponseMatch({
+      expectedStatusCode: 200,
+      callback: (api) =>
+        api.searchEvents({
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          limit: 10,
+          visitorId,
+          environment: [],
+        }),
+    })
+  })
+
+  test('with environment as incorrect array params', async ({ identify, assert }) => {
+    const { visitorId } = await identify({
+      auth: testData.credentials.maxFeaturesUS,
+    })
+
+    await assert.thatResponseMatch({
+      expectedStatusCode: 200,
+      callback: (api) =>
+        api.searchEvents({
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          limit: 10,
+          visitorId,
+          environment: [null, undefined],
+        }),
+    })
+  })
+
   test('with all params', async ({ identify, assert, fingerprintApi }) => {
     const { visitorId, requestId } = await identify({
       auth: testData.credentials.maxFeaturesUS,
