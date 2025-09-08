@@ -96,7 +96,9 @@ test.describe('SearchEvents suite', () => {
     const proxy = event.products.proxy?.data?.result === true
     const sdkVersion = event.products.identification?.data?.sdk?.version
     const sdkPlatform = event.products.identification?.data?.sdk?.platform
-    const environment = [event.products.identification?.data?.environmentId]
+
+    const environmentId = event.products.identification?.data?.environmentId
+    const environment = environmentId ? [environmentId] : undefined
     const proximityId = event.products.proximity?.data?.id
     const proximityPrecisionRadius = event.products.proximity?.data?.precisionRadius
 
