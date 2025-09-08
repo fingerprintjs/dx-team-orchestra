@@ -266,25 +266,31 @@ export class RealFingerprintApi implements FingerprintApi {
       queryParams.datacenter = params.datacenter
     }
     if (typeof params.developerTools === 'boolean') {
-      queryParams.developerTools = params.developerTools
+      queryParams.developer_tools = params.developerTools
     }
     if (typeof params.locationSpoofing === 'boolean') {
-      queryParams.locationSpoofing = params.locationSpoofing
+      queryParams.location_spoofing = params.locationSpoofing
     }
     if (typeof params.mitmAttack === 'boolean') {
-      queryParams.mitmAttack = params.mitmAttack
+      queryParams.mitm_attack = params.mitmAttack
     }
     if (typeof params.proxy === 'boolean') {
       queryParams.proxy = params.proxy
     }
     if (typeof params.sdkVersion === 'string') {
-      queryParams.sdkVersion = params.sdkVersion
+      queryParams.sdk_version = params.sdkVersion
     }
     if (typeof params.sdkPlatform === 'string') {
-      queryParams.sdkPlatform = params.sdkPlatform
+      queryParams.sdk_platform = params.sdkPlatform
     }
     if (Array.isArray(params.environment) && params.environment.every(value => typeof value === 'string')) {
       queryParams.environment = params.environment
+    }
+    if (typeof params.proximityId === 'string') {
+      queryParams.proximity_id = params.proximityId
+    }
+    if (typeof params.proximityPrecisionRadius === 'number') {
+      queryParams.proximity_precision_radius = params.proximityPrecisionRadius
     }
 
     return await jsonRequest<SearchEventsResponse>({
