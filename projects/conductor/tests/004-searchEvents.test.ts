@@ -98,7 +98,7 @@ test.describe('SearchEvents suite', () => {
     const sdkPlatform = event.products.identification?.data?.sdk?.platform
     const environment = [event.products.identification?.data?.environmentId]
     const proximityId = event.products.proximity?.data?.id
-    const proximityPrecisionRadius = event.products.proximity?.data?.radius
+    const proximityPrecisionRadius = event.products.proximity?.data?.precisionRadius
 
     await assert.thatResponseMatch({
       expectedStatusCode: 200,
