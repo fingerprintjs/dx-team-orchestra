@@ -1,32 +1,46 @@
 version: '3'
 services:
   java-sdk:
+    networks:
+      - orchestra_default
     build:
       context: ./projects/java-sdk
     ports:
       - "8080:8080"
   dotnet-sdk:
+    networks:
+      - orchestra_default
     build:
       context: ./projects/dotnet-sdk
     ports:
       - "5243:5243"
   go-sdk:
+    networks:
+      - orchestra_default
     build:
       context: ./projects/go-sdk
     ports:
       - "8081:8081"
   node-sdk:
+    networks:
+      - orchestra_default
     build:
       context: ./projects/node-sdk
     ports:
       - "3002:3002"
   python-sdk:
+    networks:
+      - orchestra_default
     build:
       context: ./projects/python-sdk
     ports:
       - "3003:3003"
   php-sdk:
+    networks:
+      - orchestra_default
     build:
       context: ./projects/php-sdk
     ports:
       - "3004:3004"
+networks:
+  orchestra_default:
