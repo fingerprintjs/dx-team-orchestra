@@ -50,9 +50,26 @@ class EventsController
         $proxy = isset($queryParams['proxy']) ? filter_var($queryParams['proxy'], FILTER_VALIDATE_BOOLEAN) : null;
         $sdkVersion = $queryParams['sdkVersion'] ?? null;
         $sdkPlatform = $queryParams['sdkPlatform'] ?? null;
-        $environment = $queryParams['environment'] ?? null;
         $proximityId = $queryParams['proximityId'] ?? null;
         $proximityPrecisionRadius = $queryParams['proximityPrecisionRadius'] ?? null;
+
+        $environmentRaw = $queryParams['environment'] ?? null;
+        $environment = null;
+
+        if (is_array($environmentRaw)) {
+            $environment = array_values(
+                array_filter(
+                    array_map(fn($v) => is_string($v) ? trim($v) : null, $environmentRaw),
+                    fn($v) => $v !== null && $v !== ''
+                )
+            );
+            if ($environment === []) {
+                $environment = null;
+            }
+        } elseif (is_string($environmentRaw)) {
+            $environmentRaw = trim($environmentRaw);
+            $environment = $environmentRaw !== '' ? [$environmentRaw] : null;
+        }
 
         $config = Configuration::getDefaultConfiguration($apiKey, $region);
         $client = new FingerprintApi(
