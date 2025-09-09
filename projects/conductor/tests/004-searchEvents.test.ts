@@ -23,6 +23,45 @@ test.describe('SearchEvents suite', () => {
     })
   })
 
+  test('with multiple environments', async ({ identify, sdkApi }) => {
+    const linkedId = `test_multi_env_${Date.now()}`
+    console.log({ linkedId })
+
+    await identify({
+      auth: testData.credentials.maxFeaturesUS,
+      linkedId,
+    })
+
+    await identify({
+      auth: testData.credentials.sealedMaximumFeaturesUs,
+      linkedId,
+    })
+
+    await delay(15_000)
+
+    const result = await sdkApi.searchEvents({
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      region: testData.credentials.maxFeaturesUS.region,
+      limit: 10,
+      linkedId,
+    })
+
+    const environmentIds =
+      result.data?.events?.map((event) => event.products.identification.data.environmentId)?.filter((t) => t) ?? []
+
+    expect(environmentIds).toHaveLength(2)
+
+    const sdkResultsByEnv = await sdkApi.searchEvents({
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      region: testData.credentials.maxFeaturesUS.region,
+      limit: 10,
+      environment: environmentIds,
+      linkedId,
+    })
+
+    expect(sdkResultsByEnv.data?.events ?? []).toHaveLength(2)
+  })
+
   test('with invalid limit', async ({ assert }) => {
     await assert.thatResponseMatch({
       expectedStatusCode: 400,
@@ -109,8 +148,8 @@ test.describe('SearchEvents suite', () => {
 
     // Use timestamp from the event to create start and end times
     const timestamp = event.products.identification.data.timestamp || Date.now()
-    const start = timestamp - (60 * 60 * 1000) // 1 hour before
-    const end = timestamp + (60 * 60 * 1000)   // 1 hour after
+    const start = timestamp - 60 * 60 * 1000 // 1 hour before
+    const end = timestamp + 60 * 60 * 1000 // 1 hour after
 
     // Get values from event if available
     const botValue = event.products.botd?.data?.bot?.result
@@ -206,7 +245,7 @@ test.describe('SearchEvents suite', () => {
   })
 
   test('with paginationKey', async ({ fingerprintApi, assert }) => {
-    const {data: originalResult} = await fingerprintApi.searchEvents({
+    const { data: originalResult } = await fingerprintApi.searchEvents({
       limit: 1,
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
       region: testData.credentials.maxFeaturesUS.region,
@@ -222,12 +261,13 @@ test.describe('SearchEvents suite', () => {
     })
 
     expect(originalResult.events.length).toBe(1)
-    expect(paginatedResult.events[0].products.identification.data.requestId)
-        .not.toEqual(originalResult.events[0].products.identification.data.requestId);
+    expect(paginatedResult.events[0].products.identification.data.requestId).not.toEqual(
+      originalResult.events[0].products.identification.data.requestId
+    )
   })
 
   test('with paginationKey reversed', async ({ fingerprintApi, assert }) => {
-    const {data: originalResult} = await fingerprintApi.searchEvents({
+    const { data: originalResult } = await fingerprintApi.searchEvents({
       limit: 1,
       reverse: true,
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
@@ -245,8 +285,9 @@ test.describe('SearchEvents suite', () => {
     })
 
     expect(originalResult.events.length).toBe(1)
-    expect(paginatedResult.events[0].products.identification.data.requestId)
-        .not.toEqual(originalResult.events[0].products.identification.data.requestId);
+    expect(paginatedResult.events[0].products.identification.data.requestId).not.toEqual(
+      originalResult.events[0].products.identification.data.requestId
+    )
   })
 
   test('with invalid bot', async ({ assert }) => {
