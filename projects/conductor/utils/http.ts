@@ -80,7 +80,7 @@ export async function jsonRequest<T = any>({
       headers,
       text,
     })
-    throw new Error(`Request failed with status ${response.status()}`)
+    throw new Error(`Request failed with status ${response.status()} | Response Text: ${text}`)
   }
 
   return { data: await response.json(), response }
