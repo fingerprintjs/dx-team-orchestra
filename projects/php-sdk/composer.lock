@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ff5d52a479a28076e0724ce054838a9d",
+    "content-hash": "a4cf7a861d0b820863718433e898fdaa",
     "packages": [
         {
             "name": "fingerprint/fingerprint-pro-server-api-sdk",
-            "version": "dev-main",
+            "version": "6.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk.git",
-                "reference": "591c3c6e86b825456bc3cbc6616309b1a0c6ec44"
+                "reference": "b8152f48562cd8bab0230edce923d1185f8996c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fingerprintjs/fingerprint-pro-server-api-php-sdk/zipball/591c3c6e86b825456bc3cbc6616309b1a0c6ec44",
-                "reference": "591c3c6e86b825456bc3cbc6616309b1a0c6ec44",
+                "url": "https://api.github.com/repos/fingerprintjs/fingerprint-pro-server-api-php-sdk/zipball/b8152f48562cd8bab0230edce923d1185f8996c8",
+                "reference": "b8152f48562cd8bab0230edce923d1185f8996c8",
                 "shasum": ""
             },
             "require": {
@@ -33,7 +33,6 @@
                 "phpunit/phpunit": "^11.5",
                 "vlucas/phpdotenv": "^5.6"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -73,9 +72,9 @@
             ],
             "support": {
                 "issues": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk/issues",
-                "source": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk/tree/v6.10.0-develop.1"
+                "source": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk/tree/v6.10.0"
             },
-            "time": "2025-09-08T10:07:22+00:00"
+            "time": "2025-09-10T09:56:36+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1059,9 +1058,7 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "fingerprint/fingerprint-pro-server-api-sdk": 20
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {},
