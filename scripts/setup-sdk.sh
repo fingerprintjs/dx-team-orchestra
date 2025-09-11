@@ -49,6 +49,28 @@ if [[ "$LANGUAGE" == "java" || "$LANGUAGE" == "go" ]]; then
     [[ "$SDK_VERSION" != v* ]] && SDK_VERSION="v$SDK_VERSION"
 fi
 
+replace_java_dep() {
+  local file="build.gradle.kts"
+  local pattern='com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:[^"'\'' ]*'
+  local replacement="com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:$SDK_VERSION"
+
+  if command -v gsed >/dev/null 2>&1; then
+    # GNU sed (often installed as gsed on macOS via Homebrew)
+    gsed -i "s|$pattern|$replacement|g" "$file"
+  else
+    case "$(uname -s)" in
+      Darwin)
+        # macOS BSD sed requires a zero-length backup suffix: -i ''
+        sed -i '' "s|$pattern|$replacement|g" "$file"
+        ;;
+      *)
+        # Linux (GNU sed)
+        sed -i "s|$pattern|$replacement|g" "$file"
+        ;;
+    esac
+  fi
+}
+
 echo "Using SDK version: $SDK_VERSION"
 
 case $LANGUAGE in
@@ -56,7 +78,7 @@ case $LANGUAGE in
         pnpm install $SDK_VERSION
         ;;
     "java")
-        sed -i "s|com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:[^\"']*|com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:$SDK_VERSION|g" build.gradle.kts
+        replace_java_dep
         ./gradlew dependencies --refresh-dependencies
         ;;
     "dotnet")
