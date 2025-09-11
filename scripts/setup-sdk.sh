@@ -51,7 +51,7 @@ fi
 
 replace_java_dep() {
   local file="build.gradle.kts"
-  local pattern='com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:[^"'\'' ]*'
+  local pattern="com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:[^\"' ]*"
   local replacement="com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:$SDK_VERSION"
 
   if command -v gsed >/dev/null 2>&1; then
