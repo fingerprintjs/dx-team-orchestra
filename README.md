@@ -23,7 +23,7 @@ It simulates an “orchestra” of services where:
 
 ## Architecture
 
-```shell
+```text
        ┌──────────────┐          ┌──────────────┐
        │  Conductor   │ ───────► │   Musician   │
        │ (Playwright) │          │ (Server SDK) │
