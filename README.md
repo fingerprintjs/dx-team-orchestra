@@ -128,7 +128,7 @@ Suppose we’re adding `/getRelatedVisitors`:
      - Create or extend the appropriate controller/handler (naming matches each language’s conventions, e.g., `RelatedVisitorsController` or an action inside `EventController`).
      - Call the corresponding Server SDK method.
      - Return a normalized response format so Conductor can assert consistently across SDKs (status code + JSON body fields).
-   - If SDK requires version bumps, use your helper script / manual steps per README “Updating SDK versions.”
+   - If SDK requires version bumps, use your helper script / manual steps per [Updating SDK versions](#updating-sdk-versions)
 3. Conductor
    - **Utility:** add a small wrapper/serializer for this endpoint in projects/conductor/utils/api.ts.
    - Test file: create a new numbered test file under `projects/conductor/tests/`, e.g.:
