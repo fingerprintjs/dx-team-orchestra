@@ -66,7 +66,16 @@ namespace dotnet_sdk.Controllers
             [FromQuery] bool? rootApps,
             [FromQuery] float? minSuspectScore,
             [FromQuery] bool? ipBlocklist,
-            [FromQuery] bool? datacenter
+            [FromQuery] bool? datacenter,
+            [FromQuery] bool? developerTools,
+            [FromQuery] bool? locationSpoofing,
+            [FromQuery] bool? mitmAttack,
+            [FromQuery] bool? proxy,
+            [FromQuery] string? sdkVersion,
+            [FromQuery] string? sdkPlatform,
+            [FromQuery] List<string>? environment,
+            [FromQuery] string? proximityId,
+            [FromQuery] int? proximityPrecisionRadius
             )
         {
             try
@@ -82,7 +91,10 @@ namespace dotnet_sdk.Controllers
                                                                start:start, end:end, reverse:reverse, suspect:suspect, vpn:vpn, virtualMachine:virtualMachine,
                                                                tampering:tampering, antiDetectBrowser:antiDetectBrowser, incognito:incognito, privacySettings:privacySettings,
                                                                jailbroken:jailbroken, frida:frida, factoryReset:factoryReset, clonedApp:clonedApp, emulator:emulator,
-                                                               rootApps:rootApps, minSuspectScore:minSuspectScore, ipBlocklist:ipBlocklist, datacenter:datacenter);
+                                                               rootApps:rootApps, minSuspectScore:minSuspectScore, ipBlocklist:ipBlocklist, datacenter:datacenter,
+                                                               developerTools: developerTools, locationSpoofing: locationSpoofing, mitmAttack: mitmAttack,
+                                                               proxy: proxy, sdkVersion: sdkVersion, sdkPlatform: sdkPlatform, environment: environment,
+                                                               proximityId: proximityId, proximityPrecisionRadius: proximityPrecisionRadius);
                 var eventResponse = apiResponse.Response;
                 var rawResponse = await eventResponse.Content.ReadAsStringAsync();
 

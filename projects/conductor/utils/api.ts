@@ -73,6 +73,15 @@ export type SearchEventsParams = {
   minSuspectScore?: number
   ipBlocklist?: boolean
   datacenter?: boolean
+  developerTools?: boolean
+  locationSpoofing?: boolean
+  mitmAttack?: boolean
+  proxy?: boolean
+  sdkVersion?: string
+  sdkPlatform?: string
+  environment?: string[]
+  proximityId?: string
+  proximityPrecisionRadius?: number
 }
 
 export type GetEventsParams = { apiKey: string; region: string; requestId: string }
@@ -176,7 +185,7 @@ export class RealFingerprintApi implements FingerprintApi {
   }
 
   async searchEvents(params: SearchEventsParams): Promise<JsonResponse<SearchEventsResponse>> {
-    const queryParams: Record<string, string | number | boolean> = {}
+    const queryParams: RequestParams = {}
 
     if (typeof params.limit === 'number') {
       queryParams.limit = params.limit
@@ -255,6 +264,33 @@ export class RealFingerprintApi implements FingerprintApi {
     }
     if (typeof params.datacenter === 'boolean') {
       queryParams.datacenter = params.datacenter
+    }
+    if (typeof params.developerTools === 'boolean') {
+      queryParams.developer_tools = params.developerTools
+    }
+    if (typeof params.locationSpoofing === 'boolean') {
+      queryParams.location_spoofing = params.locationSpoofing
+    }
+    if (typeof params.mitmAttack === 'boolean') {
+      queryParams.mitm_attack = params.mitmAttack
+    }
+    if (typeof params.proxy === 'boolean') {
+      queryParams.proxy = params.proxy
+    }
+    if (typeof params.sdkVersion === 'string') {
+      queryParams.sdk_version = params.sdkVersion
+    }
+    if (typeof params.sdkPlatform === 'string') {
+      queryParams.sdk_platform = params.sdkPlatform
+    }
+    if (Array.isArray(params.environment) && params.environment.every(value => typeof value === 'string')) {
+      queryParams.environment = params.environment
+    }
+    if (typeof params.proximityId === 'string') {
+      queryParams.proximity_id = params.proximityId
+    }
+    if (typeof params.proximityPrecisionRadius === 'number') {
+      queryParams.proximity_precision_radius = params.proximityPrecisionRadius
     }
 
     return await jsonRequest<SearchEventsResponse>({

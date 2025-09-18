@@ -6,9 +6,17 @@ import { defineConfig, devices } from '@playwright/test'
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+import * as dotenv from 'dotenv'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'url'
+
+// @ts-ignore
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
+if (!process.env.CI) {
+  dotenv.config({ path: resolve(__dirname, '.env') })
+}
 
 /**
  * See https://playwright.dev/docs/test-configuration.

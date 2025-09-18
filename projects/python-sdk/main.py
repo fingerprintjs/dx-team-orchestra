@@ -57,6 +57,15 @@ def search_events():
         "min_suspect_score": request.args.get('minSuspectScore'),
         "ip_blocklist": request.args.get('ipBlocklist'),
         "datacenter": request.args.get('datacenter'),
+        "developer_tools": request.args.get('developerTools'),
+        "location_spoofing": request.args.get('locationSpoofing'),
+        "mitm_attack": request.args.get('mitmAttack'),
+        "proxy": request.args.get('proxy'),
+        "sdk_version": request.args.get('sdkVersion'),
+        "sdk_platform": request.args.get('sdkPlatform'),
+        "environment": request.args.getlist('environment'),
+        "proximity_id": request.args.get('proximityId'),
+        "proximity_precision_radius": request.args.get('proximityPrecisionRadius'),
     }
 
     filtered_additional_params = {key: value for key, value in additional_params.items() if value is not None}

@@ -23,6 +23,45 @@ test.describe('SearchEvents suite', () => {
     })
   })
 
+  test('with multiple environments', async ({ identify, sdkApi }) => {
+    const linkedId = `test_multi_env_${Date.now()}`
+    console.log({ linkedId })
+
+    await identify({
+      auth: testData.credentials.maxFeaturesUS,
+      linkedId,
+    })
+
+    await identify({
+      auth: testData.credentials.sealedMaximumFeaturesUs,
+      linkedId,
+    })
+
+    await delay(15_000)
+
+    const result = await sdkApi.searchEvents({
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      region: testData.credentials.maxFeaturesUS.region,
+      limit: 10,
+      linkedId,
+    })
+
+    const environmentIds =
+      result.data?.events?.map((event) => event.products.identification.data.environmentId)?.filter((t) => t) ?? []
+
+    expect(environmentIds).toHaveLength(2)
+
+    const sdkResultsByEnv = await sdkApi.searchEvents({
+      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      region: testData.credentials.maxFeaturesUS.region,
+      limit: 10,
+      environment: environmentIds,
+      linkedId,
+    })
+
+    expect(sdkResultsByEnv.data?.events ?? []).toHaveLength(2)
+  })
+
   test('with invalid limit', async ({ assert }) => {
     await assert.thatResponseMatch({
       expectedStatusCode: 400,
@@ -59,6 +98,42 @@ test.describe('SearchEvents suite', () => {
     })
   })
 
+  test('with environment as empty array param', async ({ identify, assert }) => {
+    const { visitorId } = await identify({
+      auth: testData.credentials.maxFeaturesUS,
+    })
+
+    await assert.thatResponseMatch({
+      expectedStatusCode: 200,
+      callback: (api) =>
+        api.searchEvents({
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          limit: 10,
+          visitorId,
+          environment: [],
+        }),
+    })
+  })
+
+  test('with environment as incorrect array params', async ({ identify, assert }) => {
+    const { visitorId } = await identify({
+      auth: testData.credentials.maxFeaturesUS,
+    })
+
+    await assert.thatResponseMatch({
+      expectedStatusCode: 200,
+      callback: (api) =>
+        api.searchEvents({
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          limit: 10,
+          visitorId,
+          environment: [null, undefined],
+        }),
+    })
+  })
+
   test('with all params', async ({ identify, assert, fingerprintApi }) => {
     const { visitorId, requestId } = await identify({
       auth: testData.credentials.maxFeaturesUS,
@@ -73,8 +148,8 @@ test.describe('SearchEvents suite', () => {
 
     // Use timestamp from the event to create start and end times
     const timestamp = event.products.identification.data.timestamp || Date.now()
-    const start = timestamp - (60 * 60 * 1000) // 1 hour before
-    const end = timestamp + (60 * 60 * 1000)   // 1 hour after
+    const start = timestamp - 60 * 60 * 1000 // 1 hour before
+    const end = timestamp + 60 * 60 * 1000 // 1 hour after
 
     // Get values from event if available
     const botValue = event.products.botd?.data?.bot?.result
@@ -90,6 +165,17 @@ test.describe('SearchEvents suite', () => {
     const suspectScore = event.products.suspectScore?.data?.result || 0.5
     const ipBlocklist = event.products.ipBlocklist?.data?.result === true
     const datacenter = event.products.ipInfo?.data?.v4?.datacenter?.result === true
+    const developerTools = event.products.developerTools?.data?.result === true
+    const locationSpoofing = event.products.locationSpoofing?.data?.result === true
+    const mitmAttack = event.products.mitmAttack?.data?.result === true
+    const proxy = event.products.proxy?.data?.result === true
+    const sdkVersion = event.products.identification?.data?.sdk?.version
+    const sdkPlatform = event.products.identification?.data?.sdk?.platform
+
+    const environmentId = event.products.identification?.data?.environmentId || undefined
+    const environment = environmentId ? [environmentId] : undefined
+    const proximityId = event.products.proximity?.data?.id || undefined
+    const proximityPrecisionRadius = event.products.proximity?.data?.precisionRadius || undefined
 
     await assert.thatResponseMatch({
       expectedStatusCode: 200,
@@ -123,6 +209,15 @@ test.describe('SearchEvents suite', () => {
           paginationKey: '',
           ipBlocklist,
           datacenter,
+          developerTools,
+          locationSpoofing,
+          mitmAttack,
+          proxy,
+          sdkVersion,
+          sdkPlatform,
+          environment,
+          proximityId,
+          proximityPrecisionRadius,
         }),
     })
   })
@@ -150,7 +245,7 @@ test.describe('SearchEvents suite', () => {
   })
 
   test('with paginationKey', async ({ fingerprintApi, assert }) => {
-    const {data: originalResult} = await fingerprintApi.searchEvents({
+    const { data: originalResult } = await fingerprintApi.searchEvents({
       limit: 1,
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
       region: testData.credentials.maxFeaturesUS.region,
@@ -166,12 +261,13 @@ test.describe('SearchEvents suite', () => {
     })
 
     expect(originalResult.events.length).toBe(1)
-    expect(paginatedResult.events[0].products.identification.data.requestId)
-        .not.toEqual(originalResult.events[0].products.identification.data.requestId);
+    expect(paginatedResult.events[0].products.identification.data.requestId).not.toEqual(
+      originalResult.events[0].products.identification.data.requestId
+    )
   })
 
   test('with paginationKey reversed', async ({ fingerprintApi, assert }) => {
-    const {data: originalResult} = await fingerprintApi.searchEvents({
+    const { data: originalResult } = await fingerprintApi.searchEvents({
       limit: 1,
       reverse: true,
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
@@ -189,8 +285,9 @@ test.describe('SearchEvents suite', () => {
     })
 
     expect(originalResult.events.length).toBe(1)
-    expect(paginatedResult.events[0].products.identification.data.requestId)
-        .not.toEqual(originalResult.events[0].products.identification.data.requestId);
+    expect(paginatedResult.events[0].products.identification.data.requestId).not.toEqual(
+      originalResult.events[0].products.identification.data.requestId
+    )
   })
 
   test('with invalid bot', async ({ assert }) => {

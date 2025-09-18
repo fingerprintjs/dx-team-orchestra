@@ -34,6 +34,15 @@ interface QueryParams {
   minSuspectScore?: SearchEventsFilter['min_suspect_score']
   ipBlocklist?: SearchEventsFilter['ip_blocklist']
   datacenter?: SearchEventsFilter['datacenter']
+  developerTools?: SearchEventsFilter['developer_tools']
+  locationSpoofing?: SearchEventsFilter['location_spoofing']
+  mitmAttack?: SearchEventsFilter['mitm_attack']
+  proxy?: SearchEventsFilter['proxy']
+  sdkVersion?: SearchEventsFilter['sdk_version']
+  sdkPlatform?: SearchEventsFilter['sdk_platform']
+  environment?: SearchEventsFilter['environment']
+  proximityId?: SearchEventsFilter['proximity_id']
+  proximityPrecisionRadius?: SearchEventsFilter['proximity_precision_radius']
 }
 
 export const searchEvents: Handler<QueryParams> = async (req, res) => {
@@ -65,6 +74,15 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     minSuspectScore,
     ipBlocklist,
     datacenter,
+    developerTools,
+    locationSpoofing,
+    mitmAttack,
+    proxy,
+    sdkVersion,
+    sdkPlatform,
+    environment,
+    proximityId,
+    proximityPrecisionRadius,
   } = req.query
 
   const filter: SearchEventsFilter = {
@@ -143,6 +161,33 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
   }
   if (datacenter !== undefined) {
     filter.datacenter = datacenter
+  }
+  if (developerTools !== undefined) {
+    filter.developer_tools = developerTools
+  }
+  if (locationSpoofing !== undefined) {
+    filter.location_spoofing = locationSpoofing
+  }
+  if (mitmAttack !== undefined) {
+    filter.mitm_attack = mitmAttack
+  }
+  if (proxy !== undefined) {
+    filter.proxy = proxy
+  }
+  if (sdkVersion !== undefined) {
+    filter.sdk_version = sdkVersion
+  }
+  if (sdkPlatform !== undefined) {
+    filter.sdk_platform = sdkPlatform
+  }
+  if (environment !== undefined) {
+    filter.environment = environment
+  }
+  if (proximityId !== undefined) {
+    filter.proximity_id = proximityId
+  }
+  if (proximityPrecisionRadius !== undefined) {
+    filter.proximity_precision_radius = proximityPrecisionRadius
   }
 
   let result: MusicianResponse<SearchEventsResponse>

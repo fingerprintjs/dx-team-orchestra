@@ -44,6 +44,32 @@ class EventsController
         $minSuspectScore = isset($queryParams['minSuspectScore']) ? (float) $queryParams['minSuspectScore'] : null;
         $ipBlocklist = isset($queryParams['ipBlocklist']) ? filter_var($queryParams['ipBlocklist'], FILTER_VALIDATE_BOOLEAN) : null;
         $datacenter = isset($queryParams['datacenter']) ? filter_var($queryParams['datacenter'], FILTER_VALIDATE_BOOLEAN) : null;
+        $developerTools = isset($queryParams['developerTools']) ? filter_var($queryParams['developerTools'], FILTER_VALIDATE_BOOLEAN) : null;
+        $locationSpoofing = isset($queryParams['locationSpoofing']) ? filter_var($queryParams['locationSpoofing'], FILTER_VALIDATE_BOOLEAN) : null;
+        $mitmAttack = isset($queryParams['mitmAttack']) ? filter_var($queryParams['mitmAttack'], FILTER_VALIDATE_BOOLEAN) : null;
+        $proxy = isset($queryParams['proxy']) ? filter_var($queryParams['proxy'], FILTER_VALIDATE_BOOLEAN) : null;
+        $sdkVersion = $queryParams['sdkVersion'] ?? null;
+        $sdkPlatform = $queryParams['sdkPlatform'] ?? null;
+        $proximityId = $queryParams['proximityId'] ?? null;
+        $proximityPrecisionRadius = $queryParams['proximityPrecisionRadius'] ?? null;
+
+        $environmentRaw = $queryParams['environment'] ?? null;
+        $environment = null;
+
+        if (is_array($environmentRaw)) {
+            $environment = array_values(
+                array_filter(
+                    array_map(fn($v) => is_string($v) ? trim($v) : null, $environmentRaw),
+                    fn($v) => $v !== null && $v !== ''
+                )
+            );
+            if ($environment === []) {
+                $environment = null;
+            }
+        } elseif (is_string($environmentRaw)) {
+            $environmentRaw = trim($environmentRaw);
+            $environment = $environmentRaw !== '' ? [$environmentRaw] : null;
+        }
 
         $config = Configuration::getDefaultConfiguration($apiKey, $region);
         $client = new FingerprintApi(
@@ -77,7 +103,16 @@ class EventsController
                 root_apps: $rootApps,
                 min_suspect_score: $minSuspectScore,
                 ip_blocklist: $ipBlocklist,
-                datacenter: $datacenter
+                datacenter: $datacenter,
+                developer_tools: $developerTools,
+                location_spoofing: $locationSpoofing,
+                mitm_attack: $mitmAttack,
+                proxy: $proxy,
+                sdk_version: $sdkVersion,
+                sdk_platform: $sdkPlatform,
+                environment: $environment,
+                proximity_id: $proximityId,
+                proximity_precision_radius: $proximityPrecisionRadius
             );
 
             $result = new MusicianResponse($apiResponse->getStatusCode(), $apiResponse, $model);
