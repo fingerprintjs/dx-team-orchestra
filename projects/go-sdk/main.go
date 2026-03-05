@@ -25,6 +25,7 @@ func main() {
 	http.HandleFunc("/v4/searchEvents", handlersv4.SearchEvents)
 	http.HandleFunc("/v4/updateEvent", handlersv4.UpdateEvent)
 	http.HandleFunc("/v4/getEvent", handlersv4.GetEvent)
+	http.HandleFunc("/v4/unseal", handlersv4.Unseal)
 
 	fmt.Println("Server is running on port 8081...")
 	if err := http.ListenAndServe(":8081", nil); err != nil {
