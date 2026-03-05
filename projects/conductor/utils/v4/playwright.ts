@@ -1,6 +1,5 @@
 import { test as pwTest } from '@playwright/test'
-import { identify, IdentifyOptions } from '../../htmlScripts/runIdentification'
-import { ExtendedGetResult } from '@fingerprintjs/fingerprintjs-pro'
+import { identify, IdentifyOptions, IdentifyResult } from '../../htmlScripts/runIdentification_v4'
 import { cleanupVisitors, VisitorData } from './fingerprint'
 import { Credential } from '../testData'
 import { DecryptionAlgorithm, unsealEventsResponse } from '@fingerprint/node-sdk'
@@ -11,8 +10,8 @@ type Fixture = {
   fingerprintApi: FingerprintV4Api
   sdkApi: SdkFingerprintV4Api
   assert: AssertionsV4
-  identify: (options: Readonly<TestIdentifyOptions>) => Promise<ExtendedGetResult>
-  identifyBulk: (options: Readonly<TestIdentifyOptions>, size: number) => Promise<ExtendedGetResult[]>
+  identify: (options: Readonly<TestIdentifyOptions>) => Promise<IdentifyResult>
+  identifyBulk: (options: Readonly<TestIdentifyOptions>, size: number) => Promise<IdentifyResult[]>
 }
 
 export type TestIdentifyOptions = Omit<IdentifyOptions, 'publicApiKey'> & {
@@ -39,12 +38,12 @@ export const test = pwTest.extend<Fixture>({
 
       if (!options?.skipCleanup) {
         let visitorId: string
-        if (result.sealedResult) {
+        if (result.sealed_result) {
           if (!options.auth.encryptionKey) {
             throw new TypeError('No encryption key provided for unsealing result')
           }
 
-          const unsealedData = await unsealEventsResponse(Buffer.from(result.sealedResult, 'base64'), [
+          const unsealedData = await unsealEventsResponse(Buffer.from(result.sealed_result, 'base64'), [
             {
               key: Buffer.from(options.auth.encryptionKey, 'base64'),
               algorithm: DecryptionAlgorithm.Aes256Gcm,
@@ -53,7 +52,7 @@ export const test = pwTest.extend<Fixture>({
 
           visitorId = unsealedData.identification.visitor_id
         } else {
-          visitorId = result.visitorId
+          visitorId = result.visitor_id
         }
 
         visitors.push({

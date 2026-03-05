@@ -2,27 +2,27 @@ import { test } from '../../utils/v4/playwright'
 import testData from '../../utils/testData'
 
 test.describe('GetEvent Suite', () => {
-  test('for valid apiKey and requestId with Smart Signals', async ({ identify, assert }) => {
-    const { requestId } = await identify({
+  test('for valid apiKey and event_id with Smart Signals', async ({ identify, assert }) => {
+    const { event_id } = await identify({
       auth: testData.credentials.maxFeaturesUS,
     })
     const requestData = {
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
       region: testData.credentials.maxFeaturesUS.region,
-      eventId: requestId,
+      eventId: event_id,
     }
 
     await assert.thatResponsesMatch('getEvent', requestData)
   })
 
-  test('for valid apiKey and requestId without Smart Signals', async ({ identify, assert }) => {
-    const { requestId } = await identify({
+  test('for valid apiKey and event_id without Smart Signals', async ({ identify, assert }) => {
+    const { event_id } = await identify({
       auth: testData.credentials.minFeaturesUS,
     })
     const requestData = {
       apiKey: testData.credentials.minFeaturesUS.privateKey,
       region: testData.credentials.minFeaturesUS.region,
-      eventId: requestId,
+      eventId: event_id,
     }
 
     await assert.thatResponsesMatch('getEvent', requestData)
@@ -59,7 +59,7 @@ test.describe('GetEvent Suite', () => {
   })
 
   test('for invalid apikey', async ({ assert, identify }) => {
-    const { requestId } = await identify({
+    const { event_id } = await identify({
       auth: testData.credentials.maxFeaturesUS,
     })
 
@@ -75,13 +75,13 @@ test.describe('GetEvent Suite', () => {
         api.getEvent({
           apiKey: testData.credentials.invalid.privateKey,
           region: testData.credentials.maxFeaturesUS.region,
-          eventId: requestId,
+          eventId: event_id,
         }),
     })
   })
 
   test('for invalid region', async ({ assert, identify }) => {
-    const { requestId } = await identify({
+    const { event_id } = await identify({
       auth: testData.credentials.maxFeaturesUS,
     })
     await assert.thatResponseMatch({
@@ -90,7 +90,7 @@ test.describe('GetEvent Suite', () => {
         api.getEvent({
           apiKey: testData.credentials.maxFeaturesUS.privateKey,
           region: testData.credentials.invalid.region,
-          eventId: requestId,
+          eventId: event_id,
         }),
     })
   })
@@ -114,7 +114,7 @@ test.describe('GetEvent Suite', () => {
   })
 
   test('for different region', async ({ assert, identify }) => {
-    const { requestId } = await identify({
+    const { event_id } = await identify({
       auth: testData.credentials.maxFeaturesUS,
     })
 
@@ -130,13 +130,13 @@ test.describe('GetEvent Suite', () => {
         api.getEvent({
           apiKey: testData.credentials.maxFeaturesUS.privateKey,
           region: testData.credentials.regularEU.region,
-          eventId: requestId,
+          eventId: event_id,
         }),
     })
   })
 
   test('for deleted APIkey', async ({ assert, identify }) => {
-    const { requestId } = await identify({
+    const { event_id } = await identify({
       auth: testData.credentials.maxFeaturesUS,
     })
 
@@ -152,7 +152,7 @@ test.describe('GetEvent Suite', () => {
         api.getEvent({
           apiKey: testData.credentials.deleted.privateKey,
           region: testData.credentials.deleted.region,
-          eventId: requestId,
+          eventId: event_id,
         }),
     })
   })

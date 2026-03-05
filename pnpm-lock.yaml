@@ -19,11 +19,13 @@ importers:
         version: 3.8.1
 
   projects/conductor:
-    dependencies:
+    devDependencies:
+      '@fingerprint/agent':
+        specifier: ^4.0.1
+        version: 4.0.1
       '@fingerprint/node-sdk':
         specifier: ^7.0.0
         version: 7.0.0
-    devDependencies:
       '@fingerprintjs/fingerprintjs-pro':
         specifier: ^3.11.6
         version: 3.11.6
@@ -94,6 +96,9 @@ packages:
   '@eslint/js@8.56.0':
     resolution: {integrity: sha512-gMsVel9D7f2HLkBma9VbtzZRehRogVRfbr++f06nL2vnCGCNlzOD+/MUov/F4p8myyAHspEhVobgjpX64q5m6A==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+
+  '@fingerprint/agent@4.0.1':
+    resolution: {integrity: sha512-8+XUD3vP60Q5wpunaf932kp1lW2xWyXgI7f50EDAjoVNaNB7Y4T9qKam19y3WkgbipXnLdmekvNGtxEeyF+r9A==}
 
   '@fingerprint/node-sdk@7.0.0':
     resolution: {integrity: sha512-v+8A+hZacJNn5hFj5HHKabm76IpLbRULnY5Jc0JTTsjsRyxiXN9YGYGPYMNGBpqPACtLWAs/yK2WlnGt9+6I4w==}
@@ -1107,6 +1112,8 @@ snapshots:
       - supports-color
 
   '@eslint/js@8.56.0': {}
+
+  '@fingerprint/agent@4.0.1': {}
 
   '@fingerprint/node-sdk@7.0.0': {}
 
