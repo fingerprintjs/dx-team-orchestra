@@ -10,9 +10,9 @@ import (
 )
 
 type searchEventsQueryParams struct {
-	ApiKey    string `json:"apiKey"`
-	Region    string `json:"region"`
-	RequestId string `json:"requestId"`
+	ApiKey  string `json:"apiKey"`
+	Region  string `json:"region"`
+	EventID string `json:"eventId"`
 }
 
 func SearchEvents(w http.ResponseWriter, r *http.Request) {
@@ -276,9 +276,9 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 		searchEventsReq = searchEventsReq.VPNConfidence(fingerprint.SearchEventsVPNConfidence(vpnConfidence))
 	}
 	queryParams := searchEventsQueryParams{
-		ApiKey:    query.Get("apiKey"),
-		Region:    query.Get("region"),
-		RequestId: query.Get("requestId"),
+		ApiKey:  query.Get("apiKey"),
+		Region:  query.Get("region"),
+		EventID: query.Get("eventId"),
 	}
 
 	client := fingerprintv4.Init(queryParams.ApiKey, queryParams.Region)
