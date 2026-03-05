@@ -18,7 +18,7 @@ func ProcessResponse(data interface{}, httpRes *http.Response, err error) respon
 		return response.MusicianResponse{
 			Code:             httpRes.StatusCode,
 			OriginalResponse: fmt.Sprintf("%v", httpRes),
-			ParsedResponse:   fpErr.Error,
+			ParsedResponse:   fpErr,
 		}
 	}
 
