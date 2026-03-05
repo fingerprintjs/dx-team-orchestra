@@ -1,6 +1,6 @@
-import { testData } from '../utils/testData'
-import { test } from '../utils/playwright'
-import { delay } from '../utils/delay'
+import { testData } from '../../utils/testData'
+import { test } from '../../utils/playwright'
+import { delay } from '../../utils/delay'
 
 function waitBeforeFetch() {
   // Wait before fetching visitor after deletion

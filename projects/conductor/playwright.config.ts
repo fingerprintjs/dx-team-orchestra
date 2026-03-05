@@ -46,8 +46,14 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
+      name: 'chromium v3',
       use: { ...devices['Desktop Chrome'] },
+      testMatch: '**/v3/**/*.test.ts',
+    },
+    {
+      name: 'chromium v4',
+      use: { ...devices['Desktop Chrome'] },
+      testMatch: '**/v4/**/*.test.ts',
     },
 
     // {

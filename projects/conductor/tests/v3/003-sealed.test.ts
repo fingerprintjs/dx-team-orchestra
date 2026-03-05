@@ -1,5 +1,5 @@
-import { test } from '../utils/playwright'
-import testData from '../utils/testData'
+import { test } from '../../utils/playwright'
+import testData from '../../utils/testData'
 
 test.describe('Sealed', () => {
   test('Successfully unseal result with maximum fields', async ({ sdkApi, identify, assert }) => {

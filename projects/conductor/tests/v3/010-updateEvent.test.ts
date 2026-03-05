@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test'
-import { testData } from '../utils/testData'
-import { test } from '../utils/playwright'
-import { delay } from '../utils/delay'
+import { testData } from '../../utils/testData'
+import { test } from '../../utils/playwright'
+import { delay } from '../../utils/delay'
 import { EventsGetResponse } from '@fingerprintjs/fingerprintjs-pro-server-api'
 
 function checkUpdatedEvent(updatedEvent: EventsGetResponse) {

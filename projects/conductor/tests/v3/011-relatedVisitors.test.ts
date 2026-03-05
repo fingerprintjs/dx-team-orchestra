@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test'
-import testData from '../utils/testData'
-import { test } from '../utils/playwright'
+import testData from '../../utils/testData'
+import { test } from '../../utils/playwright'
 
 test.describe('Related Visitors Suite', () => {
   test('with valid apiKey and visitor id', async ({ assert, sdkApi, identify }) => {
