@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"go-sdk/utils"
+	"go-sdk/fingerprintv3"
 	"net/http"
 )
 
@@ -19,8 +19,8 @@ func GetRelatedVisitors(w http.ResponseWriter, r *http.Request) {
 		VisitorId: r.URL.Query().Get("visitorId"),
 	}
 
-	client, auth := utils.InitSdk(queryParams.ApiKey, queryParams.Region)
-	response := utils.ProcessResponse(client.FingerprintApi.GetRelatedVisitors(auth, queryParams.VisitorId))
+	client, auth := fingerprintv3.Init(queryParams.ApiKey, queryParams.Region)
+	response := fingerprintv3.ProcessResponse(client.FingerprintApi.GetRelatedVisitors(auth, queryParams.VisitorId))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)

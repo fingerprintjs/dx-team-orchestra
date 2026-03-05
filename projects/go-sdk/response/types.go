@@ -1,4 +1,4 @@
-package utils
+package response
 
 type MusicianResponse struct {
 	Code             int         `json:"code"`

@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7/sdk"
-	"go-sdk/utils"
+	"go-sdk/fingerprintv3"
 	"net/http"
 	"strconv"
+
+	"github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7/sdk"
 )
 
 type getVisitsQueryParams struct {
@@ -32,8 +33,8 @@ func GetVisits(w http.ResponseWriter, r *http.Request) {
 		Before:        before,
 	}
 
-	client, auth := utils.InitSdk(queryParams.ApiKey, queryParams.Region)
-	response := utils.ProcessResponse(client.FingerprintApi.GetVisits(auth, queryParams.VisitorId, &visitorOps))
+	client, auth := fingerprintv3.Init(queryParams.ApiKey, queryParams.Region)
+	response := fingerprintv3.ProcessResponse(client.FingerprintApi.GetVisits(auth, queryParams.VisitorId, &visitorOps))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)

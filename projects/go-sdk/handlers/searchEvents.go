@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7/sdk"
-	"go-sdk/utils"
+	"go-sdk/fingerprintv3"
 	"net/http"
 	"strconv"
+
+	"github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7/sdk"
 )
 
 type searchEventsQueryParams struct {
@@ -245,8 +246,8 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 		RequestId: query.Get("requestId"),
 	}
 
-	client, auth := utils.InitSdk(queryParams.ApiKey, queryParams.Region)
-	response := utils.ProcessResponse(client.FingerprintApi.SearchEvents(auth, limit, &searchEventsOpts))
+	client, auth := fingerprintv3.Init(queryParams.ApiKey, queryParams.Region)
+	response := fingerprintv3.ProcessResponse(client.FingerprintApi.SearchEvents(auth, limit, &searchEventsOpts))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)

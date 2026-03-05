@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7/sdk"
-	"go-sdk/utils"
+	"go-sdk/fingerprintv3"
 	"net/http"
 	"strconv"
+
+	"github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7/sdk"
 )
 
 type updateEventQueryParams struct {
@@ -39,9 +40,9 @@ func UpdateEvent(w http.ResponseWriter, r *http.Request) {
 		updateBody.Tag = &tag
 	}
 
-	client, auth := utils.InitSdk(queryParams.ApiKey, queryParams.Region)
+	client, auth := fingerprintv3.Init(queryParams.ApiKey, queryParams.Region)
 	httpRes, err := client.FingerprintApi.UpdateEvent(auth, updateBody, queryParams.RequestId)
-	response := utils.ProcessResponse(nil, httpRes, err)
+	response := fingerprintv3.ProcessResponse(nil, httpRes, err)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
