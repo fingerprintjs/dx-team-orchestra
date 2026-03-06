@@ -11,7 +11,7 @@ case $LANGUAGE in
     "node")   REPO_NAME="fingerprintjs-pro-server-api-node-sdk" ;;
     "java")   REPO_NAME="fingerprint-pro-server-api-java-sdk" ;;
     "dotnet") REPO_NAME="fingerprint-pro-server-api-dotnet-sdk" ;;
-    "go")     REPO_NAME="fingerprint-pro-server-api-go-sdk" ;;
+    "go")     REPO_NAME="go-sdk" ;;
     "python") REPO_NAME="fingerprint-pro-server-api-python-sdk" ;;
     "php")    REPO_NAME="fingerprint-pro-server-api-php-sdk" ;;
     *)
@@ -86,7 +86,7 @@ case $LANGUAGE in
         ;;
     "go")
         MAJOR_VERSION=$(echo $SDK_VERSION | cut -d'.' -f1)
-        go get github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/$MAJOR_VERSION@$SDK_VERSION
+        go get github.com/fingerprintjs/go-sdk/$MAJOR_VERSION@$SDK_VERSION
         ;;
     "python")
         pip install "fingerprint_pro_server_api_sdk==$SDK_VERSION"
