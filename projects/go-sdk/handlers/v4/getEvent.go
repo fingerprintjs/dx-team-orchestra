@@ -7,16 +7,16 @@ import (
 )
 
 type getEventsQueryParams struct {
-	ApiKey  string `json:"apiKey"`
+	ApiKey  string `json:"api_key"`
 	Region  string `json:"region"`
-	EventID string `json:"eventId"`
+	EventID string `json:"event_id"`
 }
 
 func GetEvent(w http.ResponseWriter, r *http.Request) {
 	queryParams := getEventsQueryParams{
-		ApiKey:  r.URL.Query().Get("apiKey"),
+		ApiKey:  r.URL.Query().Get("api_key"),
 		Region:  r.URL.Query().Get("region"),
-		EventID: r.URL.Query().Get("eventId"),
+		EventID: r.URL.Query().Get("event_id"),
 	}
 
 	client := fingerprintv4.Init(queryParams.ApiKey, queryParams.Region)

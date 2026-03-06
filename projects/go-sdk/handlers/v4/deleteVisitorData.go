@@ -7,16 +7,16 @@ import (
 )
 
 type deleteVisitorDataQueryParams struct {
-	ApiKey    string `json:"apiKey"`
+	ApiKey    string `json:"api_key"`
 	Region    string `json:"region"`
-	VisitorID string `json:"visitorId"`
+	VisitorID string `json:"visitor_id"`
 }
 
 func DeleteVisitorData(w http.ResponseWriter, r *http.Request) {
 	queryParams := deleteVisitorDataQueryParams{
-		ApiKey:    r.URL.Query().Get("apiKey"),
+		ApiKey:    r.URL.Query().Get("api_key"),
 		Region:    r.URL.Query().Get("region"),
-		VisitorID: r.URL.Query().Get("visitorId"),
+		VisitorID: r.URL.Query().Get("visitor_id"),
 	}
 
 	client := fingerprintv4.Init(queryParams.ApiKey, queryParams.Region)

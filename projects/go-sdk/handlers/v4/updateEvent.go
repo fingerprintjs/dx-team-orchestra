@@ -10,9 +10,9 @@ import (
 )
 
 type updateEventQueryParams struct {
-	ApiKey  string `json:"apiKey"`
+	ApiKey  string `json:"api_key"`
 	Region  string `json:"region"`
-	EventID string `json:"eventId"`
+	EventID string `json:"event_id"`
 }
 
 func UpdateEvent(w http.ResponseWriter, r *http.Request) {
@@ -26,9 +26,9 @@ func UpdateEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var tag map[string]interface{}
-	json.Unmarshal([]byte(query.Get("tag")), &tag)
+	json.Unmarshal([]byte(query.Get("tags")), &tag)
 
-	linkedId := query.Get("linkedId")
+	linkedId := query.Get("linked_id")
 
 	eventUpdate := fingerprint.EventUpdate{
 		LinkedID: &linkedId,
@@ -37,9 +37,9 @@ func UpdateEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	queryParams := updateEventQueryParams{
-		ApiKey:  query.Get("apiKey"),
+		ApiKey:  query.Get("api_key"),
 		Region:  query.Get("region"),
-		EventID: query.Get("eventId"),
+		EventID: query.Get("event_id"),
 	}
 
 	client := fingerprintv4.Init(queryParams.ApiKey, queryParams.Region)
