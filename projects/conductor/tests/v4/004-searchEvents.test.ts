@@ -3,6 +3,7 @@ import testData from '../../utils/testData'
 import { expect } from '@playwright/test'
 import { delay } from '../../utils/delay'
 import { SearchEventsFilter } from '@fingerprint/node-sdk'
+import { withRetry } from '../../utils/retry'
 
 test.describe('SearchEvents suite', () => {
   test('with valid api key and limit', async ({ assert, identify }) => {
@@ -54,15 +55,22 @@ test.describe('SearchEvents suite', () => {
 
     expect(environmentIds).toHaveLength(2)
 
-    const sdkResultsByEnv = await sdkApi.searchEvents({
-      api_key: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      limit: 10,
-      environment: environmentIds,
-      linked_id: linkedId,
-    })
+    await withRetry(
+      async () => {
+        const sdkResultsByEnv = await sdkApi.searchEvents({
+          api_key: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          limit: 10,
+          environment: environmentIds,
+          linked_id: linkedId,
+        })
 
-    expect(sdkResultsByEnv.data?.events ?? []).toHaveLength(2)
+        expect(sdkResultsByEnv.data?.events ?? []).toHaveLength(2)
+      },
+      {
+        waitMs: 5000,
+      }
+    )
   })
 
   test('with invalid limit', async ({ assert }) => {
@@ -355,35 +363,47 @@ test.describe('SearchEvents suite', () => {
     })
   })
 
-  test('with start and end date', async ({ sdkApi, identifyBulk }) => {
+  test('with start and end date', async ({ sdkApi, identify }) => {
     test.slow()
 
     const linkedId = `test_start_end_date_${Date.now()}`
 
-    await identifyBulk(
-      {
-        auth: testData.credentials.maxFeaturesUS,
-        linkedId,
-      },
-      10
-    )
-
-    // Wait for events to propagate
-    await delay(30_000)
-
-    const { data: dataWithoutDateFilter } = await sdkApi.searchEvents({
-      limit: 10,
-      api_key: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      linked_id: linkedId,
+    await identify({
+      auth: testData.credentials.maxFeaturesUS,
+      linkedId,
     })
 
-    expect(dataWithoutDateFilter.events).toHaveLength(10)
+    await delay(5000)
+
+    await identify({
+      auth: testData.credentials.maxFeaturesUS,
+      linkedId,
+    })
+
+    await delay(5000)
+
+    const dataWithoutDateFilter = await withRetry(
+      async () => {
+        const { data } = await sdkApi.searchEvents({
+          limit: 2,
+          api_key: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          linked_id: linkedId,
+        })
+
+        expect(data.events).toHaveLength(2)
+
+        return data
+      },
+      {
+        waitMs: 5000,
+      }
+    )
 
     const [event] = dataWithoutDateFilter.events
 
     const { data: dataWithFilter } = await sdkApi.searchEvents({
-      limit: 10,
+      limit: 2,
       visitor_id: event.identification.visitor_id,
       api_key: testData.credentials.maxFeaturesUS.privateKey,
       region: testData.credentials.maxFeaturesUS.region,
