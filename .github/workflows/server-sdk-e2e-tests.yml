@@ -428,7 +428,7 @@ jobs:
           app-id: ${{ vars.RUNNER_APP_ID }}
           private-key: ${{ secrets.RUNNER_APP_PRIVATE_KEY }}
           owner: fingerprintjs
-          repositories: fingerprint-pro-server-api-go-sdk,dx-team-toolkit
+          repositories: go-sdk,dx-team-toolkit
 
       - name: Set status
         if: ${{ github.event_name == 'repository_dispatch' }}
