@@ -7,9 +7,9 @@ test.describe('GetEvent Suite', () => {
       auth: testData.credentials.maxFeaturesUS,
     })
     const requestData = {
-      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      api_key: testData.credentials.maxFeaturesUS.privateKey,
       region: testData.credentials.maxFeaturesUS.region,
-      eventId: event_id,
+      event_id: event_id,
     }
 
     await assert.thatResponsesMatch('getEvent', requestData)
@@ -20,9 +20,9 @@ test.describe('GetEvent Suite', () => {
       auth: testData.credentials.minFeaturesUS,
     })
     const requestData = {
-      apiKey: testData.credentials.minFeaturesUS.privateKey,
+      api_key: testData.credentials.minFeaturesUS.privateKey,
       region: testData.credentials.minFeaturesUS.region,
-      eventId: event_id,
+      event_id: event_id,
     }
 
     await assert.thatResponsesMatch('getEvent', requestData)
@@ -33,9 +33,9 @@ test.describe('GetEvent Suite', () => {
       expectedStatusCode: 403,
       callback: (api) =>
         api.getEvent({
-          apiKey: '',
+          api_key: '',
           region: '',
-          eventId: '',
+          event_id: '',
         }),
     })
   })
@@ -51,9 +51,9 @@ test.describe('GetEvent Suite', () => {
       expectedStatusCode: 403,
       callback: (api) =>
         api.getEvent({
-          apiKey: testData.credentials.invalid.privateKey,
+          api_key: testData.credentials.invalid.privateKey,
           region: testData.credentials.invalid.region,
-          eventId: testData.invalid.requestID,
+          event_id: testData.invalid.requestID,
         }),
     })
   })
@@ -73,9 +73,9 @@ test.describe('GetEvent Suite', () => {
       },
       callback: (api) =>
         api.getEvent({
-          apiKey: testData.credentials.invalid.privateKey,
+          api_key: testData.credentials.invalid.privateKey,
           region: testData.credentials.maxFeaturesUS.region,
-          eventId: event_id,
+          event_id: event_id,
         }),
     })
   })
@@ -88,9 +88,9 @@ test.describe('GetEvent Suite', () => {
       expectedStatusCode: 200,
       callback: (api) =>
         api.getEvent({
-          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          api_key: testData.credentials.maxFeaturesUS.privateKey,
           region: testData.credentials.invalid.region,
-          eventId: event_id,
+          event_id: event_id,
         }),
     })
   })
@@ -106,9 +106,9 @@ test.describe('GetEvent Suite', () => {
       },
       callback: (api) =>
         api.getEvent({
-          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          api_key: testData.credentials.maxFeaturesUS.privateKey,
           region: testData.credentials.maxFeaturesUS.region,
-          eventId: testData.invalid.requestID,
+          event_id: testData.invalid.requestID,
         }),
     })
   })
@@ -128,9 +128,9 @@ test.describe('GetEvent Suite', () => {
       },
       callback: (api) =>
         api.getEvent({
-          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          api_key: testData.credentials.maxFeaturesUS.privateKey,
           region: testData.credentials.regularEU.region,
-          eventId: event_id,
+          event_id: event_id,
         }),
     })
   })
@@ -150,9 +150,9 @@ test.describe('GetEvent Suite', () => {
       },
       callback: (api) =>
         api.getEvent({
-          apiKey: testData.credentials.deleted.privateKey,
+          api_key: testData.credentials.deleted.privateKey,
           region: testData.credentials.deleted.region,
-          eventId: event_id,
+          event_id: event_id,
         }),
     })
   })

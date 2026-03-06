@@ -37,9 +37,9 @@ async function cleanupVisitor(api: FingerprintV4Api, visitor: VisitorData): Prom
   url.pathname = `visitors/${visitor.visitorId}`
 
   const { response } = await api.deleteVisitor({
-    visitorId: visitor.visitorId,
+    visitor_id: visitor.visitorId,
     region: visitor.auth.region,
-    apiKey: visitor.auth.privateKey,
+    api_key: visitor.auth.privateKey,
   })
 
   if (response.ok()) {

@@ -15,9 +15,9 @@ test.describe('Sealed', () => {
     ]
     const { data: unsealedEvent } = await sdkApi.unseal({ sealedData, keys })
     await assert.thatUnsealedDataMatches(unsealedEvent, {
-      apiKey: testData.credentials.sealedMaximumFeaturesUs.privateKey,
+      api_key: testData.credentials.sealedMaximumFeaturesUs.privateKey,
       region: testData.credentials.sealedMaximumFeaturesUs.region,
-      eventId: event_id,
+      event_id: event_id,
     })
   })
 
@@ -38,9 +38,9 @@ test.describe('Sealed', () => {
     ]
     const { data: unsealedEvent } = await sdkApi.unseal({ sealedData, keys })
     await assert.thatUnsealedDataMatches(unsealedEvent, {
-      apiKey: testData.sealedMaximumFeaturesUs.privateKey,
+      api_key: testData.sealedMaximumFeaturesUs.privateKey,
       region: testData.sealedMaximumFeaturesUs.region,
-      eventId: event_id,
+      event_id: event_id,
     })
   })
 
@@ -57,9 +57,9 @@ test.describe('Sealed', () => {
     ]
     const { data: unsealedEvent } = await sdkApi.unseal({ sealedData, keys })
     await assert.thatUnsealedDataMatches(unsealedEvent, {
-      apiKey: testData.sealedMinimumFeaturesUs.privateKey,
+      api_key: testData.sealedMinimumFeaturesUs.privateKey,
       region: testData.sealedMinimumFeaturesUs.region,
-      eventId: event_id,
+      event_id: event_id,
     })
   })
 })

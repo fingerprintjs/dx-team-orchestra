@@ -3,7 +3,7 @@
   const publicApiKey = "{{PUBLIC_API_KEY}}";
 
   const fpPromise = import("https://fpjscdn.net/v4/" + publicApiKey).then(
-      (loader) => loader.start()
+      (loader) => loader.start({cache: false})
   );
 
   fpPromise

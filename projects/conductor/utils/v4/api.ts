@@ -1,13 +1,14 @@
 import { APIRequestContext } from '@playwright/test'
 import testData from '../testData'
-import { jsonRequest, JsonResponse, RequestParams } from '../http'
+import { jsonRequest, JsonResponse } from '../http'
 import { MusicianResponse } from '../musician'
 import { Event, EventUpdate, SearchEventsFilter, SearchEventsResponse } from '@fingerprint/node-sdk'
 
 export type UpdateEventParams = EventUpdate & {
-  apiKey?: string
-  eventId: string
+  api_key?: string
   region?: string
+
+  event_id: string
 }
 
 export type UnsealParams = {
@@ -16,17 +17,17 @@ export type UnsealParams = {
 }
 
 export type DeleteVisitorParams = {
-  apiKey?: string
+  api_key?: string
   region?: string
-  visitorId?: string
+  visitor_id?: string
 }
 
 export type SearchEventsParams = SearchEventsFilter & {
-  apiKey?: string
+  api_key?: string
   region?: string
 }
 
-export type GetEventsParams = { apiKey: string; region: string; eventId: string }
+export type GetEventsParams = { api_key: string; region: string; event_id: string }
 
 export type ExtractFingerprintV4ApiReturnType<Method extends keyof FingerprintV4Api> =
   FingerprintV4Api[Method] extends (...args: any[]) => Promise<JsonResponse<infer Data>> ? Data : never
@@ -72,11 +73,7 @@ export class SdkFingerprintV4Api implements FingerprintV4Api {
     return this.doRequest<Event>('/v4/unseal', params, 'post')
   }
 
-  private async doRequest<T>(
-    path: string,
-    params: RequestParams,
-    method: 'post' | 'get' = 'get'
-  ): Promise<JsonResponse<T>> {
+  private async doRequest<T>(path: string, params: any, method: 'post' | 'get' = 'get'): Promise<JsonResponse<T>> {
     const url = `${testData.config.baseURL}${path}`
     const resp = await jsonRequest<MusicianResponse>({
       request: this.request,
@@ -103,37 +100,37 @@ export class RealFingerprintV4Api implements FingerprintV4Api {
     return `${testData.config.apiUrl}/v4`
   }
 
-  async updateEvent({ eventId, apiKey, region, ...data }: UpdateEventParams): Promise<JsonResponse<void>> {
+  async updateEvent({ event_id, api_key, region, ...data }: UpdateEventParams): Promise<JsonResponse<void>> {
     return await jsonRequest<void>({
       request: this.request,
-      url: `${this.baseURL}/events/${eventId}`,
+      url: `${this.baseURL}/events/${event_id}`,
       data,
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${api_key}`,
         'content-type': 'application/json',
       },
     })
   }
 
-  async searchEvents({ apiKey, region, ...params }: SearchEventsParams): Promise<JsonResponse<SearchEventsResponse>> {
+  async searchEvents({ api_key, region, ...params }: SearchEventsParams): Promise<JsonResponse<SearchEventsResponse>> {
     return await jsonRequest<SearchEventsResponse>({
       request: this.request,
       url: `${this.baseURL}/events/search`,
       params,
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${api_key}`,
         'content-type': 'application/json',
       },
     })
   }
 
-  async deleteVisitor({ apiKey, region, ...params }: DeleteVisitorParams): Promise<JsonResponse<unknown>> {
+  async deleteVisitor({ api_key, region, ...params }: DeleteVisitorParams): Promise<JsonResponse<unknown>> {
     return await jsonRequest<void>({
       request: this.request,
       method: 'delete',
-      url: `${this.baseURL}/visitors/${params.visitorId}`,
+      url: `${this.baseURL}/visitors/${params.visitor_id}`,
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${api_key}`,
         'content-type': 'application/json',
       },
     })
@@ -142,9 +139,9 @@ export class RealFingerprintV4Api implements FingerprintV4Api {
   async getEvent(params: GetEventsParams) {
     return await jsonRequest({
       request: this.request,
-      url: `${this.baseURL}/events/${params.eventId}`,
+      url: `${this.baseURL}/events/${params.event_id}`,
       headers: {
-        Authorization: `Bearer ${params.apiKey}`,
+        Authorization: `Bearer ${params.api_key}`,
         'content-type': 'application/json',
       },
     })

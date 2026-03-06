@@ -164,6 +164,13 @@ export const testData = {
       automationTest: `test_${Math.random().toString(36).substring(2, 10)}`,
     },
   },
+  v4_updateEvent: {
+    linked_id: `linkedId_${Math.floor(Math.random() * 1000)}`,
+    suspect: Math.random() < 0.5,
+    tags: {
+      automationTest: `test_${Math.random().toString(36).substring(2, 10)}`,
+    },
+  },
   updateEventComplexTag: {
     tag: {
       automationTest_testName: 'Automation Test Scenario 1',
