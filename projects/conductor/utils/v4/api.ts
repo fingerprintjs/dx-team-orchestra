@@ -115,7 +115,7 @@ export class RealFingerprintV4Api implements FingerprintV4Api {
   async searchEvents({ api_key, region, ...params }: SearchEventsParams): Promise<JsonResponse<SearchEventsResponse>> {
     return await jsonRequest<SearchEventsResponse>({
       request: this.request,
-      url: `${this.baseURL}/events/search`,
+      url: `${this.baseURL}/events`,
       params,
       headers: {
         Authorization: `Bearer ${api_key}`,

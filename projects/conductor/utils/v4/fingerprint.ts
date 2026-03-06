@@ -10,10 +10,6 @@ const fingerprintApis = {
 
 type Region = keyof typeof fingerprintApis
 
-export function getFingerprintEndpoint(region: Region) {
-  return fingerprintApis[region]
-}
-
 export function assertValidRegion(region: string): asserts region is Region {
   if (!(region in fingerprintApis)) {
     throw new Error('Invalid region')
@@ -33,9 +29,6 @@ async function cleanupVisitor(api: FingerprintV4Api, visitor: VisitorData): Prom
   const region = visitor.auth.region ?? 'us'
   assertValidRegion(region)
 
-  const url = new URL(getFingerprintEndpoint(region))
-  url.pathname = `visitors/${visitor.visitorId}`
-
   const { response } = await api.deleteVisitor({
     visitor_id: visitor.visitorId,
     region: visitor.auth.region,
@@ -47,14 +40,9 @@ async function cleanupVisitor(api: FingerprintV4Api, visitor: VisitorData): Prom
   }
 
   if (response.status() === 429) {
-    let retryAfter = parseInt(response.headers()?.['Retry-After'])
-    if (Number.isNaN(retryAfter)) {
-      retryAfter = 1
-    }
+    console.warn(`Too many requests while trying to delete visitor ${visitor.visitorId}. Retrying after.`)
 
-    console.warn(`Too many requests while trying to delete visitor ${visitor.visitorId}. Retrying after ${retryAfter}s`)
-
-    await delay(retryAfter * 1000)
+    await delay(1000)
 
     return cleanupVisitor(api, visitor)
   }
