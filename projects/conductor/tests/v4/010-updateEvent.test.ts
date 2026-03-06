@@ -170,7 +170,7 @@ test.describe('UpdateEvents Suite', () => {
   }
 
   test.describe('403 errors', () => {
-    test('Auth-API-Key header is missing - TokenRequired', async ({ identify, assert }) => {
+    test('Auth-API-Key header is missing - token required', async ({ identify, assert }) => {
       const { event_id } = await identify({
         auth: testData.credentials.maxFeaturesUS,
       })
@@ -194,7 +194,7 @@ test.describe('UpdateEvents Suite', () => {
       })
     })
 
-    test('invalid Auth-API-Key - TokenNotFound', async ({ assert, identify }) => {
+    test('invalid Auth-API-Key - token not found', async ({ assert, identify }) => {
       const { event_id } = await identify({
         auth: testData.credentials.maxFeaturesUS,
       })
@@ -221,7 +221,7 @@ test.describe('UpdateEvents Suite', () => {
   })
 
   test.describe('404 errors', () => {
-    test('invalid event_id - RequestNotFound', async ({ assert }) => {
+    test('invalid event_id - request not found', async ({ assert }) => {
       await assert.thatResponseMatch({
         expectedResponse: {
           error: {
@@ -244,7 +244,7 @@ test.describe('UpdateEvents Suite', () => {
   })
 
   test.describe('409 errors', () => {
-    test('updateEvents Event Not ready - StateNotReady', async ({ identify, assert }) => {
+    test('updateEvents Event Not ready - state not ready', async ({ identify, assert }) => {
       const { event_id } = await identify({
         auth: testData.credentials.maxFeaturesUS,
       })
