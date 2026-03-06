@@ -9,7 +9,7 @@ import (
 )
 
 func Init(apiKey string, region string) *fingerprint.Client {
-	client := fingerprint.New(fingerprint.WithAPIKey(apiKey), fingerprint.WithRegion(fingerprint.Region(region)))
+	client := fingerprint.New(fingerprint.WithAPIKey(apiKey), fingerprint.WithRegion(fingerprint.Region(region)), fingerprint.WithDebug(true))
 	return client
 }
 
