@@ -75,8 +75,8 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 			vpn = &val
 		}
 	}
-	if query.Has("virtualMachine") {
-		if val, err := strconv.ParseBool(query.Get("virtualMachine")); err == nil {
+	if query.Has("virtual_machine") {
+		if val, err := strconv.ParseBool(query.Get("virtual_machine")); err == nil {
 			virtualMachine = &val
 		}
 	}
@@ -85,8 +85,8 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 			tampering = &val
 		}
 	}
-	if query.Has("antiDetectBrowser") {
-		if val, err := strconv.ParseBool(query.Get("antiDetectBrowser")); err == nil {
+	if query.Has("anti_detect_browser") {
+		if val, err := strconv.ParseBool(query.Get("anti_detect_browser")); err == nil {
 			antiDetectBrowser = &val
 		}
 	}
@@ -95,8 +95,8 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 			incognito = &val
 		}
 	}
-	if query.Has("privacySettings") {
-		if val, err := strconv.ParseBool(query.Get("privacySettings")); err == nil {
+	if query.Has("privacy_settings") {
+		if val, err := strconv.ParseBool(query.Get("privacy_settings")); err == nil {
 			privacySettings = &val
 		}
 	}
@@ -110,13 +110,13 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 			frida = &val
 		}
 	}
-	if query.Has("factoryReset") {
-		if val, err := strconv.ParseBool(query.Get("factoryReset")); err == nil {
+	if query.Has("factory_reset") {
+		if val, err := strconv.ParseBool(query.Get("factory_reset")); err == nil {
 			factoryReset = &val
 		}
 	}
-	if query.Has("clonedApp") {
-		if val, err := strconv.ParseBool(query.Get("clonedApp")); err == nil {
+	if query.Has("cloned_app") {
+		if val, err := strconv.ParseBool(query.Get("cloned_app")); err == nil {
 			clonedApp = &val
 		}
 	}
@@ -125,29 +125,29 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 			emulator = &val
 		}
 	}
-	if query.Has("rootApps") {
-		if val, err := strconv.ParseBool(query.Get("rootApps")); err == nil {
+	if query.Has("root_apps") {
+		if val, err := strconv.ParseBool(query.Get("root_apps")); err == nil {
 			rootApps = &val
 		}
 	}
-	if query.Has("minSuspectScore") {
-		if score, err := strconv.ParseFloat(query.Get("minSuspectScore"), 32); err == nil {
+	if query.Has("min_suspect_score") {
+		if score, err := strconv.ParseFloat(query.Get("min_suspect_score"), 32); err == nil {
 			scoreFloat32 := float32(score)
 			minSuspectScore = &scoreFloat32
 		}
 	}
-	if query.Has("developerTools") {
-		if val, err := strconv.ParseBool(query.Get("developerTools")); err == nil {
+	if query.Has("developer_tools") {
+		if val, err := strconv.ParseBool(query.Get("developer_tools")); err == nil {
 			developerTools = &val
 		}
 	}
-	if query.Has("locationSpoofing") {
-		if val, err := strconv.ParseBool(query.Get("locationSpoofing")); err == nil {
+	if query.Has("location_spoofing") {
+		if val, err := strconv.ParseBool(query.Get("location_spoofing")); err == nil {
 			locationSpoofing = &val
 		}
 	}
-	if query.Has("mitmAttack") {
-		if val, err := strconv.ParseBool(query.Get("mitmAttack")); err == nil {
+	if query.Has("mitm_attack") {
+		if val, err := strconv.ParseBool(query.Get("mitm_attack")); err == nil {
 			mitmAttack = &val
 		}
 	}
@@ -156,28 +156,28 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 			proxy = &val
 		}
 	}
-	if query.Has("sdkVersion") {
-		val := query.Get("sdkVersion")
+	if query.Has("sdk_version") {
+		val := query.Get("sdk_version")
 		sdkVersion = &val
 	}
-	if query.Has("sdkPlatform") {
-		val := query.Get("sdkPlatform")
+	if query.Has("sdk_platform") {
+		val := query.Get("sdk_platform")
 		sdkPlatform = &val
 	}
 	if query.Has("environment") {
 		environment = query["environment"]
 	}
-	if query.Has("proximityId") {
-		val := query.Get("proximityId")
+	if query.Has("proximity_id") {
+		val := query.Get("proximity_id")
 		proximityId = &val
 	}
 
-	paginationKey := query.Get("paginationKey")
+	paginationKey := query.Get("pagination_key")
 	visitorId := query.Get("visitor_id")
 	bot := query.Get("bot")
-	ipAddress := query.Get("ipAddress")
-	linkedId := query.Get("linkedId")
-	vpnConfidence := query.Get("vpnConfidence")
+	ipAddress := query.Get("ip_address")
+	linkedId := query.Get("linked_id")
+	vpnConfidence := query.Get("vpn_confidence")
 
 	searchEventsReq := fingerprint.NewSearchEventsRequest().
 		Limit(limit)
