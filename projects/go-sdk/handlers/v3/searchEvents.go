@@ -1,4 +1,4 @@
-package handlers
+package handlersv3
 
 import (
 	"encoding/json"

@@ -1,4 +1,4 @@
-package handlers
+package handlersv3
 
 import (
 	"encoding/json"
@@ -6,22 +6,21 @@ import (
 	"net/http"
 )
 
-type deleteVisitorDataQueryParams struct {
+type getEventsQueryParams struct {
 	ApiKey    string `json:"apiKey"`
 	Region    string `json:"region"`
-	VisitorId string `json:"visitorId"`
+	RequestId string `json:"requestId"`
 }
 
-func DeleteVisitorData(w http.ResponseWriter, r *http.Request) {
-	queryParams := deleteVisitorDataQueryParams{
+func GetEvents(w http.ResponseWriter, r *http.Request) {
+	queryParams := getEventsQueryParams{
 		ApiKey:    r.URL.Query().Get("apiKey"),
 		Region:    r.URL.Query().Get("region"),
-		VisitorId: r.URL.Query().Get("visitorId"),
+		RequestId: r.URL.Query().Get("requestId"),
 	}
 
 	client, auth := fingerprintv3.Init(queryParams.ApiKey, queryParams.Region)
-	httpRes, err := client.FingerprintApi.DeleteVisitorData(auth, queryParams.VisitorId)
-	response := fingerprintv3.ProcessResponse(nil, httpRes, err)
+	response := fingerprintv3.ProcessResponse(client.FingerprintApi.GetEvent(auth, queryParams.RequestId))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)

@@ -2,23 +2,20 @@ package main
 
 import (
 	"fmt"
-	"go-sdk/handlers"
+	"go-sdk/handlers/v3"
 	handlersv4 "go-sdk/handlers/v4"
 	"log"
 	"net/http"
 )
 
 func main() {
-	http.HandleFunc("/getEvents", handlers.GetEvents)
-	http.HandleFunc("/updateEvent", handlers.UpdateEvent)
-	http.HandleFunc("/searchEvents", handlers.SearchEvents)
-
-	http.HandleFunc("/getVisits", handlers.GetVisits)
-	http.HandleFunc("/deleteVisitorData", handlers.DeleteVisitorData)
-
-	http.HandleFunc("/getRelatedVisitors", handlers.GetRelatedVisitors)
-
-	http.HandleFunc("/unseal", handlers.Unseal)
+	http.HandleFunc("/getEvents", handlersv3.GetEvents)
+	http.HandleFunc("/updateEvent", handlersv3.UpdateEvent)
+	http.HandleFunc("/searchEvents", handlersv3.SearchEvents)
+	http.HandleFunc("/getVisits", handlersv3.GetVisits)
+	http.HandleFunc("/deleteVisitorData", handlersv3.DeleteVisitorData)
+	http.HandleFunc("/getRelatedVisitors", handlersv3.GetRelatedVisitors)
+	http.HandleFunc("/unseal", handlersv3.Unseal)
 
 	// v4
 	http.HandleFunc("/v4/deleteVisitorData", handlersv4.DeleteVisitorData)

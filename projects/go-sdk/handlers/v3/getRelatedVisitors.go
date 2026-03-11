@@ -1,4 +1,4 @@
-package handlers
+package handlersv3
 
 import (
 	"encoding/json"
@@ -6,21 +6,21 @@ import (
 	"net/http"
 )
 
-type getEventsQueryParams struct {
+type getRelatedVisitorsQueryParams struct {
 	ApiKey    string `json:"apiKey"`
 	Region    string `json:"region"`
-	RequestId string `json:"requestId"`
+	VisitorId string `json:"visitorId"`
 }
 
-func GetEvents(w http.ResponseWriter, r *http.Request) {
-	queryParams := getEventsQueryParams{
+func GetRelatedVisitors(w http.ResponseWriter, r *http.Request) {
+	queryParams := getRelatedVisitorsQueryParams{
 		ApiKey:    r.URL.Query().Get("apiKey"),
 		Region:    r.URL.Query().Get("region"),
-		RequestId: r.URL.Query().Get("requestId"),
+		VisitorId: r.URL.Query().Get("visitorId"),
 	}
 
 	client, auth := fingerprintv3.Init(queryParams.ApiKey, queryParams.Region)
-	response := fingerprintv3.ProcessResponse(client.FingerprintApi.GetEvent(auth, queryParams.RequestId))
+	response := fingerprintv3.ProcessResponse(client.FingerprintApi.GetRelatedVisitors(auth, queryParams.VisitorId))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
