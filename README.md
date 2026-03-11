@@ -232,9 +232,9 @@ There are two supported ways to bump Server SDK versions: via the helper script 
     ```shell
     cd projects/java-sdk
     # Linux:
-    sed -i "s|com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:[^\"']*|com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:v<version>|g" build.gradle.kts
+    sed -i "s|com.github.fingerprintjs:java-sdk:[^\"']*|com.github.fingerprintjs:java-sdk:v<version>|g" build.gradle.kts
     # macOS (note the empty string after -i):
-    sed -i '' "s|com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:[^\"']*|com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:v<version>|g" build.gradle.kts
+    sed -i '' "s|com.github.fingerprintjs:java-sdk:[^\"']*|com.github.fingerprintjs:java-sdk:v<version>|g" build.gradle.kts
     ./gradlew dependencies --refresh-dependencies
     ```
     **Dotnet:**
