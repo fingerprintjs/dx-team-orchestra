@@ -84,6 +84,6 @@ public class BotdBotResultConverter : JsonConverter<BotdBotResult>
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        writer.WriteStringValue(stringValue.ToLower());
+        writer.WriteStringValue(stringValue);
     }
 }
