@@ -24,7 +24,7 @@ namespace dotnet_sdk.Controllers
             {
                 var keysList = body.Keys.Select(dict => new Sealed.DecryptionKey(
                     Convert.FromBase64String(dict["key"]),
-                    getDecryptionAlgorythm(dict["algorithm"])
+                    getDecryptionAlgorithm(dict["algorithm"])
                 )).ToArray();
 
                 var unsealedData = Sealed.UnsealEventResponse(Convert.FromBase64String(body.SealedData), keysList);
@@ -38,12 +38,12 @@ namespace dotnet_sdk.Controllers
 
         }
 
-        private Sealed.DecryptionAlgorithm getDecryptionAlgorythm(string algorythm) {
-            switch(algorythm) {
+        private Sealed.DecryptionAlgorithm getDecryptionAlgorithm(string algorithm) {
+            switch(algorithm) {
                 case "aes-256-gcm":
                     return Sealed.DecryptionAlgorithm.Aes256Gcm;
                 default:
-                    throw new Exception("Unknown Decryption Algorythm");
+                    throw new Exception("Unknown Decryption Algorithm");
             }
         }
     }
