@@ -1,6 +1,4 @@
 using System.Net;
-using FingerprintPro.ServerSdk.Client;
-using FingerprintPro.ServerSdk.Model;
 
 namespace dotnet_sdk.Models
 {
