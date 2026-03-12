@@ -5,20 +5,20 @@ using FingerprintPro.ServerSdk.Model;
 namespace dotnet_sdk.Models
 {
     class MusicianResponse<T> {
-        public int code { get; set; }
-        public string originalResponse { get; set; }
-        public T parsedResponse { get; set; }
+        public int Code { get; set; }
+        public string OriginalResponse { get; set; }
+        public T ParsedResponse { get; set; }
 
         public MusicianResponse(HttpStatusCode code, string originalResponse, T parsedResponse) {
-            this.code = (int)code;
-            this.originalResponse = originalResponse;
-            this.parsedResponse = parsedResponse;
+            Code = (int)code;
+            OriginalResponse = originalResponse;
+            ParsedResponse = parsedResponse;
         }
 
         public MusicianResponse(int code, HttpResponseMessage originalResponse, T parsedResponse) {
-            this.code = code;
-            this.originalResponse = originalResponse.ToString();
-            this.parsedResponse = parsedResponse;
+            Code = code;
+            OriginalResponse = originalResponse.ToString();
+            ParsedResponse = parsedResponse;
         }
     }
 }
