@@ -24,7 +24,7 @@ namespace dotnet_sdk.Controllers
             {
                 var keysList = body.Keys.Select(dict => new Sealed.DecryptionKey(
                     Convert.FromBase64String(dict["key"]),
-                    getDecryptionAlgorithm(dict["algorithm"])
+                    GetDecryptionAlgorithm(dict["algorithm"])
                 )).ToArray();
 
                 var unsealedData = Sealed.UnsealEventResponse(Convert.FromBase64String(body.SealedData), keysList);
@@ -38,7 +38,7 @@ namespace dotnet_sdk.Controllers
 
         }
 
-        private Sealed.DecryptionAlgorithm getDecryptionAlgorithm(string algorithm) {
+        private Sealed.DecryptionAlgorithm GetDecryptionAlgorithm(string algorithm) {
             switch(algorithm) {
                 case "aes-256-gcm":
                     return Sealed.DecryptionAlgorithm.Aes256Gcm;
