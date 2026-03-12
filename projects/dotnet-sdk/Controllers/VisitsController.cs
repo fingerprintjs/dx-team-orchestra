@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using FingerprintPro.ServerSdk.Api;
-using FingerprintPro.ServerSdk.Client;
 using FingerprintPro.ServerSdk.Model;
 using dotnet_sdk.Models;
 
@@ -24,12 +22,7 @@ public class VisitsController : ControllerBase
     {
         try
         {
-            var parsedRegion = Utils.GetRegion(region);
-            var configuration = new Configuration(apiKey)
-            {
-                Region = parsedRegion
-            };
-            var api = new FingerprintApi(configuration);
+            var api = Utils.CreateApi(apiKey, region);
 
             var apiResponse = api.GetVisitsWithHttpInfo(visitorId, requestId, linkedId, limit, paginationKey, before);
             var eventResponse = apiResponse.Response;
@@ -52,12 +45,7 @@ public class VisitsController : ControllerBase
     {
         try
         {
-            var parsedRegion = Utils.GetRegion(region);
-            var configuration = new Configuration(apiKey)
-            {
-                Region = parsedRegion
-            };
-            var api = new FingerprintApi(configuration);
+            var api = Utils.CreateApi(apiKey, region);
 
             var apiResponse = api.DeleteVisitorDataWithHttpInfo(visitorId);
             var eventResponse = apiResponse.Response;

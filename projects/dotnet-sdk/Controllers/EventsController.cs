@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using FingerprintPro.ServerSdk.Api;
-using FingerprintPro.ServerSdk.Client;
 using FingerprintPro.ServerSdk.Model;
 using dotnet_sdk.Models;
 using FingerprintPro.ServerSdk.Json;
@@ -19,12 +17,7 @@ public class EventsController : ControllerBase
     {
         try
         {
-            var parsedRegion = Utils.GetRegion(region);
-            var configuration = new Configuration(apiKey)
-            {
-                Region = parsedRegion
-            };
-            var api = new FingerprintApi(configuration);
+            var api = Utils.CreateApi(apiKey, region);
 
             var apiResponse = api.GetEventWithHttpInfo(requestId);
             var eventResponse = apiResponse.Response;
@@ -80,12 +73,7 @@ public class EventsController : ControllerBase
     {
         try
         {
-            var parsedRegion = Utils.GetRegion(region);
-            var configuration = new Configuration(apiKey)
-            {
-                Region = parsedRegion
-            };
-            var api = new FingerprintApi(configuration);
+            var api = Utils.CreateApi(apiKey, region);
 
             var apiResponse = api.SearchEventsWithHttpInfo(limit, paginationKey: paginationKey, visitorId:visitorId, bot:bot, ipAddress:ipAddress, linkedId:linkedId,
                 start:start, end:end, reverse:reverse, suspect:suspect, vpn:vpn, virtualMachine:virtualMachine,
@@ -118,12 +106,7 @@ public class EventsController : ControllerBase
     {
         try
         {
-            var parsedRegion = Utils.GetRegion(region);
-            var configuration = new Configuration(apiKey)
-            {
-                Region = parsedRegion
-            };
-            var api = new FingerprintApi(configuration);
+            var api = Utils.CreateApi(apiKey, region);
 
             var deserializedTag = tag != null ? JsonUtils.Deserialize<Tag>(tag) : null;
 

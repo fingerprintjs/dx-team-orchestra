@@ -1,10 +1,22 @@
+using FingerprintPro.ServerSdk.Api;
 using FingerprintPro.ServerSdk.Client;
 using dotnet_sdk.Models;
 
 namespace dotnet_sdk;
 
 internal static class Utils {
-    public static Region GetRegion(string? region) => region switch
+    public static FingerprintApi CreateApi(string? apiKey, string? region)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
+
+        var configuration = new Configuration(apiKey)
+        {
+            Region = GetRegion(region)
+        };
+        return new FingerprintApi(configuration);
+    }
+
+    private static Region GetRegion(string? region) => region switch
     {
         "eu" => Region.Eu,
         "ap" => Region.Asia,
