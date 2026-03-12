@@ -101,7 +101,7 @@ public class EventsController : ControllerBase
         [FromQuery] string? requestId,
         [FromQuery] string? linkedId,
         [FromQuery] string? tag,
-        [FromQuery] Boolean? suspect
+        [FromQuery] bool? suspect
     )
     {
         try
