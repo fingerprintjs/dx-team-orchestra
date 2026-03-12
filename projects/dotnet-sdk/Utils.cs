@@ -4,7 +4,7 @@ using dotnet_sdk.Models;
 
 namespace dotnet_sdk
 {
-    class Utils {
+    internal static class Utils {
         public static Region GetRegion(String region) {
             switch(region) {
                 case "eu":
