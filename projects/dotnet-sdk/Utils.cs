@@ -1,3 +1,4 @@
+using System.Net;
 using FingerprintPro.ServerSdk.Api;
 using FingerprintPro.ServerSdk.Client;
 using dotnet_sdk.Models;
@@ -28,6 +29,6 @@ internal static class Utils {
         {
             return new MusicianResponse<dynamic>(innerEx.HttpCode, innerEx.ResponseMessage, innerEx.ErrorContent);
         }
-        return new MusicianResponse<string>(System.Net.HttpStatusCode.InternalServerError, e.Message, "error");
+        return new MusicianResponse<string>(HttpStatusCode.InternalServerError, e.Message, "error");
     }
 }

@@ -20,10 +20,10 @@ public class EventsController : ControllerBase
             var api = Utils.CreateApi(apiKey, region);
 
             var apiResponse = api.GetEventWithHttpInfo(requestId);
-            var eventResponse = apiResponse.Response;
-            var rawResponse = await eventResponse.Content.ReadAsStringAsync();
+            var httpResponse = apiResponse.Response;
+            var rawResponse = await httpResponse.Content.ReadAsStringAsync();
 
-            var response = new MusicianResponse<EventsGetResponse>(eventResponse.StatusCode, rawResponse, apiResponse.Data);
+            var response = new MusicianResponse<EventsGetResponse>(httpResponse.StatusCode, rawResponse, apiResponse.Data);
             return Ok(response);
         }
         catch (Exception e) {
@@ -75,18 +75,19 @@ public class EventsController : ControllerBase
         {
             var api = Utils.CreateApi(apiKey, region);
 
-            var apiResponse = api.SearchEventsWithHttpInfo(limit, paginationKey: paginationKey, visitorId:visitorId, bot:bot, ipAddress:ipAddress, linkedId:linkedId,
-                start:start, end:end, reverse:reverse, suspect:suspect, vpn:vpn, virtualMachine:virtualMachine,
-                tampering:tampering, antiDetectBrowser:antiDetectBrowser, incognito:incognito, privacySettings:privacySettings,
-                jailbroken:jailbroken, frida:frida, factoryReset:factoryReset, clonedApp:clonedApp, emulator:emulator,
-                rootApps:rootApps, minSuspectScore:minSuspectScore, ipBlocklist:ipBlocklist, datacenter:datacenter,
+            var apiResponse = api.SearchEventsWithHttpInfo(limit,
+                paginationKey: paginationKey, visitorId: visitorId, bot: bot, ipAddress: ipAddress, linkedId: linkedId,
+                start: start, end: end, reverse: reverse, suspect: suspect, vpn: vpn, virtualMachine: virtualMachine,
+                tampering: tampering, antiDetectBrowser: antiDetectBrowser, incognito: incognito, privacySettings: privacySettings,
+                jailbroken: jailbroken, frida: frida, factoryReset: factoryReset, clonedApp: clonedApp, emulator: emulator,
+                rootApps: rootApps, minSuspectScore: minSuspectScore, ipBlocklist: ipBlocklist, datacenter: datacenter,
                 developerTools: developerTools, locationSpoofing: locationSpoofing, mitmAttack: mitmAttack,
                 proxy: proxy, sdkVersion: sdkVersion, sdkPlatform: sdkPlatform, environment: environment,
                 proximityId: proximityId, proximityPrecisionRadius: proximityPrecisionRadius);
-            var eventResponse = apiResponse.Response;
-            var rawResponse = await eventResponse.Content.ReadAsStringAsync();
+            var httpResponse = apiResponse.Response;
+            var rawResponse = await httpResponse.Content.ReadAsStringAsync();
 
-            var response = new MusicianResponse<SearchEventsResponse>(eventResponse.StatusCode, rawResponse, apiResponse.Data);
+            var response = new MusicianResponse<SearchEventsResponse>(httpResponse.StatusCode, rawResponse, apiResponse.Data);
             return Ok(response);
         }
         catch (Exception e) {
@@ -113,10 +114,10 @@ public class EventsController : ControllerBase
             var updateEventRequest = new EventsUpdateRequest(linkedId, deserializedTag, suspect);
 
             var apiResponse = api.UpdateEventWithHttpInfo(updateEventRequest, requestId);
-            var eventResponse = apiResponse.Response;
-            var rawResponse = await eventResponse.Content.ReadAsStringAsync();
+            var httpResponse = apiResponse.Response;
+            var rawResponse = await httpResponse.Content.ReadAsStringAsync();
 
-            var response = new MusicianResponse<object>(eventResponse.StatusCode, rawResponse, apiResponse.Data);
+            var response = new MusicianResponse<object>(httpResponse.StatusCode, rawResponse, apiResponse.Data);
             return Ok(response);
         }
         catch (Exception e) {

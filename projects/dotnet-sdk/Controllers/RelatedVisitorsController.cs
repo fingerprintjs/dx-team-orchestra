@@ -20,10 +20,10 @@ public class RelatedVisitorsController : ControllerBase
             var api = Utils.CreateApi(apiKey, region);
 
             var apiResponse = api.GetRelatedVisitorsWithHttpInfo(visitorId);
-            var eventResponse = apiResponse.Response;
-            var rawResponse = await eventResponse.Content.ReadAsStringAsync();
+            var httpResponse = apiResponse.Response;
+            var rawResponse = await httpResponse.Content.ReadAsStringAsync();
 
-            var response = new MusicianResponse<RelatedVisitorsResponse>(eventResponse.StatusCode, rawResponse, apiResponse.Data);
+            var response = new MusicianResponse<RelatedVisitorsResponse>(httpResponse.StatusCode, rawResponse, apiResponse.Data);
             return Ok(response);
         }
         catch (Exception e) {

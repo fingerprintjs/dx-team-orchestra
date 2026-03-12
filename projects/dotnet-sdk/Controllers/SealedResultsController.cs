@@ -1,4 +1,5 @@
 // ReSharper disable CollectionNeverUpdated.Global
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using FingerprintPro.ServerSdk;
 using FingerprintPro.ServerSdk.Model;
@@ -30,7 +31,7 @@ public class SealedResultsController : ControllerBase
 
             var unsealedData = Sealed.UnsealEventResponse(Convert.FromBase64String(body.SealedData), keysList);
 
-            var response = new MusicianResponse<EventsGetResponse>(System.Net.HttpStatusCode.OK, unsealedData.ToJson(), unsealedData);
+            var response = new MusicianResponse<EventsGetResponse>(HttpStatusCode.OK, unsealedData.ToJson(), unsealedData);
             return Task.FromResult<IActionResult>(Ok(response));
         }
         catch (Exception e) {
@@ -42,7 +43,7 @@ public class SealedResultsController : ControllerBase
     private Sealed.DecryptionAlgorithm GetDecryptionAlgorithm(string algorithm) => algorithm switch
     {
         "aes-256-gcm" => Sealed.DecryptionAlgorithm.Aes256Gcm,
-        _ => throw new Exception("Unknown Decryption Algorithm")
+        _ => throw new ArgumentException($"Unknown decryption algorithm: {algorithm}", nameof(algorithm))
     };
 
 }

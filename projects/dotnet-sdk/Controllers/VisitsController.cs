@@ -25,10 +25,10 @@ public class VisitsController : ControllerBase
             var api = Utils.CreateApi(apiKey, region);
 
             var apiResponse = api.GetVisitsWithHttpInfo(visitorId, requestId, linkedId, limit, paginationKey, before);
-            var eventResponse = apiResponse.Response;
-            var rawResponse = await eventResponse.Content.ReadAsStringAsync();
+            var httpResponse = apiResponse.Response;
+            var rawResponse = await httpResponse.Content.ReadAsStringAsync();
 
-            var response = new MusicianResponse<VisitorsGetResponse>(eventResponse.StatusCode, rawResponse, apiResponse.Data);
+            var response = new MusicianResponse<VisitorsGetResponse>(httpResponse.StatusCode, rawResponse, apiResponse.Data);
             return Ok(response);
         }
         catch (Exception e) {
@@ -48,10 +48,10 @@ public class VisitsController : ControllerBase
             var api = Utils.CreateApi(apiKey, region);
 
             var apiResponse = api.DeleteVisitorDataWithHttpInfo(visitorId);
-            var eventResponse = apiResponse.Response;
-            var rawResponse = await eventResponse.Content.ReadAsStringAsync();
+            var httpResponse = apiResponse.Response;
+            var rawResponse = await httpResponse.Content.ReadAsStringAsync();
 
-            var response = new MusicianResponse<object>(eventResponse.StatusCode, rawResponse, apiResponse.Data);
+            var response = new MusicianResponse<object>(httpResponse.StatusCode, rawResponse, apiResponse.Data);
             return Ok(response);
         }
         catch (Exception e) {
