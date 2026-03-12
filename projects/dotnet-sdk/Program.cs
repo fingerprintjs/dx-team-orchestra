@@ -2,6 +2,7 @@ using dotnet_sdk;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSingleton(new FingerprintV4Factory(builder.Services));
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
         {

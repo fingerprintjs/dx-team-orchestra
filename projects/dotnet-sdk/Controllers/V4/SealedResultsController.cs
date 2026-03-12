@@ -1,19 +1,19 @@
 using System.Net;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
-using FingerprintPro.ServerSdk;
-using FingerprintPro.ServerSdk.Model;
+using Fingerprint.ServerSdk;
+using Fingerprint.ServerSdk.Model;
 using dotnet_sdk.Models;
 
-namespace dotnet_sdk.Controllers.V3;
+namespace dotnet_sdk.Controllers.V4;
 
 [ApiController]
-[Route("")]
+[Route("v4")]
 public class SealedResultsController : ControllerBase
 {
-    [HttpPost("/unseal")]
+    [HttpPost("unseal")]
     public Task<IActionResult> Unseal(
-        [FromBody] SealedDataRequest body
-    )
+        [FromBody] SealedDataRequest body)
     {
         try
         {
@@ -24,19 +24,18 @@ public class SealedResultsController : ControllerBase
 
             var unsealedData = Sealed.UnsealEventResponse(Convert.FromBase64String(body.SealedData), keysList);
 
-            var response = new MusicianResponse<EventsGetResponse>(HttpStatusCode.OK, unsealedData.ToJson(), unsealedData);
+            var response = new MusicianResponse<Event>(HttpStatusCode.OK, JsonSerializer.Serialize(unsealedData), unsealedData);
             return Task.FromResult<IActionResult>(Ok(response));
         }
-        catch (Exception e) {
+        catch (Exception e)
+        {
             return Task.FromResult<IActionResult>(Ok(Utils.ProcessException(e)));
         }
-
     }
 
-    private Sealed.DecryptionAlgorithm GetDecryptionAlgorithm(string algorithm) => algorithm switch
+    private static Sealed.DecryptionAlgorithm GetDecryptionAlgorithm(string algorithm) => algorithm switch
     {
         "aes-256-gcm" => Sealed.DecryptionAlgorithm.Aes256Gcm,
         _ => throw new ArgumentException($"Unknown decryption algorithm: {algorithm}", nameof(algorithm))
     };
-
 }
