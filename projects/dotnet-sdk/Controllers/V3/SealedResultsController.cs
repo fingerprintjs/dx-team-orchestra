@@ -5,7 +5,7 @@ using FingerprintPro.ServerSdk;
 using FingerprintPro.ServerSdk.Model;
 using dotnet_sdk.Models;
 
-namespace dotnet_sdk.Controllers;
+namespace dotnet_sdk.Controllers.V3;
 
 public class SealedDataRequest
 {

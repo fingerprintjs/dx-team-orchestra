@@ -3,7 +3,7 @@ using FingerprintPro.ServerSdk.Model;
 using dotnet_sdk.Models;
 using FingerprintPro.ServerSdk.Json;
 
-namespace dotnet_sdk.Controllers;
+namespace dotnet_sdk.Controllers.V3;
 
 [ApiController]
 [Route("")]
