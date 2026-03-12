@@ -2,11 +2,13 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using FingerprintPro.ServerSdk.Model;
 
-public class VPNConfidenceConverter : JsonConverter<VPNConfidence>
+namespace dotnet_sdk;
+
+public class VpnConfidenceConverter : JsonConverter<VPNConfidence>
 {
     public override VPNConfidence Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        string value = reader.GetString();
+        var value = reader.GetString();
         return value switch
         {
             "low" => VPNConfidence.Low,
@@ -18,7 +20,7 @@ public class VPNConfidenceConverter : JsonConverter<VPNConfidence>
 
     public override void Write(Utf8JsonWriter writer, VPNConfidence value, JsonSerializerOptions options)
     {
-        string stringValue = value switch
+        var stringValue = value switch
         {
             VPNConfidence.Low => "low",
             VPNConfidence.Medium => "medium",
@@ -34,7 +36,7 @@ public class ProxyConfidenceConverter : JsonConverter<ProxyConfidence>
 {
     public override ProxyConfidence Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        string value = reader.GetString();
+        var value = reader.GetString();
         return value switch
         {
             "low" => ProxyConfidence.Low,
@@ -46,7 +48,7 @@ public class ProxyConfidenceConverter : JsonConverter<ProxyConfidence>
 
     public override void Write(Utf8JsonWriter writer, ProxyConfidence value, JsonSerializerOptions options)
     {
-        string stringValue = value switch
+        var stringValue = value switch
         {
             ProxyConfidence.Low => "low",
             ProxyConfidence.Medium => "medium",
@@ -62,7 +64,7 @@ public class BotdBotResultConverter : JsonConverter<BotdBotResult>
 {
     public override BotdBotResult Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        string value = reader.GetString();
+        var value = reader.GetString();
         return value switch
         {
             "notDetected" => BotdBotResult.NotDetected,
@@ -74,7 +76,7 @@ public class BotdBotResultConverter : JsonConverter<BotdBotResult>
 
     public override void Write(Utf8JsonWriter writer, BotdBotResult value, JsonSerializerOptions options)
     {
-        string stringValue = value switch
+        var stringValue = value switch
         {
             BotdBotResult.NotDetected => "notDetected",
             BotdBotResult.Good => "good",
