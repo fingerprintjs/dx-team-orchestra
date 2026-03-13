@@ -9,7 +9,6 @@ GITHUB_REPO="fingerprintjs"
 
 case $LANGUAGE in
     "node-v3")
-        REPO_NAME="fingerprint-pro-server-api-node-sdk"
         PACKAGE_NAME="@fingerprintjs/fingerprintjs-pro-server-api"
         ;;
     "node-v4" | "node")
@@ -30,12 +29,16 @@ esac
 echo "Setting up $LANGUAGE SDK..."
 
 if [[ "$EVENT_NAME" != "workflow_dispatch" && "$EVENT_NAME" != "repository_dispatch" || -z "$SDK_VERSION" || "$SDK_VERSION" == "latest" ]]; then
-    echo "Fetching latest release from GitHub for $REPO_NAME..."
-
-    SDK_VERSION=$(curl -s "https://api.github.com/repos/$GITHUB_REPO/$REPO_NAME/releases/latest" | jq -r '.tag_name')
+    if [[ "$LANGUAGE" == "node-v3" ]]; then
+        echo "Fetching latest version from npm for $PACKAGE_NAME..."
+        SDK_VERSION=$(npm view "$PACKAGE_NAME" version --json | jq -r '.')
+    else
+        echo "Fetching latest release from GitHub for $REPO_NAME..."
+        SDK_VERSION=$(curl -s "https://api.github.com/repos/$GITHUB_REPO/$REPO_NAME/releases/latest" | jq -r '.tag_name')
+    fi
 
     if [[ -z "$SDK_VERSION" || "$SDK_VERSION" == "null" ]]; then
-        echo "Failed to fetch latest version for $LANGUAGE from GitHub!"
+        echo "Failed to fetch latest version for $LANGUAGE!"
         exit 1
     fi
 fi
