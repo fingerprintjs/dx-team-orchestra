@@ -1,8 +1,39 @@
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using FingerprintPro.ServerSdk.Model;
 
 namespace dotnet_sdk;
+
+public class DateTimeTrimTrailingZerosConverter : JsonConverter<DateTime>
+{
+    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) =>
+        DateTime.Parse(reader.GetString()!, CultureInfo.InvariantCulture);
+
+    public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options) =>
+        writer.WriteStringValue(FormatDateTime(value));
+
+    internal static string FormatDateTime(DateTime value)
+    {
+        var formatted = value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ", CultureInfo.InvariantCulture);
+        var withoutZ = formatted[..^1].TrimEnd('0').TrimEnd('.');
+        return withoutZ + "Z";
+    }
+}
+
+public class NullableDateTimeTrimTrailingZerosConverter : JsonConverter<DateTime?>
+{
+    public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) =>
+        reader.TokenType == JsonTokenType.Null ? null : DateTime.Parse(reader.GetString()!, CultureInfo.InvariantCulture);
+
+    public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
+    {
+        if (value.HasValue)
+            writer.WriteStringValue(DateTimeTrimTrailingZerosConverter.FormatDateTime(value.Value));
+        else
+            writer.WriteNullValue();
+    }
+}
 
 public class VpnConfidenceConverter : JsonConverter<VPNConfidence>
 {
@@ -53,6 +84,32 @@ public class ProxyConfidenceConverter : JsonConverter<ProxyConfidence>
             ProxyConfidence.Low => "low",
             ProxyConfidence.Medium => "medium",
             ProxyConfidence.High => "high",
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        writer.WriteStringValue(stringValue);
+    }
+}
+
+public class ProxyTypeConverter : JsonConverter<ProxyDetails.ProxyTypeEnum>
+{
+    public override ProxyDetails.ProxyTypeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var value = reader.GetString();
+        return value switch
+        {
+            "residential" => ProxyDetails.ProxyTypeEnum.Residential,
+            "data_center" => ProxyDetails.ProxyTypeEnum.Datacenter,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    public override void Write(Utf8JsonWriter writer, ProxyDetails.ProxyTypeEnum value, JsonSerializerOptions options)
+    {
+        var stringValue = value switch
+        {
+            ProxyDetails.ProxyTypeEnum.Residential => "residential",
+            ProxyDetails.ProxyTypeEnum.Datacenter => "data_center",
             _ => throw new ArgumentOutOfRangeException()
         };
 

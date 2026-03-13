@@ -8,8 +8,6 @@ public class FingerprintV4Factory(IServiceCollection baseServices)
 {
     public IFingerprintApi CreateApi(string? apiKey, string? region)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
-
         IServiceCollection services = new ServiceCollection();
         foreach (var descriptor in baseServices)
         {
@@ -18,10 +16,11 @@ public class FingerprintV4Factory(IServiceCollection baseServices)
 
         services.AddFingerprint(config =>
         {
-            config.AddTokens(new BearerToken(apiKey));
+            config.AddTokens(new BearerToken(apiKey ?? ""));
             if (!string.IsNullOrEmpty(region))
             {
-                config.Region = Regions.Parse(region);
+                try { config.Region = Regions.Parse(region); }
+                catch (ArgumentException) { /* default to global region */ }
             }
         });
 

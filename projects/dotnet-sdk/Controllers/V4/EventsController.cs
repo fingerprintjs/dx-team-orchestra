@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Fingerprint.ServerSdk.Api;
 using Fingerprint.ServerSdk.Client;
@@ -26,11 +27,11 @@ public class EventsController(FingerprintV4Factory factory) : ControllerBase
                 ? new Option<string>(rulesetId)
                 : default;
 
-            var apiResponse = await api.GetEventAsync(eventId!, rulesetIdOption);
+            var apiResponse = await api.GetEventAsync(eventId ?? "", rulesetIdOption);
 
             return apiResponse.TryOk(out var data)
                 ? Ok(new MusicianResponse<Event>(HttpStatusCode.OK, apiResponse.RawContent, data))
-                : Ok(new MusicianResponse<string>(apiResponse.StatusCode, apiResponse.RawContent, "error"));
+                : Ok(new MusicianResponse<object>(apiResponse.StatusCode, apiResponse.RawContent, Utils.ParseRawContent(apiResponse.RawContent)));
         }
         catch (Exception e)
         {
@@ -75,7 +76,13 @@ public class EventsController(FingerprintV4Factory factory) : ControllerBase
         [FromQuery(Name = "sdk_platform")] string? sdkPlatform,
         [FromQuery(Name = "environment")] List<string>? environment,
         [FromQuery(Name = "proximity_id")] string? proximityId,
-        [FromQuery(Name = "vpn_confidence")] string? vpnConfidence
+        [FromQuery(Name = "vpn_confidence")] string? vpnConfidence,
+        [FromQuery(Name = "asn")] string? asn,
+        [FromQuery(Name = "url")] string? url,
+        [FromQuery(Name = "origin")] string? origin,
+        [FromQuery(Name = "bundle_id")] string? bundleId,
+        [FromQuery(Name = "tor_node")] bool? torNode,
+        [FromQuery(Name = "package_name")] string? packageName
     )
     {
         try
@@ -109,15 +116,39 @@ public class EventsController(FingerprintV4Factory factory) : ControllerBase
             if (locationSpoofing.HasValue) request = request.WithLocationSpoofing(locationSpoofing.Value);
             if (mitmAttack.HasValue) request = request.WithMitmAttack(mitmAttack.Value);
             if (proxy.HasValue) request = request.WithProxy(proxy.Value);
+            if (bot != null)
+            {
+                // To prevent internal error, just response like Server API error
+                try { request = request.WithBot(SearchEventsBotValueConverter.FromString(bot)); }
+                catch { throw new ApiException("Invalid bot filter", HttpStatusCode.BadRequest, "{\"error\":{\"code\":\"request_cannot_be_parsed\",\"message\":\"invalid bot type\"}}"); }
+            }
             if (sdkVersion != null) request = request.WithSdkVersion(sdkVersion);
+            if (sdkPlatform != null)
+            {
+                // To prevent internal error, just response like Server API error
+                try { request = request.WithSdkPlatform(SearchEventsSdkPlatformValueConverter.FromString(sdkPlatform)); }
+                catch { throw new ApiException("Invalid sdkPlatform", HttpStatusCode.BadRequest, "{\"error\":{\"code\":\"request_cannot_be_parsed\",\"message\":\"invalid sdk platform\"}}"); }
+            }
+            if (vpnConfidence != null)
+            {
+                // To prevent internal error, just response like Server API error
+                try { request = request.WithVpnConfidence(SearchEventsVpnConfidenceValueConverter.FromString(vpnConfidence)); }
+                catch { throw new ApiException("Invalid vpnConfidence", HttpStatusCode.BadRequest, "{\"error\":{\"code\":\"request_cannot_be_parsed\",\"message\":\"invalid vpn confidence\"}}"); }
+            }
             if (environment is { Count: > 0 }) request = request.WithEnvironment(environment);
             if (proximityId != null) request = request.WithProximityId(proximityId);
+            if (asn != null) request = request.WithAsn(asn);
+            if (url != null) request = request.WithUrl(url);
+            if (origin != null) request = request.WithOrigin(origin);
+            if (bundleId != null) request = request.WithBundleId(bundleId);
+            if (torNode.HasValue) request = request.WithTorNode(torNode.Value);
+            if (packageName != null) request = request.WithPackageName(packageName);
 
             var apiResponse = await api.SearchEventsAsync(request);
 
             return apiResponse.TryOk(out var data)
                 ? Ok(new MusicianResponse<EventSearch>(HttpStatusCode.OK, apiResponse.RawContent, data))
-                : Ok(new MusicianResponse<string>(apiResponse.StatusCode, apiResponse.RawContent, "error"));
+                : Ok(new MusicianResponse<object>(apiResponse.StatusCode, apiResponse.RawContent, Utils.ParseRawContent(apiResponse.RawContent)));
         }
         catch (Exception e)
         {
@@ -131,7 +162,7 @@ public class EventsController(FingerprintV4Factory factory) : ControllerBase
         [FromQuery(Name = "region")] string? region,
         [FromQuery(Name = "event_id")] string? eventId,
         [FromQuery(Name = "linked_id")] string? linkedId,
-        [FromQuery(Name = "tag")] string? tag,
+        [FromQuery(Name = "tags")] string? tags,
         [FromQuery(Name = "suspect")] bool? suspect)
     {
         try
@@ -141,10 +172,11 @@ public class EventsController(FingerprintV4Factory factory) : ControllerBase
             var updateRequest = new EventUpdate();
             if (linkedId != null) updateRequest.LinkedId = linkedId;
             if (suspect.HasValue) updateRequest.Suspect = suspect;
+            if (tags != null) updateRequest.Tags = JsonSerializer.Deserialize<Dictionary<string, object>>(tags)!;
 
-            var apiResponse = await api.UpdateEventAsync(eventId!, updateRequest);
+            var apiResponse = await api.UpdateEventAsync(eventId ?? "", updateRequest);
 
-            return Ok(new MusicianResponse<string>(apiResponse.StatusCode, apiResponse.RawContent ?? "", "ok"));
+            return Ok(new MusicianResponse<object>(apiResponse.StatusCode, apiResponse.RawContent ?? "", Utils.ParseRawContent(apiResponse.RawContent)));
         }
         catch (Exception e)
         {

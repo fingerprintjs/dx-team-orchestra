@@ -17,9 +17,9 @@ public class VisitsController(FingerprintV4Factory factory) : ControllerBase
         {
             var api = factory.CreateApi(apiKey, region);
 
-            var apiResponse = await api.DeleteVisitorDataAsync(visitorId!);
+            var apiResponse = await api.DeleteVisitorDataAsync(visitorId ?? "");
 
-            return Ok(new MusicianResponse<string>(apiResponse.StatusCode, apiResponse.RawContent ?? "", "ok"));
+            return Ok(new MusicianResponse<object>(apiResponse.StatusCode, apiResponse.RawContent ?? "", Utils.ParseRawContent(apiResponse.RawContent)));
         }
         catch (Exception e)
         {

@@ -1,22 +1,17 @@
-// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable UnusedMember.Global
 using System.Net;
 
 namespace dotnet_sdk.Models;
 
-internal class MusicianResponse<T> {
-    public int Code { get; set; }
-    public string OriginalResponse { get; set; }
-    public T ParsedResponse { get; set; }
+internal class MusicianResponse<T>(int code, string originalResponse, T parsedResponse)
+{
+    public int Code { get; set; } = code;
+    public string OriginalResponse { get; set; } = originalResponse;
+    public T ParsedResponse { get; set; } = parsedResponse;
 
-    public MusicianResponse(HttpStatusCode code, string originalResponse, T parsedResponse) {
-        Code = (int)code;
-        OriginalResponse = originalResponse;
-        ParsedResponse = parsedResponse;
-    }
+    public MusicianResponse(HttpStatusCode code, string originalResponse, T parsedResponse) : this((int)code,
+        originalResponse, parsedResponse) { }
 
-    public MusicianResponse(int code, HttpResponseMessage originalResponse, T parsedResponse) {
-        Code = code;
-        OriginalResponse = originalResponse.ToString();
-        ParsedResponse = parsedResponse;
-    }
+    public MusicianResponse(int code, HttpResponseMessage originalResponse, T parsedResponse) : this(code,
+        originalResponse.ToString(), parsedResponse) { }
 }
