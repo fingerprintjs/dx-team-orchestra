@@ -47,6 +47,9 @@ importers:
 
   projects/node-sdk:
     dependencies:
+      '@fingerprint/node-sdk':
+        specifier: ^7.0.0
+        version: 7.0.0
       '@fingerprintjs/fingerprintjs-pro-server-api':
         specifier: 6.10.0
         version: 6.10.0

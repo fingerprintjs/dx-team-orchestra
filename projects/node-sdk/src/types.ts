@@ -12,12 +12,7 @@ export type MusicianResponse<Response200Type> =
       parsedResponse: Response200Type
     }
   | {
-      code: 500
+      code: number // or 4**, 5** in case of error
       originalResponse: unknown
       parsedResponse: unknown
-    }
-  | {
-      code: number // or 4**, 5** in case of error
-      originalResponse: String
-      parsedResponse: String
     }

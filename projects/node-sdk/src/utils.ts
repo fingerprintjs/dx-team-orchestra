@@ -1,25 +1,34 @@
-import { Region, RequestError } from '@fingerprintjs/fingerprintjs-pro-server-api'
+import { Region as V4Region, RequestError as V4RequestError } from '@fingerprint/node-sdk'
+import { Region as V3Region, RequestError as V3RequestError } from '@fingerprintjs/fingerprintjs-pro-server-api'
+
 import { MusicianResponse } from './types'
 
-export function getRegion(region: string): Region {
+function getRegionCode(region: string): 'EU' | 'AP' | 'Global' {
   switch (region) {
     case 'eu':
-      return Region.EU
+      return 'EU'
     case 'ap':
-      return Region.AP
+      return 'AP'
     default:
-      return Region.Global
+      return 'Global'
   }
 }
 
-type Method = 'updateEvent' | 'deleteVisitorData'
+export function getV3Region(region: string): V3Region {
+  return V3Region[getRegionCode(region)]
+}
 
-export async function unwrapError<Response200Type>(
+export function getV4Region(region: string): V4Region {
+  return V4Region[getRegionCode(region)]
+}
+
+type V3Method = 'updateEvent' | 'deleteVisitorData'
+
+export async function unwrapV3Error<Response200Type>(
   error: unknown,
-  method?: Method
+  method?: V3Method
 ): Promise<MusicianResponse<Response200Type>> {
-  console.log(unwrapError, error)
-  if (error instanceof RequestError) {
+  if (error instanceof V3RequestError) {
     const originalResponse = await error.response.text()
     return {
       code: error.statusCode,
@@ -30,7 +39,7 @@ export async function unwrapError<Response200Type>(
   // Make behaviour consistent with other Server SDKs
   if (error instanceof Error && error.message == `Api key is not set`) {
     console.log(error.message, error.toString(), JSON.stringify(error))
-    if (['updateEvent', 'deleteVisitorData'].includes(method!)) {
+    if (method && ['updateEvent', 'deleteVisitorData'].includes(method)) {
       return {
         code: 403,
         originalResponse: error.toString(),
@@ -43,7 +52,7 @@ export async function unwrapError<Response200Type>(
         },
       }
     }
-    
+
     if (error.message === 'Api key is not set') {
       return {
         code: 403,
@@ -51,7 +60,7 @@ export async function unwrapError<Response200Type>(
         parsedResponse: JSON.stringify(error),
       }
     }
-    
+
     return {
       code: 404,
       originalResponse: error.toString(),
@@ -78,6 +87,23 @@ export async function unwrapError<Response200Type>(
   }
 }
 
+export async function unwrapV4Error<Response200Type>(error: unknown): Promise<MusicianResponse<Response200Type>> {
+  if (error instanceof V4RequestError) {
+    const originalResponse = await error.response.text()
+    return {
+      code: error.statusCode,
+      originalResponse,
+      parsedResponse: error.responseBody,
+    }
+  }
+
+  return {
+    code: 500,
+    originalResponse: error?.toString(),
+    parsedResponse: JSON.stringify(error),
+  }
+}
+
 export function parseBoolean(value: string) {
   if (value === 'true') {
     return true
@@ -86,4 +112,63 @@ export function parseBoolean(value: string) {
     return false
   }
   throw new Error(`Invalid boolean value: ${value}`)
+}
+
+type QueryValue = unknown
+
+function normalizeQueryValue(value: QueryValue): string | undefined {
+  if (typeof value === 'string') {
+    return value
+  }
+
+  if (Array.isArray(value)) {
+    const firstValue = value.find((item) => typeof item === 'string')
+    return typeof firstValue === 'string' ? firstValue : undefined
+  }
+
+  return undefined
+}
+
+export function getStringQueryValue(value: QueryValue): string | undefined {
+  return normalizeQueryValue(value)
+}
+
+export function getStringArrayQueryValue(value: QueryValue): string[] | undefined {
+  if (typeof value === 'string') {
+    return [value]
+  }
+
+  if (Array.isArray(value)) {
+    return value.filter((item): item is string => typeof item === 'string')
+  }
+
+  return undefined
+}
+
+export function getBooleanQueryValue(value: QueryValue): boolean | undefined {
+  const normalizedValue = normalizeQueryValue(value)
+  return normalizedValue === undefined ? undefined : parseBoolean(normalizedValue)
+}
+
+export function getNumberQueryValue(value: QueryValue): number | undefined {
+  const normalizedValue = normalizeQueryValue(value)
+
+  if (normalizedValue === undefined || normalizedValue === '') {
+    return undefined
+  }
+
+  return Number(normalizedValue)
+}
+
+export function createErrorResponse(code: number, errorCode: string, message: string): MusicianResponse<never> {
+  return {
+    code,
+    originalResponse: message,
+    parsedResponse: {
+      error: {
+        code: errorCode,
+        message,
+      },
+    },
+  }
 }

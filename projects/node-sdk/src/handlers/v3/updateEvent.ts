@@ -1,6 +1,6 @@
-import { Handler, MusicianResponse } from '../types'
+import { Handler, MusicianResponse } from '../../types'
 import { EventsUpdateRequest, FingerprintJsServerApiClient } from '@fingerprintjs/fingerprintjs-pro-server-api'
-import { getRegion, parseBoolean, unwrapError } from '../utils'
+import { getV3Region, parseBoolean, unwrapV3Error } from '../../utils'
 
 interface QueryParams {
   apiKey?: string
@@ -13,12 +13,11 @@ interface QueryParams {
 
 export const updateEvent: Handler<QueryParams> = async (req, res) => {
   const { apiKey = '', region = '', requestId = '', linkedId, tag, suspect } = req.query
-  console.log(req.query)
   let result: MusicianResponse<void>
   try {
     const client = new FingerprintJsServerApiClient({
-      apiKey: apiKey,
-      region: getRegion(region),
+      apiKey,
+      region: getV3Region(region),
     })
 
     const eventsUpdateRequest: EventsUpdateRequest = {}
@@ -31,7 +30,7 @@ export const updateEvent: Handler<QueryParams> = async (req, res) => {
     if (suspect != undefined) {
       eventsUpdateRequest.suspect = parseBoolean(suspect)
     }
-    console.log(eventsUpdateRequest, linkedId, tag, suspect, JSON.stringify(eventsUpdateRequest))
+
     const event = await client.updateEvent(eventsUpdateRequest, requestId)
     result = {
       code: 200,
@@ -39,7 +38,7 @@ export const updateEvent: Handler<QueryParams> = async (req, res) => {
       parsedResponse: event,
     }
   } catch (error) {
-    result = await unwrapError<void>(error, 'updateEvent')
+    result = await unwrapV3Error<void>(error, 'updateEvent')
   }
   res.send(result)
 }

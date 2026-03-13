@@ -1,11 +1,11 @@
-import { Handler, MusicianResponse } from '../types'
+import { Handler, MusicianResponse } from '../../types'
 import {
   EventsGetResponse,
   unsealEventsResponse,
   DecryptionKey,
   DecryptionAlgorithm,
 } from '@fingerprintjs/fingerprintjs-pro-server-api'
-import { unwrapError } from '../utils'
+import { unwrapV3Error } from '../../utils'
 
 interface RequestBody {
   sealedData: string
@@ -30,7 +30,7 @@ export const unseal: Handler<{}, RequestBody> = async (req, res) => {
       parsedResponse: event,
     }
   } catch (error) {
-    result = await unwrapError<EventsGetResponse>(error)
+    result = await unwrapV3Error<EventsGetResponse>(error)
   }
   res.send(result)
 }

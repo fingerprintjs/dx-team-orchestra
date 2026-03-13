@@ -1,14 +1,21 @@
 #!/bin/bash
 set -e
 
-LANGUAGE=$1        # node, java, dotnet, go, python, php
+LANGUAGE=$1        # node-v3, node-v4, node (alias of node-v4), java, dotnet, go, python, php
 EVENT_NAME=$2      # workflow_dispatch, push, pull_request, schedule
 SDK_VERSION=$3     # SDK version or "latest"
 
 GITHUB_REPO="fingerprintjs"
 
 case $LANGUAGE in
-    "node")   REPO_NAME="node-sdk" ;;
+    "node-v3")
+        REPO_NAME="fingerprint-pro-server-api-node-sdk"
+        PACKAGE_NAME="@fingerprintjs/fingerprintjs-pro-server-api"
+        ;;
+    "node-v4" | "node")
+        REPO_NAME="node-sdk"
+        PACKAGE_NAME="@fingerprint/node-sdk"
+        ;;
     "java")   REPO_NAME="java-sdk" ;;
     "dotnet") REPO_NAME="dotnet-sdk" ;;
     "go")     REPO_NAME="go-sdk" ;;
@@ -33,14 +40,14 @@ if [[ "$EVENT_NAME" != "workflow_dispatch" && "$EVENT_NAME" != "repository_dispa
     fi
 fi
 
-if [[ "$LANGUAGE" == "php"  || "$LANGUAGE" == "python" || "$LANGUAGE" == "dotnet" || "$LANGUAGE" == "node" ]]; then
+if [[ "$LANGUAGE" == "php" || "$LANGUAGE" == "python" || "$LANGUAGE" == "dotnet" || "$LANGUAGE" == "node-v3" || "$LANGUAGE" == "node-v4" || "$LANGUAGE" == "node" ]]; then
     SDK_VERSION=${SDK_VERSION#v}  # Remove leading `v` if presented
 fi
 
-if [[ "$LANGUAGE" == "node" ]]; then
-    # Node.js: If SDK_VERSION has only version without full tag, add `@fingerprintjs/fingerprintjs-pro-server-api@`
+if [[ "$LANGUAGE" == "node-v3" || "$LANGUAGE" == "node-v4" || "$LANGUAGE" == "node" ]]; then
+    # Node.js: If SDK_VERSION has only version without full tag, add the correct package name
     if [[ "$SDK_VERSION" != @* ]]; then
-        SDK_VERSION="@fingerprintjs/fingerprintjs-pro-server-api@$SDK_VERSION"
+        SDK_VERSION="$PACKAGE_NAME@$SDK_VERSION"
     fi
 fi
 
@@ -74,7 +81,7 @@ replace_java_dep() {
 echo "Using SDK version: $SDK_VERSION"
 
 case $LANGUAGE in
-    "node")
+    "node-v3" | "node-v4" | "node")
         pnpm install $SDK_VERSION
         ;;
     "java")
