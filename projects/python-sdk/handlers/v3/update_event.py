@@ -1,9 +1,7 @@
 from fingerprint_pro_server_api_sdk import EventsUpdateRequest
-from fingerprint_pro_server_api_sdk.rest import ApiException
-from flask import jsonify, request, json
+from flask import request, json
 
-from handlers.v3.fingerprint_client import create_client
-from musician_response import prepare_musician_response, prepare_musician_response_from_error
+from handlers.v3.fingerprint_client import create_client, create_response
 
 
 def update_event():
@@ -23,11 +21,4 @@ def update_event():
     )
 
     api_instance = create_client()
-
-    try:
-        (result, code, http_response) = api_instance.update_event_with_http_info(update_body, request_id)
-        response = prepare_musician_response(result, code, http_response)
-    except ApiException as e:
-        response = prepare_musician_response_from_error(e)
-
-    return jsonify(response)
+    return create_response(lambda: api_instance.update_event_with_http_info(update_body, request_id))
