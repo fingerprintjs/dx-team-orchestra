@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from fingerprint_pro_server_api_sdk import IdentificationSeenAt
 from fingerprint_pro_server_api_sdk.rest import KnownApiException, ApiException
 
 CUSTOM_RENAME = {
