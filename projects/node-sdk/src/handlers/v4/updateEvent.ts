@@ -1,7 +1,14 @@
 import { EventUpdate, FingerprintServerApiClient } from '@fingerprint/node-sdk'
 
 import { Handler, MusicianResponse } from '../../types'
-import { createErrorResponse, getBooleanQueryValue, getStringQueryValue, getV4Region, unwrapV4Error } from '../../utils'
+import {
+  createErrorResponse,
+  getBooleanQueryValue,
+  getStringQueryValue,
+  getV4Region,
+  parseJsonValue,
+  unwrapV4Error,
+} from '../../utils'
 
 interface QueryParams {
   api_key?: string
@@ -22,25 +29,25 @@ export const updateEvent: Handler<QueryParams> = async (req, res) => {
     return
   }
 
-  const eventUpdate: EventUpdate = {}
-  const linkedId = getStringQueryValue(req.query.linked_id)
-  const tags = getStringQueryValue(req.query.tags)
-  const suspect = getBooleanQueryValue(req.query.suspect)
-
-  if (linkedId !== undefined) {
-    eventUpdate.linked_id = linkedId
-  }
-
-  if (tags !== undefined) {
-    eventUpdate.tags = JSON.parse(tags)
-  }
-
-  if (suspect !== undefined) {
-    eventUpdate.suspect = suspect
-  }
-
   let result: MusicianResponse<void>
   try {
+    const eventUpdate: EventUpdate = {}
+    const linkedId = getStringQueryValue(req.query.linked_id)
+    const tags = getStringQueryValue(req.query.tags)
+    const suspect = getBooleanQueryValue(req.query.suspect, 'suspect')
+
+    if (linkedId !== undefined) {
+      eventUpdate.linked_id = linkedId
+    }
+
+    if (tags !== undefined) {
+      eventUpdate.tags = parseJsonValue(tags, 'tags')
+    }
+
+    if (suspect !== undefined) {
+      eventUpdate.suspect = suspect
+    }
+
     const client = new FingerprintServerApiClient({
       apiKey,
       region: getV4Region(region),

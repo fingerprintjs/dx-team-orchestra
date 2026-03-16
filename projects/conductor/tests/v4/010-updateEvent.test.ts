@@ -220,6 +220,50 @@ test.describe('UpdateEvents Suite', () => {
     })
   })
 
+  test.describe('400 errors', () => {
+    test('invalid suspect - request cannot be parsed', async ({ assert }) => {
+      await assert.thatResponseMatch({
+        expectedStatusCode: 400,
+        expectedResponse: {
+          error: {
+            code: 'request_cannot_be_parsed',
+            message: 'invalid suspect',
+          },
+        },
+        callback: (api) =>
+          api.updateEvent({
+            event_id: testData.invalid.requestID,
+            api_key: testData.credentials.maxFeaturesUS.privateKey,
+            region: testData.credentials.maxFeaturesUS.region,
+            suspect: 'maybe' as any,
+          }),
+      })
+    })
+
+    test('invalid tags - request cannot be parsed', async ({ request }) => {
+      const params = new URLSearchParams({
+        event_id: testData.invalid.requestID,
+        api_key: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        tags: '{',
+      })
+
+      const response = await request.get(`${testData.config.baseURL}/v4/updateEvent?${params.toString()}`)
+      const body = await response.json()
+
+      expect(body).toStrictEqual({
+        code: 400,
+        originalResponse: 'invalid tags',
+        parsedResponse: {
+          error: {
+            code: 'request_cannot_be_parsed',
+            message: 'invalid tags',
+          },
+        },
+      })
+    })
+  })
+
   test.describe('404 errors', () => {
     test('invalid event_id - request not found', async ({ assert }) => {
       await assert.thatResponseMatch({

@@ -8,16 +8,6 @@ on:
         required: false
         type: string
         default: 'latest'
-      node-sdk-v3-version:
-        description: 'Node SDK v3 version to set up'
-        required: false
-        type: string
-        default: ''
-      node-sdk-v4-version:
-        description: 'Node SDK v4 version to set up'
-        required: false
-        type: string
-        default: 'latest'
       run-node-sdk-tests:
         description: 'Should we run Node SDK tests?'
         required: false
@@ -67,7 +57,7 @@ jobs:
     name: 'Set Datadog team'
     uses: fingerprintjs/dx-team-toolkit/.github/workflows/set-datadog-team.yml@v1
     with:
-      additionalTags: ${{ (github.event.client_payload && format('release-tag-name:{0},trigger-repository:{1}', github.event.client_payload.node-sdk-v4-version || github.event.client_payload.sdk-version, github.event.client_payload.repository)) || '' }}
+      additionalTags: ${{ (github.event.client_payload && format('release-tag-name:{0},trigger-repository:{1}', github.event.client_payload.sdk-version, github.event.client_payload.repository)) || '' }}
     secrets:
       DD_API_KEY: ${{ secrets.INTEGRATIONS_DATADOG_API_KEY }}
 
@@ -115,15 +105,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Set up Node SDK v3 version
-        if: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.node-sdk-v3-version != '') || (github.event_name == 'repository_dispatch' && github.event.client_payload.node-sdk-v3-version != '') }}
-        working-directory: ./projects/node-sdk
-        run: ../../scripts/setup-sdk.sh node-v3 ${{ github.event_name }} ${{ github.event.client_payload.node-sdk-v3-version || github.event.inputs.node-sdk-v3-version }}
-
       - name: Set up Node SDK v4 version
         if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/node-sdk
-        run: ../../scripts/setup-sdk.sh node-v4 ${{ github.event_name }} ${{ github.event.client_payload.node-sdk-v4-version || github.event.client_payload.sdk-version || github.event.inputs.node-sdk-v4-version }}
+        run: ../../scripts/setup-sdk.sh node-v4 ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }}
 
       - name: Install Playwright browsers
         working-directory: ./projects/conductor

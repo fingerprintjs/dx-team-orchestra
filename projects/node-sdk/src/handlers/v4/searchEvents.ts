@@ -14,6 +14,8 @@ import {
 interface QueryParams {
   api_key?: string
   region?: string
+  asn?: string
+  bundle_id?: string
   limit?: string
   pagination_key?: string
   visitor_id?: string
@@ -47,23 +49,31 @@ interface QueryParams {
   sdk_version?: string
   sdk_platform?: string
   environment?: string | string[]
+  origin?: string
+  package_name?: string
   proximity_id?: string
   proximity_precision_radius?: string
+  tor_node?: string
+  url?: string
 }
 
 const stringFields = [
+  'bundle_id',
   'pagination_key',
   'visitor_id',
   'bot',
   'ip_address',
   'linked_id',
+  'url',
+  'origin',
   'vpn_confidence',
   'sdk_version',
   'sdk_platform',
+  'package_name',
   'proximity_id',
 ] as const
 
-const numberFields = ['limit', 'start', 'end', 'min_suspect_score', 'proximity_precision_radius'] as const
+const numberFields = ['asn', 'limit', 'start', 'end', 'min_suspect_score', 'proximity_precision_radius'] as const
 
 const booleanFields = [
   'reverse',
@@ -86,6 +96,7 @@ const booleanFields = [
   'location_spoofing',
   'mitm_attack',
   'proxy',
+  'tor_node',
 ] as const
 
 export const searchEvents: Handler<QueryParams> = async (req, res) => {
@@ -97,36 +108,36 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     return
   }
 
-  const filter: Record<string, unknown> = {}
-
-  for (const field of stringFields) {
-    const value = getStringQueryValue(req.query[field])
-    if (value !== undefined) {
-      filter[field] = value
-    }
-  }
-
-  for (const field of numberFields) {
-    const value = getNumberQueryValue(req.query[field])
-    if (value !== undefined) {
-      filter[field] = value
-    }
-  }
-
-  for (const field of booleanFields) {
-    const value = getBooleanQueryValue(req.query[field])
-    if (value !== undefined) {
-      filter[field] = value
-    }
-  }
-
-  const environments = getStringArrayQueryValue(req.query.environment)
-  if (environments !== undefined) {
-    filter.environment = environments
-  }
-
   let result: MusicianResponse<SearchEventsResponse>
   try {
+    const filter: Record<string, unknown> = {}
+
+    for (const field of stringFields) {
+      const value = getStringQueryValue(req.query[field])
+      if (value !== undefined) {
+        filter[field] = value
+      }
+    }
+
+    for (const field of numberFields) {
+      const value = getNumberQueryValue(req.query[field], field)
+      if (value !== undefined) {
+        filter[field] = value
+      }
+    }
+
+    for (const field of booleanFields) {
+      const value = getBooleanQueryValue(req.query[field], field)
+      if (value !== undefined) {
+        filter[field] = value
+      }
+    }
+
+    const environments = getStringArrayQueryValue(req.query.environment)
+    if (environments !== undefined) {
+      filter.environment = environments
+    }
+
     const client = new FingerprintServerApiClient({
       apiKey,
       region: getV4Region(region),
