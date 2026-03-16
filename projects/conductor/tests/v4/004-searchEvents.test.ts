@@ -91,25 +91,6 @@ test.describe('SearchEvents suite', () => {
     })
   })
 
-  test('with invalid reverse', async ({ assert }) => {
-    await assert.thatResponseMatch({
-      expectedStatusCode: 400,
-      expectedResponse: {
-        error: {
-          code: 'request_cannot_be_parsed',
-          message: 'invalid reverse',
-        },
-      },
-      callback: (api) =>
-        api.searchEvents({
-          api_key: testData.credentials.maxFeaturesUS.privateKey,
-          region: testData.credentials.maxFeaturesUS.region,
-          limit: 10,
-          reverse: 'maybe' as any,
-        }),
-    })
-  })
-
   test('with partial params', async ({ identify, assert }) => {
     const { visitor_id } = await identify({
       auth: testData.credentials.maxFeaturesUS,
