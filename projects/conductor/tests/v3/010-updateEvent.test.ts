@@ -30,7 +30,7 @@ test.describe('UpdateEvents Suite', () => {
     const { response } = await sdkApi.updateEvent({
       requestId,
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.publicKey,
+      region: testData.credentials.maxFeaturesUS.region,
       linkedId: testData.updateEvent.linkedId,
       suspect: testData.updateEvent.suspect,
       tag: testData.updateEvent.tag,
