@@ -233,6 +233,9 @@ There are two supported ways to bump Server SDK versions: via the helper script 
    ../../scripts/setup-sdk.sh node push latest
    ```
 
+   For Node, the helper script updates the v4 SDK package only: `@fingerprint/node-sdk`.
+   If your change also depends on the legacy v3 musician endpoints, update `@fingerprintjs/fingerprintjs-pro-server-api` separately.
+
    > After updating, rebuild/restart the relevant container(s) and run Conductor tests:
 
 2. Manual updates (language-by-language)
@@ -240,12 +243,21 @@ There are two supported ways to bump Server SDK versions: via the helper script 
 
    **Node:**
 
+   The Node musician currently depends on two different packages:
+   - `@fingerprintjs/fingerprintjs-pro-server-api` for the legacy v3 endpoints
+   - `@fingerprint/node-sdk` for the v4 endpoints
+
+   Only bump the package(s) your change actually needs. They do not need to share the same version number.
+
    ```shell
    cd projects/node-sdk
-   pnpm add @fingerprintjs/fingerprintjs-pro-server-api@<version>
-   pnpm add @fingerprint/node-sdk@<version>
-   ```
 
+   # v3 endpoints
+   pnpm add @fingerprintjs/fingerprintjs-pro-server-api@<v3-version>
+
+   # v4 endpoints
+   pnpm add @fingerprint/node-sdk@<v4-version>
+   ```
 
    **Java:**
 
