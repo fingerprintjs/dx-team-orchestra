@@ -86,10 +86,11 @@ export type SearchEventsParams = {
 
 export type GetEventsParams = { apiKey: string; region: string; requestId: string }
 
-export type ExtractFingerprintApiReturnType<Method extends keyof FingerprintApi> =
-    FingerprintApi[Method] extends (...args: any[]) => Promise<JsonResponse<infer Data>>
-        ? Data
-        : never;
+export type ExtractFingerprintApiReturnType<Method extends keyof FingerprintApi> = FingerprintApi[Method] extends (
+  ...args: any[]
+) => Promise<JsonResponse<infer Data>>
+  ? Data
+  : never
 
 export interface FingerprintApi {
   getEvent(params: GetEventsParams): Promise<JsonResponse<EventsGetResponse>>
@@ -283,7 +284,7 @@ export class RealFingerprintApi implements FingerprintApi {
     if (typeof params.sdkPlatform === 'string') {
       queryParams.sdk_platform = params.sdkPlatform
     }
-    if (Array.isArray(params.environment) && params.environment.every(value => typeof value === 'string')) {
+    if (Array.isArray(params.environment) && params.environment.every((value) => typeof value === 'string')) {
       queryParams.environment = params.environment
     }
     if (typeof params.proximityId === 'string') {

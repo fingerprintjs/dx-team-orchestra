@@ -1,0 +1,15 @@
+<script>
+  // Initialize the agent on page load.
+  const publicApiKey = "{{PUBLIC_API_KEY}}";
+
+  const fpPromise = import("https://fpjscdn.net/v4/" + publicApiKey).then(
+      (loader) => loader.start({cache: false})
+  );
+
+  fpPromise
+      .then((fp) => {
+        Object.assign(window, {
+          FP: fp
+        })
+      })
+</script>

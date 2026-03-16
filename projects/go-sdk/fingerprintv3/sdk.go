@@ -1,13 +1,15 @@
-package utils
+package fingerprintv3
 
 import (
 	"context"
 	"fmt"
-	"github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7/sdk"
+	"go-sdk/response"
 	"net/http"
+
+	"github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7/sdk"
 )
 
-func InitSdk(apiKey string, region string) (*sdk.APIClient, context.Context) {
+func Init(apiKey string, region string) (*sdk.APIClient, context.Context) {
 	cfg := sdk.NewConfiguration()
 	cfg.ChangeRegion(sdk.Region(region))
 
@@ -18,16 +20,16 @@ func InitSdk(apiKey string, region string) (*sdk.APIClient, context.Context) {
 	return client, auth
 }
 
-func ProcessResponse(data interface{}, httpRes *http.Response, err sdk.Error) MusicianResponse {
+func ProcessResponse(data interface{}, httpRes *http.Response, err sdk.Error) response.MusicianResponse {
 	if err != nil {
-		return MusicianResponse{
+		return response.MusicianResponse{
 			Code:             httpRes.StatusCode,
 			OriginalResponse: fmt.Sprintf("%v", httpRes),
 			ParsedResponse:   err.Model(),
 		}
 	}
 
-	return MusicianResponse{
+	return response.MusicianResponse{
 		Code:             httpRes.StatusCode,
 		OriginalResponse: fmt.Sprintf("%v", httpRes),
 		ParsedResponse:   data,

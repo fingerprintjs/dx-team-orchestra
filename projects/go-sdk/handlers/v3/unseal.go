@@ -1,10 +1,11 @@
-package handlers
+package handlersv3
 
 import (
 	"encoding/json"
-	"github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7/sdk/sealed"
-	"go-sdk/utils"
+	"go-sdk/response"
 	"net/http"
+
+	"github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7/sdk/sealed"
 )
 
 type RequestBody struct {
@@ -19,15 +20,15 @@ func Unseal(w http.ResponseWriter, r *http.Request) {
 
 	unsealedResponse, err := sealed.UnsealEventsResponse(body.SealedData, body.Keys)
 
-	var response utils.MusicianResponse
+	var resp response.MusicianResponse
 	if err != nil {
-		response = utils.MusicianResponse{
+		resp = response.MusicianResponse{
 			Code:             500,
 			OriginalResponse: "",
 			ParsedResponse:   err.Error(),
 		}
 	} else {
-		response = utils.MusicianResponse{
+		resp = response.MusicianResponse{
 			Code:             200,
 			OriginalResponse: "",
 			ParsedResponse:   unsealedResponse,
@@ -36,5 +37,5 @@ func Unseal(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(resp)
 }

@@ -8,12 +8,12 @@ SDK_VERSION=$3     # SDK version or "latest"
 GITHUB_REPO="fingerprintjs"
 
 case $LANGUAGE in
-    "node")   REPO_NAME="fingerprintjs-pro-server-api-node-sdk" ;;
-    "java")   REPO_NAME="fingerprint-pro-server-api-java-sdk" ;;
-    "dotnet") REPO_NAME="fingerprint-pro-server-api-dotnet-sdk" ;;
-    "go")     REPO_NAME="fingerprint-pro-server-api-go-sdk" ;;
-    "python") REPO_NAME="fingerprint-pro-server-api-python-sdk" ;;
-    "php")    REPO_NAME="fingerprint-pro-server-api-php-sdk" ;;
+    "node")   REPO_NAME="node-sdk" ;;
+    "java")   REPO_NAME="java-sdk" ;;
+    "dotnet") REPO_NAME="dotnet-sdk" ;;
+    "go")     REPO_NAME="go-sdk" ;;
+    "python") REPO_NAME="python-sdk" ;;
+    "php")    REPO_NAME="php-sdk" ;;
     *)
         echo "Unknown SDK language: $LANGUAGE"
         exit 1
@@ -51,8 +51,8 @@ fi
 
 replace_java_dep() {
   local file="build.gradle.kts"
-  local pattern="com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:[^\"' ]*"
-  local replacement="com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:$SDK_VERSION"
+  local pattern="com.github.fingerprintjs:java-sdk:[^\"' ]*"
+  local replacement="com.github.fingerprintjs:java-sdk:$SDK_VERSION"
 
   if command -v gsed >/dev/null 2>&1; then
     # GNU sed (often installed as gsed on macOS via Homebrew)
@@ -86,7 +86,7 @@ case $LANGUAGE in
         ;;
     "go")
         MAJOR_VERSION=$(echo $SDK_VERSION | cut -d'.' -f1)
-        go get github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/$MAJOR_VERSION@$SDK_VERSION
+        go get github.com/fingerprintjs/go-sdk/$MAJOR_VERSION@$SDK_VERSION
         ;;
     "python")
         pip install "fingerprint_pro_server_api_sdk==$SDK_VERSION"

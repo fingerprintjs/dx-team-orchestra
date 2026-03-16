@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test'
-import { testData } from '../utils/testData'
-import { test } from '../utils/playwright'
-import { delay } from '../utils/delay'
+import { testData } from '../../utils/testData'
+import { test } from '../../utils/playwright'
+import { delay } from '../../utils/delay'
 import { EventsGetResponse } from '@fingerprintjs/fingerprintjs-pro-server-api'
 
 function checkUpdatedEvent(updatedEvent: EventsGetResponse) {
@@ -30,7 +30,7 @@ test.describe('UpdateEvents Suite', () => {
     const { response } = await sdkApi.updateEvent({
       requestId,
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.publicKey,
+      region: testData.credentials.maxFeaturesUS.region,
       linkedId: testData.updateEvent.linkedId,
       suspect: testData.updateEvent.suspect,
       tag: testData.updateEvent.tag,

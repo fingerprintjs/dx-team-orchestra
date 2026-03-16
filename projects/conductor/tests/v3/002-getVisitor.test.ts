@@ -1,7 +1,7 @@
-import { testData } from '../utils/testData'
-import { test } from '../utils/playwright'
+import { testData } from '../../utils/testData'
+import { test } from '../../utils/playwright'
 import { expect } from '@playwright/test'
-import { getRandomDevice } from '../htmlScripts/runIdentification'
+import { getRandomDevice } from '../../htmlScripts/runIdentification'
 
 test.describe('GetVisitor Suite', () => {
   test('with valid apiKey', async ({ assert, identify }) => {

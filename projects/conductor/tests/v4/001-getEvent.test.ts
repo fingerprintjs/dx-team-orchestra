@@ -1,28 +1,28 @@
-import { testData } from '../utils/testData'
-import { test } from '../utils/playwright'
+import { test } from '../../utils/v4/playwright'
+import testData from '../../utils/testData'
 
-test.describe('GetEvents Suite', () => {
-  test('for valid apiKey and requestId with Smart Signals', async ({ identify, assert }) => {
-    const { requestId } = await identify({
+test.describe('GetEvent Suite', () => {
+  test('for valid apiKey and event_id with Smart Signals', async ({ identify, assert }) => {
+    const { event_id } = await identify({
       auth: testData.credentials.maxFeaturesUS,
     })
     const requestData = {
-      apiKey: testData.credentials.maxFeaturesUS.privateKey,
+      api_key: testData.credentials.maxFeaturesUS.privateKey,
       region: testData.credentials.maxFeaturesUS.region,
-      requestId,
+      event_id: event_id,
     }
 
     await assert.thatResponsesMatch('getEvent', requestData)
   })
 
-  test('for valid apiKey and requestId without Smart Signals', async ({ identify, assert }) => {
-    const { requestId } = await identify({
+  test('for valid apiKey and event_id without Smart Signals', async ({ identify, assert }) => {
+    const { event_id } = await identify({
       auth: testData.credentials.minFeaturesUS,
     })
     const requestData = {
-      apiKey: testData.credentials.minFeaturesUS.privateKey,
+      api_key: testData.credentials.minFeaturesUS.privateKey,
       region: testData.credentials.minFeaturesUS.region,
-      requestId,
+      event_id: event_id,
     }
 
     await assert.thatResponsesMatch('getEvent', requestData)
@@ -33,33 +33,33 @@ test.describe('GetEvents Suite', () => {
       expectedStatusCode: 403,
       callback: (api) =>
         api.getEvent({
-          apiKey: '',
+          api_key: '',
           region: '',
-          requestId: '',
+          event_id: '',
         }),
     })
   })
 
-  test('for invalid apikey, region, and requestID', async ({ assert }) => {
+  test('for invalid apikey, region, and eventId', async ({ assert }) => {
     await assert.thatResponseMatch({
       expectedResponse: {
         error: {
-          code: 'TokenNotFound',
-          message: 'secret key is not found',
+          code: 'secret_api_key_not_found',
+          message: 'no fingerprint workspace found for specified secret API key',
         },
       },
       expectedStatusCode: 403,
       callback: (api) =>
         api.getEvent({
-          apiKey: testData.credentials.invalid.privateKey,
+          api_key: testData.credentials.invalid.privateKey,
           region: testData.credentials.invalid.region,
-          requestId: testData.invalid.requestID,
+          event_id: testData.invalid.requestID,
         }),
     })
   })
 
   test('for invalid apikey', async ({ assert, identify }) => {
-    const { requestId } = await identify({
+    const { event_id } = await identify({
       auth: testData.credentials.maxFeaturesUS,
     })
 
@@ -67,54 +67,54 @@ test.describe('GetEvents Suite', () => {
       expectedStatusCode: 403,
       expectedResponse: {
         error: {
-          code: 'TokenNotFound',
-          message: 'secret key is not found',
+          code: 'secret_api_key_not_found',
+          message: 'no fingerprint workspace found for specified secret API key',
         },
       },
       callback: (api) =>
         api.getEvent({
-          apiKey: testData.credentials.invalid.privateKey,
+          api_key: testData.credentials.invalid.privateKey,
           region: testData.credentials.maxFeaturesUS.region,
-          requestId,
+          event_id: event_id,
         }),
     })
   })
 
   test('for invalid region', async ({ assert, identify }) => {
-    const { requestId } = await identify({
+    const { event_id } = await identify({
       auth: testData.credentials.maxFeaturesUS,
     })
     await assert.thatResponseMatch({
       expectedStatusCode: 200,
       callback: (api) =>
         api.getEvent({
-          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          api_key: testData.credentials.maxFeaturesUS.privateKey,
           region: testData.credentials.invalid.region,
-          requestId,
+          event_id: event_id,
         }),
     })
   })
 
-  test('for invalid requestId', async ({ assert }) => {
+  test('for invalid eventId', async ({ assert }) => {
     await assert.thatResponseMatch({
       expectedStatusCode: 404,
       expectedResponse: {
         error: {
-          code: 'RequestNotFound',
-          message: 'request id not found',
+          code: 'event_not_found',
+          message: 'event id not found',
         },
       },
       callback: (api) =>
         api.getEvent({
-          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          api_key: testData.credentials.maxFeaturesUS.privateKey,
           region: testData.credentials.maxFeaturesUS.region,
-          requestId: testData.invalid.requestID,
+          event_id: testData.invalid.requestID,
         }),
     })
   })
 
   test('for different region', async ({ assert, identify }) => {
-    const { requestId } = await identify({
+    const { event_id } = await identify({
       auth: testData.credentials.maxFeaturesUS,
     })
 
@@ -122,21 +122,21 @@ test.describe('GetEvents Suite', () => {
       expectedStatusCode: 403,
       expectedResponse: {
         error: {
-          code: 'WrongRegion',
+          code: 'wrong_region',
           message: 'wrong region',
         },
       },
       callback: (api) =>
         api.getEvent({
-          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          api_key: testData.credentials.maxFeaturesUS.privateKey,
           region: testData.credentials.regularEU.region,
-          requestId,
+          event_id: event_id,
         }),
     })
   })
 
   test('for deleted APIkey', async ({ assert, identify }) => {
-    const { requestId } = await identify({
+    const { event_id } = await identify({
       auth: testData.credentials.maxFeaturesUS,
     })
 
@@ -144,15 +144,15 @@ test.describe('GetEvents Suite', () => {
       expectedStatusCode: 403,
       expectedResponse: {
         error: {
-          code: 'TokenNotFound',
-          message: 'secret key is not found',
+          code: 'secret_api_key_not_found',
+          message: 'no fingerprint workspace found for specified secret API key',
         },
       },
       callback: (api) =>
         api.getEvent({
-          apiKey: testData.credentials.deleted.privateKey,
+          api_key: testData.credentials.deleted.privateKey,
           region: testData.credentials.deleted.region,
-          requestId,
+          event_id: event_id,
         }),
     })
   })

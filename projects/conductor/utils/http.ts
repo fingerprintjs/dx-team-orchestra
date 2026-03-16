@@ -1,13 +1,18 @@
 import { APIRequestContext, APIResponse } from '@playwright/test'
 
 type Primitive = string | number | boolean
-export type RequestParams = Record<string, Primitive | Primitive[] | RequestParams>
+export type RequestParams = Record<string, Primitive | Primitive[]>
+
+type MethodVariants =
+  | { method?: 'get'; params?: RequestParams }
+  | { method: 'post'; params?: any; data?: unknown }
+  | { method: 'delete'; params?: any }
 
 type JsonRequestOptions = {
   request: APIRequestContext
   url: string
   headers?: Record<string, string>
-} & ({ method?: 'get'; params?: RequestParams } | { method: 'post'; params?: any; data?: unknown })
+} & MethodVariants
 
 export type JsonResponse<T> = {
   data: T

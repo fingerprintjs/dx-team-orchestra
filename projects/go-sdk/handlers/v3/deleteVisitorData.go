@@ -1,8 +1,8 @@
-package handlers
+package handlersv3
 
 import (
 	"encoding/json"
-	"go-sdk/utils"
+	"go-sdk/fingerprintv3"
 	"net/http"
 )
 
@@ -19,9 +19,9 @@ func DeleteVisitorData(w http.ResponseWriter, r *http.Request) {
 		VisitorId: r.URL.Query().Get("visitorId"),
 	}
 
-	client, auth := utils.InitSdk(queryParams.ApiKey, queryParams.Region)
+	client, auth := fingerprintv3.Init(queryParams.ApiKey, queryParams.Region)
 	httpRes, err := client.FingerprintApi.DeleteVisitorData(auth, queryParams.VisitorId)
-	response := utils.ProcessResponse(nil, httpRes, err)
+	response := fingerprintv3.ProcessResponse(nil, httpRes, err)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)

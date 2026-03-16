@@ -75,7 +75,7 @@ jobs:
           private-key: ${{ secrets.RUNNER_APP_PRIVATE_KEY }}
           owner: fingerprintjs
           # TODO Add remaining SDK repos
-          repositories: fingerprintjs-pro-server-api-node-sdk,dx-team-toolkit
+          repositories: node-sdk,dx-team-toolkit
       - name: Set status
         if: ${{ github.event_name == 'repository_dispatch' }}
         uses: Sibz/github-status-action@650dd1a882a76dbbbc4576fb5974b8d22f29847f
@@ -182,7 +182,7 @@ jobs:
           app-id: ${{ vars.RUNNER_APP_ID }}
           private-key: ${{ secrets.RUNNER_APP_PRIVATE_KEY }}
           owner: fingerprintjs
-          repositories: fingerprint-pro-server-api-java-sdk,dx-team-toolkit
+          repositories: java-sdk,dx-team-toolkit
 
       - name: Set status
         if: ${{ github.event_name == 'repository_dispatch' }}
@@ -308,7 +308,7 @@ jobs:
           app-id: ${{ vars.RUNNER_APP_ID }}
           private-key: ${{ secrets.RUNNER_APP_PRIVATE_KEY }}
           owner: fingerprintjs
-          repositories: fingerprint-pro-server-api-dotnet-sdk,dx-team-toolkit
+          repositories: dotnet-sdk,dx-team-toolkit
 
       - name: Set status
         if: ${{ github.event_name == 'repository_dispatch' }}
@@ -428,7 +428,7 @@ jobs:
           app-id: ${{ vars.RUNNER_APP_ID }}
           private-key: ${{ secrets.RUNNER_APP_PRIVATE_KEY }}
           owner: fingerprintjs
-          repositories: fingerprint-pro-server-api-go-sdk,dx-team-toolkit
+          repositories: go-sdk,dx-team-toolkit
 
       - name: Set status
         if: ${{ github.event_name == 'repository_dispatch' }}
@@ -560,7 +560,7 @@ jobs:
           app-id: ${{ vars.RUNNER_APP_ID }}
           private-key: ${{ secrets.RUNNER_APP_PRIVATE_KEY }}
           owner: fingerprintjs
-          repositories: fingerprint-pro-server-api-python-sdk,dx-team-toolkit
+          repositories: python-sdk,dx-team-toolkit
 
       - name: Set status
         if: ${{ github.event_name == 'repository_dispatch' }}
@@ -677,7 +677,7 @@ jobs:
           app-id: ${{ vars.RUNNER_APP_ID }}
           private-key: ${{ secrets.RUNNER_APP_PRIVATE_KEY }}
           owner: fingerprintjs
-          repositories: fingerprint-pro-server-api-php-sdk,dx-team-toolkit
+          repositories: php-sdk,dx-team-toolkit
 
       - name: Set status
         if: ${{ github.event_name == 'repository_dispatch' }}

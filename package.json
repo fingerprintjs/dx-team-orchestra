@@ -7,10 +7,9 @@
     "lint": "eslint --ext .js,.ts --ignore-path .gitignore --max-warnings 0 .",
     "lint:fix": "pnpm lint --fix"
   },
-  "dependencies": {
-  },
   "devDependencies": {
     "@fingerprintjs/eslint-config-dx-team": "^0.1.0",
-    "@fingerprintjs/prettier-config-dx-team": "^0.2.0"
+    "@fingerprintjs/prettier-config-dx-team": "^0.2.0",
+    "prettier": "^3.8.1"
   }
 }

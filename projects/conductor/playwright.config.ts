@@ -25,7 +25,7 @@ export default defineConfig({
   timeout: 60000,
   testDir: './tests',
   /* Run tests in files in parallel */
-  fullyParallel: true,
+  fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
@@ -46,8 +46,14 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
+      name: 'chromium v3',
       use: { ...devices['Desktop Chrome'] },
+      testMatch: '**/v3/**/*.test.ts',
+    },
+    {
+      name: 'chromium v4',
+      use: { ...devices['Desktop Chrome'] },
+      testMatch: '**/v4/**/*.test.ts',
     },
 
     // {
