@@ -226,10 +226,8 @@ There are two supported ways to bump Server SDK versions: via the helper script 
    # (B) Install the latest release (let the script fetch it):
    #     Any EVENT_NAME other than 'workflow_dispatch' or 'repository_dispatch', or leaving version as 'latest',
    #     will make the script fetch the latest GitHub release tag.
-   ../../scripts/setup-sdk.sh node-v4 push latest
+   ../../scripts/setup-sdk.sh node push latest
    ```
-
-   For Node, use `node-v3` to manage `@fingerprintjs/fingerprintjs-pro-server-api` and `node-v4` to manage `@fingerprint/node-sdk`.
 
    > After updating, rebuild/restart the relevant container(s) and run Conductor tests:
 

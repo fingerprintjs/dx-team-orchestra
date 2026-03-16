@@ -105,10 +105,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Set up Node SDK v4 version
+      - name: Set up Node SDK version
         if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/node-sdk
-        run: ../../scripts/setup-sdk.sh node-v4 ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }}
+        run: ../../scripts/setup-sdk.sh node ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }}
 
       - name: Install Playwright browsers
         working-directory: ./projects/conductor

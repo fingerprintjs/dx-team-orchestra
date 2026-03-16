@@ -1,17 +1,14 @@
 #!/bin/bash
 set -e
 
-LANGUAGE=$1        # node-v3, node-v4, node (alias of node-v4), java, dotnet, go, python, php
+LANGUAGE=$1        # node, java, dotnet, go, python, php
 EVENT_NAME=$2      # workflow_dispatch, push, pull_request, schedule
 SDK_VERSION=$3     # SDK version or "latest"
 
 GITHUB_REPO="fingerprintjs"
 
 case $LANGUAGE in
-    "node-v3")
-        PACKAGE_NAME="@fingerprintjs/fingerprintjs-pro-server-api"
-        ;;
-    "node-v4" | "node")
+    "node")
         REPO_NAME="node-sdk"
         PACKAGE_NAME="@fingerprint/node-sdk"
         ;;
@@ -29,13 +26,8 @@ esac
 echo "Setting up $LANGUAGE SDK..."
 
 if [[ "$EVENT_NAME" != "workflow_dispatch" && "$EVENT_NAME" != "repository_dispatch" || -z "$SDK_VERSION" || "$SDK_VERSION" == "latest" ]]; then
-    if [[ "$LANGUAGE" == "node-v3" ]]; then
-        echo "Fetching latest version from npm for $PACKAGE_NAME..."
-        SDK_VERSION=$(npm view "$PACKAGE_NAME" version --json | jq -r '.')
-    else
-        echo "Fetching latest release from GitHub for $REPO_NAME..."
-        SDK_VERSION=$(curl -s "https://api.github.com/repos/$GITHUB_REPO/$REPO_NAME/releases/latest" | jq -r '.tag_name')
-    fi
+    echo "Fetching latest release from GitHub for $REPO_NAME..."
+    SDK_VERSION=$(curl -s "https://api.github.com/repos/$GITHUB_REPO/$REPO_NAME/releases/latest" | jq -r '.tag_name')
 
     if [[ -z "$SDK_VERSION" || "$SDK_VERSION" == "null" ]]; then
         echo "Failed to fetch latest version for $LANGUAGE!"
@@ -43,11 +35,11 @@ if [[ "$EVENT_NAME" != "workflow_dispatch" && "$EVENT_NAME" != "repository_dispa
     fi
 fi
 
-if [[ "$LANGUAGE" == "php" || "$LANGUAGE" == "python" || "$LANGUAGE" == "dotnet" || "$LANGUAGE" == "node-v3" || "$LANGUAGE" == "node-v4" || "$LANGUAGE" == "node" ]]; then
+if [[ "$LANGUAGE" == "php" || "$LANGUAGE" == "python" || "$LANGUAGE" == "dotnet" || "$LANGUAGE" == "node" ]]; then
     SDK_VERSION=${SDK_VERSION#v}  # Remove leading `v` if presented
 fi
 
-if [[ "$LANGUAGE" == "node-v3" || "$LANGUAGE" == "node-v4" || "$LANGUAGE" == "node" ]]; then
+if [[ "$LANGUAGE" == "node" ]]; then
     # Node.js: If SDK_VERSION has only version without full tag, add the correct package name
     if [[ "$SDK_VERSION" != @* ]]; then
         SDK_VERSION="$PACKAGE_NAME@$SDK_VERSION"
@@ -84,7 +76,7 @@ replace_java_dep() {
 echo "Using SDK version: $SDK_VERSION"
 
 case $LANGUAGE in
-    "node-v3" | "node-v4" | "node")
+    "node")
         pnpm install $SDK_VERSION
         ;;
     "java")
