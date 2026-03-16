@@ -11,15 +11,19 @@ It simulates an “orchestra” of services where:
 > This repository is part of our internal tooling.
 > It is not included in our core product and is provided “as-is” with no guaranteed level of support from Fingerprint.
 
-1. [Architecture](#architecture)
-2. [Getting Started](#getting-started)
-   - [Requirements](#requirements)
-   - [Running musicians](#running-musicians)
-   - [Running conductor](#running-conductor)
-3. [Endpoints & Requests](#endpoints--requests)
-4. [Development Guide](#development-guide)
-   - [Adding test cases](#adding-test-cases)
-   - [Updating SDK versions](#updating-sdk-versions)
+- [DX Team Orchestra](#dx-team-orchestra)
+  - [Architecture](#architecture)
+  - [Getting Started](#getting-started)
+    - [Requirements](#requirements)
+    - [Running musicians](#running-musicians)
+    - [Running conductor](#running-conductor)
+  - [Endpoints \& Requests](#endpoints--requests)
+  - [Development Guide](#development-guide)
+    - [Adding test cases](#adding-test-cases)
+      - [A) Add a new search events filter](#a-add-a-new-search-events-filter)
+      - [B) Add a new endpoint (end-to-end)](#b-add-a-new-endpoint-end-to-end)
+      - [C) Protecting test ordering (how \& why)](#c-protecting-test-ordering-how--why)
+  - [Updating SDK versions](#updating-sdk-versions)
 
 ## Architecture
 
@@ -241,6 +245,7 @@ There are two supported ways to bump Server SDK versions: via the helper script 
    pnpm add @fingerprintjs/fingerprintjs-pro-server-api@<version>
    pnpm add @fingerprint/node-sdk@<version>
    ```
+
 
    **Java:**
 
