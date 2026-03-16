@@ -1,14 +1,14 @@
 import express from 'express'
 
 import { deleteVisitorData as deleteVisitorDataV3 } from './handlers/v3/deleteVisitorData'
-import { getEvents } from './handlers/v3/getEvents'
-import { getRelatedVisitors } from './handlers/v3/getRelatedVisitors'
-import { getVisits } from './handlers/v3/getVisits'
-import { searchEvents } from './handlers/v3/searchEvents'
+import { getEvent as getEventV3 } from './handlers/v3/getEvent'
+import { getRelatedVisitors as getRelatedVisitorsV3 } from './handlers/v3/getRelatedVisitors'
+import { getVisits as getVisitsV3 } from './handlers/v3/getVisits'
+import { searchEvents as searchEventsV3 } from './handlers/v3/searchEvents'
 import { unseal as unsealV3 } from './handlers/v3/unseal'
 import { updateEvent as updateEventV3 } from './handlers/v3/updateEvent'
 import { deleteVisitorData as deleteVisitorDataV4 } from './handlers/v4/deleteVisitorData'
-import { getEvent } from './handlers/v4/getEvent'
+import { getEvent as getEventV4 } from './handlers/v4/getEvent'
 import { searchEvents as searchEventsV4 } from './handlers/v4/searchEvents'
 import { unseal as unsealV4 } from './handlers/v4/unseal'
 import { updateEvent as updateEventV4 } from './handlers/v4/updateEvent'
@@ -19,15 +19,15 @@ app.use(express.json())
 
 const port = 3002
 
-app.get('/getEvents', getEvents)
-app.get('/searchEvents', searchEvents)
+app.get('/getEvents', getEventV3)
+app.get('/searchEvents', searchEventsV3)
 app.get('/updateEvent', updateEventV3)
-app.get('/getVisits', getVisits)
+app.get('/getVisits', getVisitsV3)
 app.get('/deleteVisitorData', deleteVisitorDataV3)
-app.get('/getRelatedVisitors', getRelatedVisitors)
+app.get('/getRelatedVisitors', getRelatedVisitorsV3)
 app.post('/unseal', unsealV3)
 
-app.get('/v4/getEvent', getEvent)
+app.get('/v4/getEvent', getEventV4)
 app.get('/v4/searchEvents', searchEventsV4)
 app.get('/v4/updateEvent', updateEventV4)
 app.get('/v4/deleteVisitorData', deleteVisitorDataV4)

@@ -8,7 +8,7 @@ interface QueryParams {
   requestId?: string
 }
 
-export const getEvents: Handler<QueryParams> = async (req, res) => {
+export const getEvent: Handler<QueryParams> = async (req, res) => {
   const { apiKey = '', region = '', requestId = '' } = req.query
   let result: MusicianResponse<EventsGetResponse>
   try {
