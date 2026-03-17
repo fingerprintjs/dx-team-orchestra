@@ -4,7 +4,7 @@ import { Handler, MusicianResponse } from '../../types'
 import { getV4Region, parseBooleanFromString, parseNumberFromString, unwrapV4Error } from '../../utils'
 
 type V4SearchEventsFilter = NonNullable<SearchEventsFilter>
-type QueryParams = { [K in keyof V4SearchEventsFilter]?: string } & {
+type QueryParams = Omit<{ [K in keyof V4SearchEventsFilter]?: string }, 'environment'> & {
   api_key?: string
   region?: string
   // Only environment can be multiple values
