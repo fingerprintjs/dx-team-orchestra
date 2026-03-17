@@ -215,7 +215,7 @@ test.describe('UpdateEvents Suite', () => {
             linked_id: testData.v4_updateEvent.linked_id,
             suspect: testData.v4_updateEvent.suspect,
             tags: testData.v4_updateEvent.tags,
-        }),
+          }),
       })
     })
   })
