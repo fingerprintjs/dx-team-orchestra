@@ -149,7 +149,7 @@ export function parseBoolean(value: string) {
   if (value === 'false') {
     return false
   }
-  throw new InvalidRequestError('invalid boolean value')
+  throw new InvalidRequestError(`Invalid boolean value: ${value}`)
 }
 
 export function parseNumberFromString(value: string, fieldName: string): number {
