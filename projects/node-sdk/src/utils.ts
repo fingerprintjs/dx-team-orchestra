@@ -110,7 +110,7 @@ export async function unwrapV4Error<Response200Type>(error: unknown): Promise<Mu
 
   return {
     code: 500,
-    originalResponse: error?.toString(),
+    originalResponse: error instanceof Error ? error.toString() : String(error),
     parsedResponse: JSON.stringify(error),
   }
 }
