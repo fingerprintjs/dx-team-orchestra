@@ -115,16 +115,6 @@ export async function unwrapV4Error<Response200Type>(error: unknown): Promise<Mu
   }
 }
 
-export function parseBoolean(value: string) {
-  if (value === 'true') {
-    return true
-  }
-  if (value === 'false') {
-    return false
-  }
-  throw new InvalidRequestError('invalid boolean value')
-}
-
 export function createErrorResponse(code: number, errorCode: string, message: string): MusicianResponse<never> {
   return {
     code,
@@ -135,5 +125,39 @@ export function createErrorResponse(code: number, errorCode: string, message: st
         message,
       },
     },
+  }
+}
+
+export function parseBoolean(value: string) {
+  if (value === 'true') {
+    return true
+  }
+  if (value === 'false') {
+    return false
+  }
+  throw new InvalidRequestError('invalid boolean value')
+}
+
+export function parseNumberFromString(value: string, fieldName: string): number {
+  if (value === '') {
+    throw new InvalidRequestError(`${fieldName} is not a valid number`)
+  }
+
+  const parsedValue = Number(value)
+  if (!Number.isFinite(parsedValue)) {
+    throw new InvalidRequestError(`${fieldName} is not a valid number`)
+  }
+
+  return parsedValue
+}
+export function parseBooleanFromString(value: string, fieldName: string): boolean {
+  if (value === '') {
+    throw new InvalidRequestError(`${fieldName} is not a valid boolean`)
+  }
+
+  try {
+    return parseBoolean(value)
+  } catch {
+    throw new InvalidRequestError(`${fieldName} is not a valid boolean`)
   }
 }

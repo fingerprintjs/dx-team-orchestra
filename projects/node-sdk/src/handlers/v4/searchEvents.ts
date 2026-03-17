@@ -1,78 +1,20 @@
 import { FingerprintServerApiClient, SearchEventsFilter, SearchEventsResponse } from '@fingerprint/node-sdk'
 
 import { Handler, MusicianResponse } from '../../types'
-import { InvalidRequestError, createErrorResponse, getV4Region, parseBoolean, unwrapV4Error } from '../../utils'
+import {
+  createErrorResponse,
+  getV4Region,
+  parseBooleanFromString,
+  parseNumberFromString,
+  unwrapV4Error,
+} from '../../utils'
 
 type V4SearchEventsFilter = NonNullable<SearchEventsFilter>
-interface QueryParams {
+type QueryParams = { [K in keyof V4SearchEventsFilter]?: string } & {
   api_key?: string
   region?: string
-  asn?: string
-  bundle_id?: string
-  limit?: string
-  pagination_key?: string
-  visitor_id?: string
-  bot?: string
-  ip_address?: string
-  linked_id?: string
-  start?: string
-  end?: string
-  reverse?: string
-  suspect?: string
-  vpn?: string
-  virtual_machine?: string
-  tampering?: string
-  anti_detect_browser?: string
-  incognito?: string
-  privacy_settings?: string
-  jailbroken?: string
-  frida?: string
-  factory_reset?: string
-  cloned_app?: string
-  emulator?: string
-  root_apps?: string
-  vpn_confidence?: string
-  min_suspect_score?: string
-  ip_blocklist?: string
-  datacenter?: string
-  developer_tools?: string
-  location_spoofing?: string
-  mitm_attack?: string
-  proxy?: string
-  sdk_version?: string
-  sdk_platform?: string
+  // Only environment can be multiple values
   environment?: string | string[]
-  origin?: string
-  package_name?: string
-  proximity_id?: string
-  proximity_precision_radius?: string
-  tor_node?: string
-  url?: string
-}
-
-function parseNumberQuery(value: string, fieldName: string): number {
-  if (value === '') {
-    throw new InvalidRequestError(`${fieldName} is not a valid number`)
-  }
-
-  const parsedValue = Number(value)
-  if (!Number.isFinite(parsedValue)) {
-    throw new InvalidRequestError(`${fieldName} is not a valid number`)
-  }
-
-  return parsedValue
-}
-
-function parseBooleanQuery(value: string, fieldName: string): boolean {
-  if (value === '') {
-    throw new InvalidRequestError(`${fieldName} is not a valid boolean`)
-  }
-
-  try {
-    return parseBoolean(value)
-  } catch {
-    throw new InvalidRequestError(`${fieldName} is not a valid boolean`)
-  }
 }
 
 export const searchEvents: Handler<QueryParams> = async (req, res) => {
@@ -105,8 +47,6 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     root_apps,
     vpn_confidence,
     min_suspect_score,
-    ip_blocklist,
-    datacenter,
     developer_tools,
     location_spoofing,
     mitm_attack,
@@ -117,7 +57,6 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     origin,
     package_name,
     proximity_id,
-    proximity_precision_radius,
     tor_node,
     url,
   } = req.query
@@ -131,7 +70,7 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
   try {
     const filter: V4SearchEventsFilter = {}
     if (limit !== undefined) {
-      filter.limit = parseNumberQuery(limit, 'limit')
+      filter.limit = parseNumberFromString(limit, 'limit')
     }
     if (asn !== undefined) {
       filter.asn = asn
@@ -155,82 +94,76 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
       filter.linked_id = linked_id
     }
     if (start !== undefined) {
-      filter.start = parseNumberQuery(start, 'start')
+      filter.start = parseNumberFromString(start, 'start')
     }
     if (end !== undefined) {
-      filter.end = parseNumberQuery(end, 'end')
+      filter.end = parseNumberFromString(end, 'end')
     }
     if (reverse !== undefined) {
-      filter.reverse = parseBooleanQuery(reverse, 'reverse')
+      filter.reverse = parseBooleanFromString(reverse, 'reverse')
     }
     if (suspect !== undefined) {
-      filter.suspect = parseBooleanQuery(suspect, 'suspect')
+      filter.suspect = parseBooleanFromString(suspect, 'suspect')
     }
     if (vpn !== undefined) {
-      filter.vpn = parseBooleanQuery(vpn, 'vpn')
+      filter.vpn = parseBooleanFromString(vpn, 'vpn')
     }
     if (virtual_machine !== undefined) {
-      filter.virtual_machine = parseBooleanQuery(virtual_machine, 'virtual_machine')
+      filter.virtual_machine = parseBooleanFromString(virtual_machine, 'virtual_machine')
     }
     if (tampering !== undefined) {
-      filter.tampering = parseBooleanQuery(tampering, 'tampering')
+      filter.tampering = parseBooleanFromString(tampering, 'tampering')
     }
     if (anti_detect_browser !== undefined) {
-      filter.anti_detect_browser = parseBooleanQuery(anti_detect_browser, 'anti_detect_browser')
+      filter.anti_detect_browser = parseBooleanFromString(anti_detect_browser, 'anti_detect_browser')
     }
     if (incognito !== undefined) {
-      filter.incognito = parseBooleanQuery(incognito, 'incognito')
+      filter.incognito = parseBooleanFromString(incognito, 'incognito')
     }
     if (privacy_settings !== undefined) {
-      filter.privacy_settings = parseBooleanQuery(privacy_settings, 'privacy_settings')
+      filter.privacy_settings = parseBooleanFromString(privacy_settings, 'privacy_settings')
     }
     if (jailbroken !== undefined) {
-      filter.jailbroken = parseBooleanQuery(jailbroken, 'jailbroken')
+      filter.jailbroken = parseBooleanFromString(jailbroken, 'jailbroken')
     }
     if (frida !== undefined) {
-      filter.frida = parseBooleanQuery(frida, 'frida')
+      filter.frida = parseBooleanFromString(frida, 'frida')
     }
     if (factory_reset !== undefined) {
-      filter.factory_reset = parseBooleanQuery(factory_reset, 'factory_reset')
+      filter.factory_reset = parseBooleanFromString(factory_reset, 'factory_reset')
     }
     if (cloned_app !== undefined) {
-      filter.cloned_app = parseBooleanQuery(cloned_app, 'cloned_app')
+      filter.cloned_app = parseBooleanFromString(cloned_app, 'cloned_app')
     }
     if (emulator !== undefined) {
-      filter.emulator = parseBooleanQuery(emulator, 'emulator')
+      filter.emulator = parseBooleanFromString(emulator, 'emulator')
     }
     if (root_apps !== undefined) {
-      filter.root_apps = parseBooleanQuery(root_apps, 'root_apps')
+      filter.root_apps = parseBooleanFromString(root_apps, 'root_apps')
     }
     if (vpn_confidence !== undefined) {
       filter.vpn_confidence = vpn_confidence as NonNullable<V4SearchEventsFilter['vpn_confidence']>
     }
     if (min_suspect_score !== undefined) {
-      filter.min_suspect_score = parseNumberQuery(min_suspect_score, 'min_suspect_score')
-    }
-    if (ip_blocklist !== undefined) {
-      filter.ip_blocklist = ip_blocklist as NonNullable<V4SearchEventsFilter['ip_blocklist']>
-    }
-    if (datacenter !== undefined) {
-      filter.datacenter = datacenter as NonNullable<V4SearchEventsFilter['datacenter']>
+      filter.min_suspect_score = parseNumberFromString(min_suspect_score, 'min_suspect_score')
     }
     if (developer_tools !== undefined) {
-      filter.developer_tools = parseBooleanQuery(developer_tools, 'developer_tools')
+      filter.developer_tools = parseBooleanFromString(developer_tools, 'developer_tools')
     }
     if (location_spoofing !== undefined) {
-      filter.location_spoofing = parseBooleanQuery(location_spoofing, 'location_spoofing')
+      filter.location_spoofing = parseBooleanFromString(location_spoofing, 'location_spoofing')
     }
     if (mitm_attack !== undefined) {
-      filter.mitm_attack = parseBooleanQuery(mitm_attack, 'mitm_attack')
+      filter.mitm_attack = parseBooleanFromString(mitm_attack, 'mitm_attack')
     }
     if (proxy !== undefined) {
-      filter.proxy = parseBooleanQuery(proxy, 'proxy')
+      filter.proxy = parseBooleanFromString(proxy, 'proxy')
     }
     if (sdk_version !== undefined) {
       filter.sdk_version = sdk_version
     }
     if (sdk_platform !== undefined) {
-      filter.sdk_platform = sdk_platform
+      filter.sdk_platform = sdk_platform as NonNullable<V4SearchEventsFilter['sdk_platform']>
     }
     if (environment !== undefined) {
       filter.environment = Array.isArray(environment) ? environment : [environment]
@@ -244,11 +177,8 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     if (proximity_id !== undefined) {
       filter.proximity_id = proximity_id
     }
-    if (proximity_precision_radius !== undefined) {
-      filter.proximity_precision_radius = parseNumberQuery(proximity_precision_radius, 'proximity_precision_radius')
-    }
     if (tor_node !== undefined) {
-      filter.tor_node = parseBooleanQuery(tor_node, 'tor_node')
+      filter.tor_node = parseBooleanFromString(tor_node, 'tor_node')
     }
     if (url !== undefined) {
       filter.url = url
