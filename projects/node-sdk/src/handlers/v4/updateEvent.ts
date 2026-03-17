@@ -1,7 +1,7 @@
 import { EventUpdate, FingerprintServerApiClient } from '@fingerprint/node-sdk'
 
 import { Handler, MusicianResponse } from '../../types'
-import { getV4Region, parseBoolean, parseBooleanFromString, parseJsonFromString, unwrapV4Error } from '../../utils'
+import { getV4Region, parseBooleanFromString, parseJsonFromString, unwrapV4Error } from '../../utils'
 
 interface QueryParams {
   api_key?: string
