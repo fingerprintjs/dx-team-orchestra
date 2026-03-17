@@ -39,7 +39,7 @@ fi
 if [[ "$LANGUAGE" == "node" ]]; then
     # Node.js: If SDK_VERSION has only version without full tag, add the correct package name
     if [[ "$SDK_VERSION" != @* ]]; then
-        SDK_VERSION="@fingerprintjs/node-sdk@$SDK_VERSION"
+        SDK_VERSION="@fingerprint/node-sdk@$SDK_VERSION"
     fi
 fi
 

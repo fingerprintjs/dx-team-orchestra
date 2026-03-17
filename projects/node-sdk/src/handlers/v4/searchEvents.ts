@@ -53,6 +53,7 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     proximity_id,
     tor_node,
     url,
+    total_hits,
   } = req.query
 
   let result: MusicianResponse<SearchEventsResponse>
@@ -171,6 +172,9 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     }
     if (url !== undefined) {
       filter.url = url
+    }
+    if (total_hits !== undefined) {
+      filter.total_hits = parseNumberFromString(total_hits, 'total_hits')
     }
 
     const client = new FingerprintServerApiClient({
