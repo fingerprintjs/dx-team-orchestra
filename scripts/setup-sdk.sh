@@ -8,10 +8,7 @@ SDK_VERSION=$3     # SDK version or "latest"
 GITHUB_REPO="fingerprintjs"
 
 case $LANGUAGE in
-    "node")
-        REPO_NAME="node-sdk"
-        PACKAGE_NAME="@fingerprint/node-sdk"
-        ;;
+    "node")   REPO_NAME="node-sdk" ;;
     "java")   REPO_NAME="java-sdk" ;;
     "dotnet") REPO_NAME="dotnet-sdk" ;;
     "go")     REPO_NAME="go-sdk" ;;
@@ -30,7 +27,7 @@ if [[ "$EVENT_NAME" != "workflow_dispatch" && "$EVENT_NAME" != "repository_dispa
     SDK_VERSION=$(curl -s "https://api.github.com/repos/$GITHUB_REPO/$REPO_NAME/releases/latest" | jq -r '.tag_name')
 
     if [[ -z "$SDK_VERSION" || "$SDK_VERSION" == "null" ]]; then
-        echo "Failed to fetch latest version for $LANGUAGE!"
+        echo "Failed to fetch latest version for $LANGUAGE from GitHub!"
         exit 1
     fi
 fi
@@ -42,7 +39,7 @@ fi
 if [[ "$LANGUAGE" == "node" ]]; then
     # Node.js: If SDK_VERSION has only version without full tag, add the correct package name
     if [[ "$SDK_VERSION" != @* ]]; then
-        SDK_VERSION="$PACKAGE_NAME@$SDK_VERSION"
+        SDK_VERSION="@fingerprintjs/node-sdk@$SDK_VERSION"
     fi
 fi
 
