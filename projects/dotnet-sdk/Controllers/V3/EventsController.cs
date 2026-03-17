@@ -1,0 +1,127 @@
+using Microsoft.AspNetCore.Mvc;
+using FingerprintPro.ServerSdk.Model;
+using dotnet_sdk.Models;
+using FingerprintPro.ServerSdk.Json;
+
+namespace dotnet_sdk.Controllers.V3;
+
+[ApiController]
+[Route("")]
+public class EventsController : ControllerBase
+{
+    [HttpGet("/getEvents")]
+    public async Task<IActionResult> GetEvents(
+        [FromQuery] string? apiKey,
+        [FromQuery] string? region,
+        [FromQuery] string? requestId)
+    {
+        try
+        {
+            var api = Utils.CreateApi(apiKey, region);
+
+            var apiResponse = api.GetEventWithHttpInfo(requestId);
+            var httpResponse = apiResponse.Response;
+            var rawResponse = await httpResponse.Content.ReadAsStringAsync();
+
+            var response = new MusicianResponse<EventsGetResponse>(httpResponse.StatusCode, rawResponse, apiResponse.Data);
+            return Ok(response);
+        }
+        catch (Exception e) {
+            return Ok(Utils.ProcessException(e));
+        }
+    }
+
+    [HttpGet("/searchEvents")]
+    public async Task<IActionResult> SearchEvents(
+        [FromQuery] string? apiKey,
+        [FromQuery] string? region,
+        [FromQuery] int? limit,
+        [FromQuery] string? paginationKey,
+        [FromQuery] string? visitorId,
+        [FromQuery] string? bot,
+        [FromQuery] string? ipAddress,
+        [FromQuery] string? linkedId,
+        [FromQuery] long? start,
+        [FromQuery] long? end,
+        [FromQuery] bool? reverse,
+        [FromQuery] bool? suspect,
+        [FromQuery] bool? vpn,
+        [FromQuery] bool? virtualMachine,
+        [FromQuery] bool? tampering,
+        [FromQuery] bool? antiDetectBrowser,
+        [FromQuery] bool? incognito,
+        [FromQuery] bool? privacySettings,
+        [FromQuery] bool? jailbroken,
+        [FromQuery] bool? frida,
+        [FromQuery] bool? factoryReset,
+        [FromQuery] bool? clonedApp,
+        [FromQuery] bool? emulator,
+        [FromQuery] bool? rootApps,
+        [FromQuery] float? minSuspectScore,
+        [FromQuery] bool? ipBlocklist,
+        [FromQuery] bool? datacenter,
+        [FromQuery] bool? developerTools,
+        [FromQuery] bool? locationSpoofing,
+        [FromQuery] bool? mitmAttack,
+        [FromQuery] bool? proxy,
+        [FromQuery] string? sdkVersion,
+        [FromQuery] string? sdkPlatform,
+        [FromQuery] List<string>? environment,
+        [FromQuery] string? proximityId,
+        [FromQuery] int? proximityPrecisionRadius
+    )
+    {
+        try
+        {
+            var api = Utils.CreateApi(apiKey, region);
+
+            var apiResponse = api.SearchEventsWithHttpInfo(limit,
+                paginationKey: paginationKey, visitorId: visitorId, bot: bot, ipAddress: ipAddress, linkedId: linkedId,
+                start: start, end: end, reverse: reverse, suspect: suspect, vpn: vpn, virtualMachine: virtualMachine,
+                tampering: tampering, antiDetectBrowser: antiDetectBrowser, incognito: incognito, privacySettings: privacySettings,
+                jailbroken: jailbroken, frida: frida, factoryReset: factoryReset, clonedApp: clonedApp, emulator: emulator,
+                rootApps: rootApps, minSuspectScore: minSuspectScore, ipBlocklist: ipBlocklist, datacenter: datacenter,
+                developerTools: developerTools, locationSpoofing: locationSpoofing, mitmAttack: mitmAttack,
+                proxy: proxy, sdkVersion: sdkVersion, sdkPlatform: sdkPlatform, environment: environment,
+                proximityId: proximityId, proximityPrecisionRadius: proximityPrecisionRadius);
+            var httpResponse = apiResponse.Response;
+            var rawResponse = await httpResponse.Content.ReadAsStringAsync();
+
+            var response = new MusicianResponse<SearchEventsResponse>(httpResponse.StatusCode, rawResponse, apiResponse.Data);
+            return Ok(response);
+        }
+        catch (Exception e) {
+            return Ok(Utils.ProcessException(e));
+        }
+    }
+
+    [HttpGet("/updateEvent")]
+    public async Task<IActionResult> UpdateEvent(
+        [FromQuery] string? apiKey,
+        [FromQuery] string? region,
+        [FromQuery] string? requestId,
+        [FromQuery] string? linkedId,
+        [FromQuery] string? tag,
+        [FromQuery] bool? suspect
+    )
+    {
+        try
+        {
+            var api = Utils.CreateApi(apiKey, region);
+
+            var deserializedTag = tag != null ? JsonUtils.Deserialize<Tag>(tag) : null;
+
+            var updateEventRequest = new EventsUpdateRequest(linkedId, deserializedTag, suspect);
+
+            var apiResponse = api.UpdateEventWithHttpInfo(updateEventRequest, requestId);
+            var httpResponse = apiResponse.Response;
+            var rawResponse = await httpResponse.Content.ReadAsStringAsync();
+
+            var response = new MusicianResponse<object>(httpResponse.StatusCode, rawResponse, apiResponse.Data);
+            return Ok(response);
+        }
+        catch (Exception e) {
+            return Ok(Utils.ProcessException(e));
+        }
+    }
+}
