@@ -5,6 +5,9 @@ using FingerprintPro.ServerSdk.Model;
 
 namespace dotnet_sdk;
 
+// .NET's default DateTime serialization includes trailing zeros in fractional seconds (like `2024-01-01T00:00:00.0000000Z`),
+// but the API returns timestamps with trailing zeros trimmed (like `2024-01-01T00:00:00Z`).
+// This converter makes the output matches the expected API format.
 public class DateTimeTrimTrailingZerosConverter : JsonConverter<DateTime>
 {
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) =>
