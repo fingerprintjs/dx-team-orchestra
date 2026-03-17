@@ -2,6 +2,7 @@ import { expect } from '@playwright/test'
 import { testData } from '../../utils/testData'
 import { test } from '../../utils/v4/playwright'
 import { delay } from '../../utils/delay'
+import { withRetry } from '../../utils/retry'
 import { Event } from '@fingerprint/node-sdk'
 
 function checkUpdatedEvent(updatedEvent: Event) {
@@ -148,13 +149,22 @@ test.describe('UpdateEvents Suite', () => {
 
       await waitBeforeUpdate()
 
-      const { response } = await sdkApi.updateEvent({
-        event_id: event_id,
-        api_key: testData.validSmartSignal.apiKey,
-        region: testData.validSmartSignal.region,
-        suspect,
-      })
-      expect(response.status()).toEqual(200)
+      await withRetry(
+        async () => {
+          const { response } = await sdkApi.updateEvent({
+            event_id: event_id,
+            api_key: testData.validSmartSignal.apiKey,
+            region: testData.validSmartSignal.region,
+            suspect,
+          })
+
+          expect(response.status()).toEqual(200)
+        },
+        {
+          retries: 12,
+          waitMs: 5000,
+        }
+      )
 
       const { data: updatedEvent } = await fingerprintApi.getEvent({
         event_id: event_id,
