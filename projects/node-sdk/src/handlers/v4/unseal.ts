@@ -12,14 +12,14 @@ export const unseal: Handler<{}, RequestBody> = async (req, res) => {
   const { sealedData, keys } = req.body
 
   const sealedDataBuffer = Buffer.from(sealedData, 'base64')
-  const decryptionKeys: DecryptionKey[] = keys.map(({ key, algorithm }) => ({
+  const unsealKeys: DecryptionKey[] = keys.map(({ key, algorithm }) => ({
     key: Buffer.from(key, 'base64'),
     algorithm: algorithm as DecryptionAlgorithm,
   }))
 
   let result: MusicianResponse<Event>
   try {
-    const event = await unsealEventsResponse(sealedDataBuffer, decryptionKeys)
+    const event = await unsealEventsResponse(sealedDataBuffer, unsealKeys)
     result = {
       code: 200,
       originalResponse: event,

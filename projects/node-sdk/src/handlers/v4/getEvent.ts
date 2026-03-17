@@ -1,7 +1,7 @@
 import { FingerprintServerApiClient, Event } from '@fingerprint/node-sdk'
 
 import { Handler, MusicianResponse } from '../../types'
-import { createErrorResponse, getStringQueryValue, getV4Region, unwrapV4Error } from '../../utils'
+import { createErrorResponse, getV4Region, unwrapV4Error } from '../../utils'
 
 interface QueryParams {
   api_key?: string
@@ -11,12 +11,9 @@ interface QueryParams {
 }
 
 export const getEvent: Handler<QueryParams> = async (req, res) => {
-  const apiKey = getStringQueryValue(req.query.api_key) ?? ''
-  const region = getStringQueryValue(req.query.region) ?? ''
-  const eventId = getStringQueryValue(req.query.event_id) ?? ''
-  const rulesetId = getStringQueryValue(req.query.ruleset_id)
+  const { api_key = '', region = '', event_id = '', ruleset_id } = req.query
 
-  if (!apiKey) {
+  if (!api_key) {
     res.send(createErrorResponse(403, 'secret_api_key_required', 'secret API key in header is missing or empty'))
     return
   }
@@ -24,11 +21,11 @@ export const getEvent: Handler<QueryParams> = async (req, res) => {
   let result: MusicianResponse<Event>
   try {
     const client = new FingerprintServerApiClient({
-      apiKey,
+      apiKey: api_key,
       region: getV4Region(region),
     })
 
-    const event = await client.getEvent(eventId, rulesetId ? { ruleset_id: rulesetId } : undefined)
+    const event = await client.getEvent(event_id, ruleset_id ? { ruleset_id } : undefined)
     result = {
       code: 200,
       originalResponse: event,
