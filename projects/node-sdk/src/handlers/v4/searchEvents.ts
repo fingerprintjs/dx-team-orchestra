@@ -1,13 +1,7 @@
 import { FingerprintServerApiClient, SearchEventsFilter, SearchEventsResponse } from '@fingerprint/node-sdk'
 
 import { Handler, MusicianResponse } from '../../types'
-import {
-  createErrorResponse,
-  getV4Region,
-  parseBooleanFromString,
-  parseNumberFromString,
-  unwrapV4Error,
-} from '../../utils'
+import { getV4Region, parseBooleanFromString, parseNumberFromString, unwrapV4Error } from '../../utils'
 
 type V4SearchEventsFilter = NonNullable<SearchEventsFilter>
 type QueryParams = { [K in keyof V4SearchEventsFilter]?: string } & {
@@ -60,11 +54,6 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     tor_node,
     url,
   } = req.query
-
-  if (!api_key) {
-    res.send(createErrorResponse(403, 'secret_api_key_required', 'secret API key in header is missing or empty'))
-    return
-  }
 
   let result: MusicianResponse<SearchEventsResponse>
   try {

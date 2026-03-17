@@ -1,7 +1,7 @@
 import { FingerprintServerApiClient } from '@fingerprint/node-sdk'
 
 import { Handler, MusicianResponse } from '../../types'
-import { createErrorResponse, getV4Region, unwrapV4Error } from '../../utils'
+import { getV4Region, unwrapV4Error } from '../../utils'
 
 interface QueryParams {
   api_key?: string
@@ -11,16 +11,6 @@ interface QueryParams {
 
 export const deleteVisitorData: Handler<QueryParams> = async (req, res) => {
   const { api_key = '', region = '', visitor_id = '' } = req.query
-
-  if (!api_key) {
-    res.send(createErrorResponse(403, 'secret_api_key_required', 'secret API key in header is missing or empty'))
-    return
-  }
-
-  if (!visitor_id) {
-    res.send(createErrorResponse(400, 'request_cannot_be_parsed', 'visitor id is required'))
-    return
-  }
 
   let result: MusicianResponse<void>
   try {
