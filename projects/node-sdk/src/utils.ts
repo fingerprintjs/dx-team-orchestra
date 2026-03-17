@@ -95,6 +95,11 @@ export async function unwrapV3Error<Response200Type>(
 }
 
 export async function unwrapV4Error<Response200Type>(error: unknown): Promise<MusicianResponse<Response200Type>> {
+  // Catch Conductor errors
+  if (error instanceof InvalidRequestError) {
+    return createErrorResponse(400, 'request_cannot_be_parsed', error.message)
+  }
+
   if (error instanceof V4RequestError) {
     const originalResponse = await error.response.text()
     return {
@@ -112,14 +117,9 @@ export async function unwrapV4Error<Response200Type>(error: unknown): Promise<Mu
       return createErrorResponse(403, 'secret_api_key_required', 'secret API key in header is missing or empty')
     }
 
-    if (normalizedMessage === 'visitorId is not set') {
+    if (normalizedMessage === 'visitorid is not set') {
       return createErrorResponse(400, 'request_cannot_be_parsed', 'visitor id is required')
     }
-  }
-
-  // Catch Conductor errors
-  if (error instanceof InvalidRequestError) {
-    return createErrorResponse(400, 'request_cannot_be_parsed', error.message)
   }
 
   return {
