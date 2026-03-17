@@ -1,7 +1,7 @@
 import { EventUpdate, FingerprintServerApiClient } from '@fingerprint/node-sdk'
 
 import { Handler, MusicianResponse } from '../../types'
-import { getV4Region, parseBoolean, unwrapV4Error } from '../../utils'
+import { getV4Region, parseBoolean, parseJsonFromString, unwrapV4Error } from '../../utils'
 
 interface QueryParams {
   api_key?: string
@@ -27,7 +27,7 @@ export const updateEvent: Handler<QueryParams> = async (req, res) => {
       eventUpdateBody.linked_id = linked_id
     }
     if (tags != undefined) {
-      eventUpdateBody.tags = JSON.parse(tags)
+      eventUpdateBody.tags = parseJsonFromString(tags, 'tags')
     }
     if (suspect != undefined) {
       eventUpdateBody.suspect = parseBoolean(suspect)

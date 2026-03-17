@@ -150,6 +150,15 @@ export function parseNumberFromString(value: string, fieldName: string): number 
 
   return parsedValue
 }
+
+export function parseJsonFromString(value: string, fieldName: string): Record<string, unknown> {
+  try {
+    return JSON.parse(value)
+  } catch {
+    throw new InvalidRequestError(`${fieldName} is not a valid JSON`)
+  }
+}
+
 export function parseBooleanFromString(value: string, fieldName: string): boolean {
   if (value === '') {
     throw new InvalidRequestError(`${fieldName} is not a valid boolean`)
