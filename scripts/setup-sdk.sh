@@ -24,7 +24,6 @@ echo "Setting up $LANGUAGE SDK..."
 
 if [[ "$EVENT_NAME" != "workflow_dispatch" && "$EVENT_NAME" != "repository_dispatch" || -z "$SDK_VERSION" || "$SDK_VERSION" == "latest" ]]; then
     echo "Fetching latest release from GitHub for $REPO_NAME..."
-
     SDK_VERSION=$(curl -s "https://api.github.com/repos/$GITHUB_REPO/$REPO_NAME/releases/latest" | jq -r '.tag_name')
 
     if [[ -z "$SDK_VERSION" || "$SDK_VERSION" == "null" ]]; then
@@ -33,14 +32,14 @@ if [[ "$EVENT_NAME" != "workflow_dispatch" && "$EVENT_NAME" != "repository_dispa
     fi
 fi
 
-if [[ "$LANGUAGE" == "php"  || "$LANGUAGE" == "python" || "$LANGUAGE" == "dotnet" || "$LANGUAGE" == "node" ]]; then
+if [[ "$LANGUAGE" == "php" || "$LANGUAGE" == "python" || "$LANGUAGE" == "dotnet" || "$LANGUAGE" == "node" ]]; then
     SDK_VERSION=${SDK_VERSION#v}  # Remove leading `v` if presented
 fi
 
 if [[ "$LANGUAGE" == "node" ]]; then
-    # Node.js: If SDK_VERSION has only version without full tag, add `@fingerprintjs/fingerprintjs-pro-server-api@`
+    # Node.js: If SDK_VERSION has only version without full tag, add the correct package name
     if [[ "$SDK_VERSION" != @* ]]; then
-        SDK_VERSION="@fingerprintjs/fingerprintjs-pro-server-api@$SDK_VERSION"
+        SDK_VERSION="@fingerprint/node-sdk@$SDK_VERSION"
     fi
 fi
 

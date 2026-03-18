@@ -1,10 +1,10 @@
-import { Handler, MusicianResponse } from '../types'
+import { Handler, MusicianResponse } from '../../types'
 import {
   FingerprintJsServerApiClient,
   SearchEventsFilter,
   SearchEventsResponse,
 } from '@fingerprintjs/fingerprintjs-pro-server-api'
-import { getRegion, unwrapError } from '../utils'
+import { getV3Region, unwrapV3Error } from '../../utils'
 
 interface QueryParams {
   apiKey?: string
@@ -193,8 +193,8 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
   let result: MusicianResponse<SearchEventsResponse>
   try {
     const client = new FingerprintJsServerApiClient({
-      apiKey: apiKey,
-      region: getRegion(region),
+      apiKey,
+      region: getV3Region(region),
     })
 
     const events = await client.searchEvents(filter)
@@ -204,7 +204,7 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
       parsedResponse: events,
     }
   } catch (error) {
-    result = await unwrapError<SearchEventsResponse>(error)
+    result = await unwrapV3Error<SearchEventsResponse>(error)
   }
   res.send(result)
 }

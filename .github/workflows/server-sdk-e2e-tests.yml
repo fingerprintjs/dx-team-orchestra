@@ -4,42 +4,42 @@ on:
   workflow_dispatch:
     inputs:
       sdk-version:
-        description: "SDK version to set up"
+        description: 'SDK version to set up'
         required: false
         type: string
-        default: "latest"
+        default: 'latest'
       run-node-sdk-tests:
-        description: "Should we run Node SDK tests?"
+        description: 'Should we run Node SDK tests?'
         required: false
         type: boolean
         default: false
       run-java-sdk-tests:
-        description: "Should we run Java SDK tests?"
+        description: 'Should we run Java SDK tests?'
         required: false
         type: boolean
         default: false
       run-dotnet-sdk-tests:
-        description: "Should we run .NET SDK tests?"
+        description: 'Should we run .NET SDK tests?'
         required: false
         type: boolean
         default: false
       run-go-sdk-tests:
-        description: "Should we run Go SDK tests?"
+        description: 'Should we run Go SDK tests?'
         required: false
         type: boolean
         default: false
       run-python-sdk-tests:
-        description: "Should we run Python SDK tests?"
+        description: 'Should we run Python SDK tests?'
         required: false
         type: boolean
         default: false
       run-php-sdk-tests:
-        description: "Should we run PHP SDK tests?"
+        description: 'Should we run PHP SDK tests?'
         required: false
         type: boolean
         default: false
   schedule:
-    - cron: "0 0 * * *" # Runs daily at midnight UTC
+    - cron: '0 0 * * *' # Runs daily at midnight UTC
   push:
     branches:
       - main

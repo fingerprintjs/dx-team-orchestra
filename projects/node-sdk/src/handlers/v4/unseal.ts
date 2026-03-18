@@ -1,11 +1,7 @@
-import { Handler, MusicianResponse } from '../types'
-import {
-  EventsGetResponse,
-  unsealEventsResponse,
-  DecryptionKey,
-  DecryptionAlgorithm,
-} from '@fingerprintjs/fingerprintjs-pro-server-api'
-import { unwrapError } from '../utils'
+import { DecryptionAlgorithm, DecryptionKey, Event, unsealEventsResponse } from '@fingerprint/node-sdk'
+
+import { Handler, MusicianResponse } from '../../types'
+import { unwrapV4Error } from '../../utils'
 
 interface RequestBody {
   sealedData: string
@@ -21,7 +17,7 @@ export const unseal: Handler<{}, RequestBody> = async (req, res) => {
     algorithm: algorithm as DecryptionAlgorithm,
   }))
 
-  let result: MusicianResponse<EventsGetResponse>
+  let result: MusicianResponse<Event>
   try {
     const event = await unsealEventsResponse(sealedDataBuffer, unsealKeys)
     result = {
@@ -30,7 +26,8 @@ export const unseal: Handler<{}, RequestBody> = async (req, res) => {
       parsedResponse: event,
     }
   } catch (error) {
-    result = await unwrapError<EventsGetResponse>(error)
+    result = await unwrapV4Error<Event>(error)
   }
+
   res.send(result)
 }
