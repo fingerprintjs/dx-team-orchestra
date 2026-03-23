@@ -1,10 +1,8 @@
-package com.example.java_sdk;
+package com.example.java_sdk.v4;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.fingerprint.Sealed;
-import com.fingerprint.sdk.ApiException;
+import com.fingerprint.v4.sdk.ApiException;
 
 import java.util.HashMap;
 import java.util.Map;

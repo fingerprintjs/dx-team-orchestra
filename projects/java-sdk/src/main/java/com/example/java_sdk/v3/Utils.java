@@ -1,6 +1,5 @@
-package com.example.java_sdk;
+package com.example.java_sdk.v3;
 
-import com.fingerprint.Sealed;
 import com.fingerprint.sdk.Region;
 
 public class Utils {
