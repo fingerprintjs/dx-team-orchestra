@@ -26,7 +26,7 @@ class MusicianResponse<T> {
         if (e.getMessage() == "Missing the required parameter 'visitorId' when calling deleteVisitorData") {
             this.parsedResponse = (T) new HashMap<String, Object>() {{
                 put("error", new HashMap<String, String>() {{
-                    put("code", "RequestCannotBeParsed");
+                    put("code", "request_cannot_be_parsed");
                     put("message", "visitor id is required");
                 }});
             }};
