@@ -154,7 +154,7 @@ public class EventController {
             @RequestParam(required = false, value = "") String region,
             @RequestParam(required = false, value = "") String event_id,
             @RequestParam(required = false) String linked_id,
-            @RequestParam(required = false) String tag,
+            @RequestParam(required = false) String tags,
             @RequestParam(required = false) Boolean suspect
     ) {
         ApiClient client = Configuration.getDefaultApiClient(api_key, Utils.getRegion(region));
@@ -163,9 +163,9 @@ public class EventController {
             final EventUpdate eventsUpdateRequest = new EventUpdate();
             eventsUpdateRequest.setLinkedId(linked_id);
             eventsUpdateRequest.setSuspect(suspect);
-            if (tag != null) {
+            if (tags != null) {
                 try {
-                    Map<String, Object> parsedTag = objectMapper.readValue(tag, new TypeReference<Map<String, Object>>() {
+                    Map<String, Object> parsedTag = objectMapper.readValue(tags, new TypeReference<Map<String, Object>>() {
                     });
                     eventsUpdateRequest.setTags(parsedTag);
                 } catch (JsonProcessingException e) {
