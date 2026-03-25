@@ -1,1 +1,1 @@
-rootProject.name = "java-sdk"
+rootProject.name = "orchestra-java-sdk"
