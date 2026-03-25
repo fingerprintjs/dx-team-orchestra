@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Base64;
 
 
-@RestController
-public class SealedResultControllerV3 {
+@RestController("SealedResultControllerV3")
+public class SealedResultController {
     @PostMapping("/unseal")
     public ResponseEntity<MusicianResponse> unseal(@RequestBody UnsealRequest request) {
         try {

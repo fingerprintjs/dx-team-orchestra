@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
-@RestController
+@RestController("EventControllerV4")
 @RequestMapping("/v4")
 public class EventController {
     private final ObjectMapper objectMapper;

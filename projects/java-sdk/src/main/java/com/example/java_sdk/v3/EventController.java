@@ -19,11 +19,11 @@ import java.util.List;
 
 import java.util.Map;
 
-@RestController
-public class EventsControllerV3 {
+@RestController("EventControllerV3")
+public class EventController {
     private final ObjectMapper objectMapper;
 
-    public EventsControllerV3(ObjectMapper objectMapper) {
+    public EventController(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 

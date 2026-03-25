@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Base64;
 
 
-@RestController
+@RestController("SealedResultControllerV4")
 @RequestMapping("/v4")
 public class SealedResultController {
     @PostMapping("/unseal")

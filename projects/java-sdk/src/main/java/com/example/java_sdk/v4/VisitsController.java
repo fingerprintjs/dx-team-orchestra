@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController("VisitsControllerV4")
 @RequestMapping("/v4")
 public class VisitsController {
     @GetMapping("/deleteVisitorData")
