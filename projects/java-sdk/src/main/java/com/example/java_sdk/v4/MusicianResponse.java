@@ -1,10 +1,8 @@
-package com.example.java_sdk;
+package com.example.java_sdk.v4;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.fingerprint.Sealed;
-import com.fingerprint.sdk.ApiException;
+import com.fingerprint.v4.sdk.ApiException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +26,7 @@ class MusicianResponse<T> {
         if (e.getMessage() == "Missing the required parameter 'visitorId' when calling deleteVisitorData") {
             this.parsedResponse = (T) new HashMap<String, Object>() {{
                 put("error", new HashMap<String, String>() {{
-                    put("code", "RequestCannotBeParsed");
+                    put("code", "request_cannot_be_parsed");
                     put("message", "visitor id is required");
                 }});
             }};

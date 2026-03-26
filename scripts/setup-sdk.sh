@@ -88,7 +88,7 @@ case $LANGUAGE in
         go get github.com/fingerprintjs/go-sdk/$MAJOR_VERSION@$SDK_VERSION
         ;;
     "python")
-        pip install "fingerprint_pro_server_api_sdk==$SDK_VERSION"
+        pip install "fingerprint-server-sdk==$SDK_VERSION"
         ;;
     "php")
         composer require fingerprint/fingerprint-pro-server-api-sdk:$SDK_VERSION --update-with-dependencies

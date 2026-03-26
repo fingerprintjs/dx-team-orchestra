@@ -1,9 +1,7 @@
-package com.example.java_sdk;
+package com.example.java_sdk.v3;
 
 import com.fingerprint.api.FingerprintApi;
-import com.fingerprint.model.RelatedVisitor;
 import com.fingerprint.model.RelatedVisitorsResponse;
-import com.fingerprint.model.VisitorsGetResponse;
 import com.fingerprint.sdk.ApiClient;
 import com.fingerprint.sdk.ApiException;
 import com.fingerprint.sdk.ApiResponse;
@@ -13,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+@RestController("RelatedVisitorsControllerV3")
 public class RelatedVisitorsController {
 
     @GetMapping("getRelatedVisitors")

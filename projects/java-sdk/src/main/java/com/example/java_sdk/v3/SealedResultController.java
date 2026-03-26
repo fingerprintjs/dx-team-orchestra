@@ -1,22 +1,17 @@
-package com.example.java_sdk;
+package com.example.java_sdk.v3;
 
+import com.example.java_sdk.UnsealRequest;
 import com.fingerprint.Sealed;
 import com.fingerprint.model.EventsGetResponse;
-import com.fingerprint.sdk.ApiException;
-import com.fingerprint.sdk.ApiResponse;
-import com.fingerprint.sdk.Configuration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.util.Base64;
-import java.util.List;
-import java.util.Map;
 
 
-@RestController
+@RestController("SealedResultControllerV3")
 public class SealedResultController {
     @PostMapping("/unseal")
     public ResponseEntity<MusicianResponse> unseal(@RequestBody UnsealRequest request) {

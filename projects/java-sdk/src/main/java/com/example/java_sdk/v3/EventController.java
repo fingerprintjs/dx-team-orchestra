@@ -1,4 +1,4 @@
-package com.example.java_sdk;
+package com.example.java_sdk.v3;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -19,11 +19,11 @@ import java.util.List;
 
 import java.util.Map;
 
-@RestController
-public class EventsController {
+@RestController("EventControllerV3")
+public class EventController {
     private final ObjectMapper objectMapper;
 
-    public EventsController(ObjectMapper objectMapper) {
+    public EventController(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
