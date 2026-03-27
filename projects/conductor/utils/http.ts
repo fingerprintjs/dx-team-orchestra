@@ -77,8 +77,8 @@ export async function jsonRequest<T = any>({
   }
 
   const response = await request[method](finalUrl, args)
+  const text = await response.text()
   if (!response.ok()) {
-    const text = await response.text()
     console.error(`Request to ${finalUrl} failed with status ${response.status()}`, {
       params,
       method,
@@ -88,5 +88,5 @@ export async function jsonRequest<T = any>({
     throw new Error(`Request failed with status ${response.status()} | Response Text: ${text}`)
   }
 
-  return { data: await response.json(), response }
+  return { data: (text ? JSON.parse(text) : undefined) as T, response }
 }
