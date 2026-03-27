@@ -1,4 +1,4 @@
-import { APIRequestContext, expect } from '@playwright/test'
+import { APIRequestContext } from '@playwright/test'
 import testData from './testData'
 import { jsonRequest, JsonResponse, RequestParams } from './http'
 import { MusicianResponse } from './musician'
