@@ -5,7 +5,7 @@ export type RequestParams = Record<string, Primitive | Primitive[]>
 
 type MethodVariants =
   | { method?: 'get'; params?: RequestParams }
-  | { method: 'post'; params?: any; data?: unknown }
+  | { method: 'post' | 'patch'; params?: any; data?: unknown }
   | { method: 'delete'; params?: any }
 
 type JsonRequestOptions = {

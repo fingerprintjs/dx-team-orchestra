@@ -105,6 +105,7 @@ export class RealFingerprintV4Api implements FingerprintV4Api {
       request: this.request,
       url: `${this.baseURL}/events/${event_id}`,
       data,
+      method: 'patch',
       headers: {
         Authorization: `Bearer ${api_key}`,
         'content-type': 'application/json',
