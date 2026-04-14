@@ -1,4 +1,4 @@
-import { APIRequestContext, expect } from '@playwright/test'
+import { APIRequestContext } from '@playwright/test'
 import testData from './testData'
 import { jsonRequest, JsonResponse, RequestParams } from './http'
 import { MusicianResponse } from './musician'
@@ -374,18 +374,4 @@ export class RealFingerprintApi implements FingerprintApi {
       },
     })
   }
-}
-
-/**
- * @deprecated Use RealFingerprintApi.getEvent instead
- * */
-export async function getEvent(request: APIRequestContext, requestId: string, apiKey: string) {
-  const getEventByRequestID = await request.get(`${testData.config.apiUrl}/events/${requestId}`, {
-    headers: {
-      'Auth-API-Key': apiKey,
-      'content-type': 'application/json',
-    },
-  })
-  expect(getEventByRequestID.status()).toEqual(200)
-  return getEventByRequestID.json()
 }

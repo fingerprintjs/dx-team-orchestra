@@ -5,8 +5,7 @@ export type RequestParams = Record<string, Primitive | Primitive[]>
 
 type MethodVariants =
   | { method?: 'get'; params?: RequestParams }
-  | { method: 'post'; params?: any; data?: unknown }
-  | { method: 'delete'; params?: any }
+  | { method: 'post' | 'patch'| 'delete'; params?: any }
 
 type JsonRequestOptions = {
   request: APIRequestContext
@@ -72,13 +71,13 @@ export async function jsonRequest<T = any>({
     if (queryString) {
       finalUrl = url.includes('?') ? `${url}&${queryString}` : `${url}?${queryString}`
     }
-  } else if (method === 'post') {
+  } else if (['post', 'patch'].includes(method)) {
     args.data = params
   }
 
   const response = await request[method](finalUrl, args)
+  const text = await response.text()
   if (!response.ok()) {
-    const text = await response.text()
     console.error(`Request to ${finalUrl} failed with status ${response.status()}`, {
       params,
       method,
@@ -88,5 +87,5 @@ export async function jsonRequest<T = any>({
     throw new Error(`Request failed with status ${response.status()} | Response Text: ${text}`)
   }
 
-  return { data: await response.json(), response }
+  return { data: (text ? JSON.parse(text) : undefined) as T, response }
 }

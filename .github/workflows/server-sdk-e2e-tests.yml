@@ -65,7 +65,8 @@ jobs:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-node-sdk-tests || github.event.client_payload.run-node-sdk-tests }}
     runs-on: ubuntu-latest
     outputs:
-      test_failed: ${{ steps.result.outputs.test_failed }}
+      v3_test_failed: ${{ steps.v3-result.outputs.test_failed }}
+      v4_test_failed: ${{ steps.v4-result.outputs.test_failed }}
     steps:
       - name: 'Get token for the GitHub App'
         uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
@@ -120,7 +121,8 @@ jobs:
           nohup pnpm start &
 
       # Run tests
-      - name: Run tests
+      - name: Run v4 tests
+        id: run-v4
         working-directory: ./projects/conductor
         env:
           MUSICIAN_PORT: 3002
@@ -137,11 +139,39 @@ jobs:
           MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
           DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
-        run: pnpm playwright test
+        run: pnpm playwright test --project="chromium v4"
 
-      - name: Set test result on failure
-        id: result
-        if: failure()
+      - name: Set v4 test result on failure
+        id: v4-result
+        if: always() && steps.run-v4.outcome == 'failure'
+        run: echo "test_failed=true" >> $GITHUB_OUTPUT
+
+      # Run v3 tests regardless of v4 outcome, but only if v4 actually ran.
+      # This ensures v3 is skipped if an earlier setup step (e.g. checkout, install) failed.
+      - name: Run v3 tests
+        id: run-v3
+        if: always() && (steps.run-v4.outcome == 'success' || steps.run-v4.outcome == 'failure')
+        working-directory: ./projects/conductor
+        env:
+          MUSICIAN_PORT: 3002
+          MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
+          MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
+          MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
+          MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
+          DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
+          DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
+        run: pnpm playwright test --project="chromium v3"
+
+      - name: Set v3 test result on failure
+        id: v3-result
+        if: always() && steps.run-v3.outcome == 'failure'
         run: echo "test_failed=true" >> $GITHUB_OUTPUT
 
       - name: Set failed status
@@ -173,7 +203,8 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     outputs:
-      test_failed: ${{ steps.result.outputs.test_failed }}
+      v3_test_failed: ${{ steps.v3-result.outputs.test_failed }}
+      v4_test_failed: ${{ steps.v4-result.outputs.test_failed }}
     steps:
       - name: 'Get token for the GitHub App'
         uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
@@ -246,7 +277,8 @@ jobs:
         run: |
           nohup java -jar build/libs/*-SNAPSHOT.jar &
 
-      - name: Run tests
+      - name: Run v4 tests
+        id: run-v4
         working-directory: ./projects/conductor
         env:
           MUSICIAN_PORT: 8080
@@ -263,11 +295,39 @@ jobs:
           MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
           DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
-        run: pnpm playwright test
+        run: pnpm playwright test --project="chromium v4"
 
-      - name: Set test result on failure
-        id: result
-        if: failure()
+      - name: Set v4 test result on failure
+        id: v4-result
+        if: always() && steps.run-v4.outcome == 'failure'
+        run: echo "test_failed=true" >> $GITHUB_OUTPUT
+
+      # Run v3 tests regardless of v4 outcome, but only if v4 actually ran.
+      # This ensures v3 is skipped if an earlier setup step (e.g. checkout, install) failed.
+      - name: Run v3 tests
+        id: run-v3
+        if: always() && (steps.run-v4.outcome == 'success' || steps.run-v4.outcome == 'failure')
+        working-directory: ./projects/conductor
+        env:
+          MUSICIAN_PORT: 8080
+          MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
+          MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
+          MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
+          MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
+          DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
+          DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
+        run: pnpm playwright test --project="chromium v3"
+
+      - name: Set v3 test result on failure
+        id: v3-result
+        if: always() && steps.run-v3.outcome == 'failure'
         run: echo "test_failed=true" >> $GITHUB_OUTPUT
 
       - name: Set failed status
@@ -299,7 +359,8 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     outputs:
-      test_failed: ${{ steps.result.outputs.test_failed }}
+      v3_test_failed: ${{ steps.v3-result.outputs.test_failed }}
+      v4_test_failed: ${{ steps.v4-result.outputs.test_failed }}
     steps:
       - name: 'Get token for the GitHub App'
         uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
@@ -366,7 +427,8 @@ jobs:
         run: |
           nohup dotnet ./out/dotnet-sdk.dll &
 
-      - name: Run tests
+      - name: Run v4 tests
+        id: run-v4
         working-directory: ./projects/conductor
         env:
           MUSICIAN_PORT: 5243
@@ -383,11 +445,39 @@ jobs:
           MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
           DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
-        run: pnpm playwright test
+        run: pnpm playwright test --project="chromium v4"
 
-      - name: Set test result on failure
-        id: result
-        if: failure()
+      - name: Set v4 test result on failure
+        id: v4-result
+        if: always() && steps.run-v4.outcome == 'failure'
+        run: echo "test_failed=true" >> $GITHUB_OUTPUT
+
+      # Run v3 tests regardless of v4 outcome, but only if v4 actually ran.
+      # This ensures v3 is skipped if an earlier setup step (e.g. checkout, install) failed.
+      - name: Run v3 tests
+        id: run-v3
+        if: always() && (steps.run-v4.outcome == 'success' || steps.run-v4.outcome == 'failure')
+        working-directory: ./projects/conductor
+        env:
+          MUSICIAN_PORT: 5243
+          MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
+          MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
+          MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
+          MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
+          DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
+          DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
+        run: pnpm playwright test --project="chromium v3"
+
+      - name: Set v3 test result on failure
+        id: v3-result
+        if: always() && steps.run-v3.outcome == 'failure'
         run: echo "test_failed=true" >> $GITHUB_OUTPUT
 
       - name: Set failed status
@@ -419,7 +509,8 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     outputs:
-      test_failed: ${{ steps.result.outputs.test_failed }}
+      v3_test_failed: ${{ steps.v3-result.outputs.test_failed }}
+      v4_test_failed: ${{ steps.v4-result.outputs.test_failed }}
     steps:
       - name: 'Get token for the GitHub App'
         uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
@@ -498,7 +589,8 @@ jobs:
         run: |
           nohup ./myapp &
 
-      - name: Run tests
+      - name: Run v4 tests
+        id: run-v4
         working-directory: ./projects/conductor
         env:
           MUSICIAN_PORT: 8081
@@ -515,11 +607,39 @@ jobs:
           MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
           DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
-        run: pnpm playwright test
+        run: pnpm playwright test --project="chromium v4"
 
-      - name: Set test result on failure
-        id: result
-        if: failure()
+      - name: Set v4 test result on failure
+        id: v4-result
+        if: always() && steps.run-v4.outcome == 'failure'
+        run: echo "test_failed=true" >> $GITHUB_OUTPUT
+
+      # Run v3 tests regardless of v4 outcome, but only if v4 actually ran.
+      # This ensures v3 is skipped if an earlier setup step (e.g. checkout, install) failed.
+      - name: Run v3 tests
+        id: run-v3
+        if: always() && (steps.run-v4.outcome == 'success' || steps.run-v4.outcome == 'failure')
+        working-directory: ./projects/conductor
+        env:
+          MUSICIAN_PORT: 8081
+          MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
+          MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
+          MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
+          MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
+          DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
+          DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
+        run: pnpm playwright test --project="chromium v3"
+
+      - name: Set v3 test result on failure
+        id: v3-result
+        if: always() && steps.run-v3.outcome == 'failure'
         run: echo "test_failed=true" >> $GITHUB_OUTPUT
 
       - name: Set failed status
@@ -551,7 +671,8 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     outputs:
-      test_failed: ${{ steps.result.outputs.test_failed }}
+      v3_test_failed: ${{ steps.v3-result.outputs.test_failed }}
+      v4_test_failed: ${{ steps.v4-result.outputs.test_failed }}
     steps:
       - name: 'Get token for the GitHub App'
         uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
@@ -615,7 +736,8 @@ jobs:
         run: |
           nohup python main.py &
 
-      - name: Run tests
+      - name: Run v4 tests
+        id: run-v4
         working-directory: ./projects/conductor
         env:
           MUSICIAN_PORT: 3003
@@ -632,11 +754,39 @@ jobs:
           MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
           DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
-        run: pnpm playwright test
+        run: pnpm playwright test --project="chromium v4"
 
-      - name: Set test result on failure
-        id: result
-        if: failure()
+      - name: Set v4 test result on failure
+        id: v4-result
+        if: always() && steps.run-v4.outcome == 'failure'
+        run: echo "test_failed=true" >> $GITHUB_OUTPUT
+
+      # Run v3 tests regardless of v4 outcome, but only if v4 actually ran.
+      # This ensures v3 is skipped if an earlier setup step (e.g. checkout, install) failed.
+      - name: Run v3 tests
+        id: run-v3
+        if: always() && (steps.run-v4.outcome == 'success' || steps.run-v4.outcome == 'failure')
+        working-directory: ./projects/conductor
+        env:
+          MUSICIAN_PORT: 3003
+          MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
+          MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
+          MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
+          MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
+          DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
+          DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
+        run: pnpm playwright test --project="chromium v3"
+
+      - name: Set v3 test result on failure
+        id: v3-result
+        if: always() && steps.run-v3.outcome == 'failure'
         run: echo "test_failed=true" >> $GITHUB_OUTPUT
 
       - name: Set failed status
@@ -668,7 +818,8 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     outputs:
-      test_failed: ${{ steps.result.outputs.test_failed }}
+      v3_test_failed: ${{ steps.v3-result.outputs.test_failed }}
+      v4_test_failed: ${{ steps.v4-result.outputs.test_failed }}
     steps:
       - name: 'Get token for the GitHub App'
         uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
@@ -741,7 +892,8 @@ jobs:
         run: |
           nohup php -S 0.0.0.0:3004 -t public/ &
 
-      - name: Run tests
+      - name: Run v4 tests
+        id: run-v4
         working-directory: ./projects/conductor
         env:
           MUSICIAN_PORT: 3004
@@ -758,11 +910,39 @@ jobs:
           MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
           DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
           DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
-        run: pnpm playwright test
+        run: pnpm playwright test --project="chromium v4"
 
-      - name: Set test result on failure
-        id: result
-        if: failure()
+      - name: Set v4 test result on failure
+        id: v4-result
+        if: always() && steps.run-v4.outcome == 'failure'
+        run: echo "test_failed=true" >> $GITHUB_OUTPUT
+
+      # Run v3 tests regardless of v4 outcome, but only if v4 actually ran.
+      # This ensures v3 is skipped if an earlier setup step (e.g. checkout, install) failed.
+      - name: Run v3 tests
+        id: run-v3
+        if: always() && (steps.run-v4.outcome == 'success' || steps.run-v4.outcome == 'failure')
+        working-directory: ./projects/conductor
+        env:
+          MUSICIAN_PORT: 3004
+          MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
+          MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
+          MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
+          MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
+          MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
+          MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
+          MAXIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MAXIMUM_US_SEALED_ENCRYPTION_KEY }}
+          DEFAULT_EU_DEFAULT_PUBLIC_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PUBLIC_KEY }}
+          DEFAULT_EU_DEFAULT_PRIVATE_KEY: ${{ secrets.DEFAULT_EU_DEFAULT_PRIVATE_KEY }}
+        run: pnpm playwright test --project="chromium v3"
+
+      - name: Set v3 test result on failure
+        id: v3-result
+        if: always() && steps.run-v3.outcome == 'failure'
         run: echo "test_failed=true" >> $GITHUB_OUTPUT
 
       - name: Set failed status
@@ -803,33 +983,58 @@ jobs:
       - name: Checks the statuses from each job
         run: |
           failed=false
-          if [ "${{ needs.run-node-sdk-tests.outputs.test_failed }}" = "true" ]; then
-            echo "Node SDK tests failed"
+
+          if [ "${{ needs.run-node-sdk-tests.outputs.v3_test_failed }}" = "true" ]; then
+            echo "Node SDK v3 tests failed"
+            failed=true
+          fi
+          if [ "${{ needs.run-node-sdk-tests.outputs.v4_test_failed }}" = "true" ]; then
+            echo "Node SDK v4 tests failed"
             failed=true
           fi
 
-          if [ "${{ needs.run-java-sdk-tests.outputs.test_failed }}" = "true" ]; then
-            echo "Java SDK tests failed"
+          if [ "${{ needs.run-java-sdk-tests.outputs.v3_test_failed }}" = "true" ]; then
+            echo "Java SDK v3 tests failed"
+            failed=true
+          fi
+          if [ "${{ needs.run-java-sdk-tests.outputs.v4_test_failed }}" = "true" ]; then
+            echo "Java SDK v4 tests failed"
             failed=true
           fi
 
-          if [ "${{ needs.run-dotnet-sdk-tests.outputs.test_failed }}" = "true" ]; then
-            echo ".NET SDK tests failed"
+          if [ "${{ needs.run-dotnet-sdk-tests.outputs.v3_test_failed }}" = "true" ]; then
+            echo ".NET SDK v3 tests failed"
+            failed=true
+          fi
+          if [ "${{ needs.run-dotnet-sdk-tests.outputs.v4_test_failed }}" = "true" ]; then
+            echo ".NET SDK v4 tests failed"
             failed=true
           fi
 
-          if [ "${{ needs.run-go-sdk-tests.outputs.test_failed }}" = "true" ]; then
-            echo "Go SDK tests failed"
+          if [ "${{ needs.run-go-sdk-tests.outputs.v3_test_failed }}" = "true" ]; then
+            echo "Go SDK v3 tests failed"
+            failed=true
+          fi
+          if [ "${{ needs.run-go-sdk-tests.outputs.v4_test_failed }}" = "true" ]; then
+            echo "Go SDK v4 tests failed"
             failed=true
           fi
 
-          if [ "${{ needs.run-python-sdk-tests.outputs.test_failed }}" = "true" ]; then
-            echo "Python SDK tests failed"
+          if [ "${{ needs.run-python-sdk-tests.outputs.v3_test_failed }}" = "true" ]; then
+            echo "Python SDK v3 tests failed"
+            failed=true
+          fi
+          if [ "${{ needs.run-python-sdk-tests.outputs.v4_test_failed }}" = "true" ]; then
+            echo "Python SDK v4 tests failed"
             failed=true
           fi
 
-          if [ "${{ needs.run-php-sdk-tests.outputs.test_failed }}" = "true" ]; then
-            echo "PHP SDK tests failed"
+          if [ "${{ needs.run-php-sdk-tests.outputs.v3_test_failed }}" = "true" ]; then
+            echo "PHP SDK v3 tests failed"
+            failed=true
+          fi
+          if [ "${{ needs.run-php-sdk-tests.outputs.v4_test_failed }}" = "true" ]; then
+            echo "PHP SDK v4 tests failed"
             failed=true
           fi
 
