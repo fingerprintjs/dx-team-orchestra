@@ -81,7 +81,7 @@ case $LANGUAGE in
         ./gradlew dependencies --refresh-dependencies
         ;;
     "dotnet")
-        dotnet add package FingerprintPro.ServerSdk --version $SDK_VERSION
+        dotnet add package Fingerprint.ServerSdk --version $SDK_VERSION
         ;;
     "go")
         MAJOR_VERSION=$(echo $SDK_VERSION | cut -d'.' -f1)
