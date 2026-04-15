@@ -57,22 +57,22 @@ class EventsController
         $proximityId = $queryParams['proximityId'] ?? null;
         $proximityPrecisionRadius = $queryParams['proximityPrecisionRadius'] ?? null;
 
-        $environmentRaw = $queryParams['environment'] ?? null;
         $environment = null;
-
-        if (is_array($environmentRaw)) {
-            $environment = array_values(
-                array_filter(
-                    array_map(fn($v) => is_string($v) ? trim($v) : null, $environmentRaw),
-                    fn($v) => $v !== null && $v !== ''
-                )
-            );
-            if ($environment === []) {
-                $environment = null;
+        $rawQuery = $request->getUri()->getQuery();
+        if ($rawQuery) {
+            $environmentValues = [];
+            foreach (explode('&', $rawQuery) as $pair) {
+                $parts = explode('=', $pair, 2);
+                if ($parts[0] === 'environment' && isset($parts[1])) {
+                    $value = trim(urldecode($parts[1]));
+                    if ($value !== '') {
+                        $environmentValues[] = $value;
+                    }
+                }
             }
-        } elseif (is_string($environmentRaw)) {
-            $environmentRaw = trim($environmentRaw);
-            $environment = $environmentRaw !== '' ? [$environmentRaw] : null;
+            if (!empty($environmentValues)) {
+                $environment = $environmentValues;
+            }
         }
 
         $client = FingerprintClient::create($queryParams);
