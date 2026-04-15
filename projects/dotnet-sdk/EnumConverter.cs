@@ -94,6 +94,34 @@ public class ProxyConfidenceConverter : JsonConverter<ProxyConfidence>
     }
 }
 
+public class TamperingConfidenceConverter : JsonConverter<Tampering.ConfidenceEnum>
+{
+    public override Tampering.ConfidenceEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var value = reader.GetString();
+        return value switch
+        {
+            "low" => Tampering.ConfidenceEnum.Low,
+            "medium" => Tampering.ConfidenceEnum.Medium,
+            "high" => Tampering.ConfidenceEnum.High,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    public override void Write(Utf8JsonWriter writer, Tampering.ConfidenceEnum value, JsonSerializerOptions options)
+    {
+        var stringValue = value switch
+        {
+            Tampering.ConfidenceEnum.Low => "low",
+            Tampering.ConfidenceEnum.Medium => "medium",
+            Tampering.ConfidenceEnum.High => "high",
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        writer.WriteStringValue(stringValue);
+    }
+}
+
 public class ProxyTypeConverter : JsonConverter<ProxyDetails.ProxyTypeEnum>
 {
     public override ProxyDetails.ProxyTypeEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)

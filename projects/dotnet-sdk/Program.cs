@@ -22,6 +22,7 @@ builder.Services.AddControllers()
             // V3 SDK enum converters
             options.JsonSerializerOptions.Converters.Add(new VpnConfidenceConverter());
             options.JsonSerializerOptions.Converters.Add(new ProxyConfidenceConverter());
+            options.JsonSerializerOptions.Converters.Add(new TamperingConfidenceConverter());
             options.JsonSerializerOptions.Converters.Add(new ProxyTypeConverter());
             options.JsonSerializerOptions.Converters.Add(new BotdBotResultConverter());
 
