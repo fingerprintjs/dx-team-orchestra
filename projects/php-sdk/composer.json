@@ -1,7 +1,7 @@
 {
     "require": {
         "fingerprint/fingerprint-pro-server-api-sdk": "6.10.0",
-        "slim/slim": "^4.15"
+        "slim/slim": "^4.15.1"
     },
     "autoload": {
         "psr-4": {
