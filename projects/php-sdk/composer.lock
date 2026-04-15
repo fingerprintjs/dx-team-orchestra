@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7130a28884cea46de992d53462648f41",
+    "content-hash": "313063633c2d054aa1c9771aec250e78",
     "packages": [
         {
             "name": "fingerprint/fingerprint-pro-server-api-sdk",
@@ -75,6 +75,81 @@
                 "source": "https://github.com/fingerprintjs/php-sdk/tree/v6.10.0"
             },
             "time": "2025-09-10T09:56:36+00:00"
+        },
+        {
+            "name": "fingerprint/server-sdk",
+            "version": "7.0.0-beta.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fingerprintjs/php-sdk.git",
+                "reference": "5b98295bf0118aa09d1386dcace3b2f2dcab4bdc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fingerprintjs/php-sdk/zipball/5b98295bf0118aa09d1386dcace3b2f2dcab4bdc",
+                "reference": "5b98295bf0118aa09d1386dcace3b2f2dcab4bdc",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "ext-openssl": "*",
+                "ext-zlib": "*",
+                "guzzlehttp/guzzle": "^7.3",
+                "guzzlehttp/psr7": "^1.7 || ^2.0",
+                "php": "^8.2"
+            },
+            "replace": {
+                "symfony/polyfill-php80": "*",
+                "symfony/polyfill-php81": "*"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.5",
+                "phpunit/phpunit": "^11.5",
+                "vlucas/phpdotenv": "^5.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fingerprint\\ServerSdk\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "fingerprint",
+                    "homepage": "https://github.com/fingerprintjs/php-sdk"
+                }
+            ],
+            "description": "Fingerprint Server API allows you to get, search, and update Events in a server environment. It can be used for data exports, decision-making, and data analysis scenarios. Server API is intended for server-side usage, it's not intended to be used from the client side, whether it's a browser or a mobile device.",
+            "homepage": "https://fingerprint.com",
+            "keywords": [
+                "Fingerprint",
+                "api",
+                "audio-fingerprinting",
+                "browser",
+                "browser-fingerprint",
+                "browser-fingerprinting",
+                "detection",
+                "fingerprinting",
+                "fingerprintjs",
+                "fingerprintjs-pro",
+                "fraud",
+                "fraud-detection",
+                "identification",
+                "php",
+                "sdk",
+                "visitor-identification"
+            ],
+            "support": {
+                "issues": "https://github.com/fingerprintjs/php-sdk/issues",
+                "source": "https://github.com/fingerprintjs/php-sdk/tree/v7.0.0-beta.1"
+            },
+            "time": "2026-04-14T19:50:34+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1059,10 +1134,12 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "fingerprint/server-sdk": 10
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {},
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.6.0"
 }
