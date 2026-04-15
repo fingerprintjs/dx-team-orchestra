@@ -866,7 +866,7 @@ jobs:
       - name: Set up PHP
         uses: shivammathur/setup-php@9e72090525849c5e82e596468b86eb55e9cc5401
         with:
-          php-version: '8.1'
+          php-version: '8.2'
           tools: composer:v2
 
       - name: Cache dependencies
