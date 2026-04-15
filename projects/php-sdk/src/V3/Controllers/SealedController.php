@@ -1,9 +1,7 @@
 <?php
 
-namespace PHP_SDK\Controllers;
+namespace PHP_SDK\V3\Controllers;
 
-use Fingerprint\ServerAPI\ApiException;
-use Fingerprint\ServerAPI\Sealed\DecryptionAlgorithm;
 use Fingerprint\ServerAPI\Sealed\DecryptionKey;
 use Fingerprint\ServerAPI\Sealed\Sealed;
 use Fingerprint\ServerAPI\Sealed\UnsealAggregateException;

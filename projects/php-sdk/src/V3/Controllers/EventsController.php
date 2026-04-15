@@ -1,23 +1,27 @@
 <?php
 
-namespace PHP_SDK\Controllers;
+namespace PHP_SDK\V3\Controllers;
 
-use Fingerprint\ServerAPI\Api\FingerprintApi;
-use Fingerprint\ServerAPI\ApiException;
-use Fingerprint\ServerAPI\Configuration;
 use Fingerprint\ServerAPI\Model\EventsUpdateRequest;
-use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
-use PHP_SDK\Models\MusicianResponse;
+use PHP_SDK\V3\FingerprintClient;
 use Psr\Http\Message\MessageInterface;
 
 class EventsController
 {
-    public function searchEvents(ServerRequest $request, Response $response): MessageInterface {
+    public function getEvents(ServerRequest $request, Response $response): MessageInterface
+    {
         $queryParams = $request->getQueryParams();
-        $apiKey = $queryParams['apiKey'] ?? '';
-        $region = $queryParams['region'] ?? '';
+        $requestId = $queryParams['requestId'] ?? '';
+        $client = FingerprintClient::create($queryParams);
+
+        return FingerprintClient::createResponse($response, fn() => $client->getEvent($requestId));
+    }
+
+    public function searchEvents(ServerRequest $request, Response $response): MessageInterface
+    {
+        $queryParams = $request->getQueryParams();
         $limit = $queryParams['limit'] ?? null;
 
         $paginationKey = $queryParams['paginationKey'] ?? null;
@@ -71,106 +75,54 @@ class EventsController
             $environment = $environmentRaw !== '' ? [$environmentRaw] : null;
         }
 
-        $config = Configuration::getDefaultConfiguration($apiKey, $region);
-        $client = new FingerprintApi(
-            new Client(),
-            $config
-        );
+        $client = FingerprintClient::create($queryParams);
 
-        try {
-            list($model, $apiResponse) = $client->searchEvents(
-                $limit,
-                pagination_key: $paginationKey,
-                visitor_id: $visitorId,
-                bot: $bot,
-                ip_address: $ipAddress,
-                linked_id: $linkedId,
-                start: $start,
-                end: $end,
-                reverse: $reverse,
-                suspect: $suspect,
-                vpn: $vpn,
-                virtual_machine: $virtualMachine,
-                tampering: $tampering,
-                anti_detect_browser: $antiDetectBrowser,
-                incognito: $incognito,
-                privacy_settings: $privacySettings,
-                jailbroken: $jailbroken,
-                frida: $frida,
-                factory_reset: $factoryReset,
-                cloned_app: $clonedApp,
-                emulator: $emulator,
-                root_apps: $rootApps,
-                min_suspect_score: $minSuspectScore,
-                ip_blocklist: $ipBlocklist,
-                datacenter: $datacenter,
-                developer_tools: $developerTools,
-                location_spoofing: $locationSpoofing,
-                mitm_attack: $mitmAttack,
-                proxy: $proxy,
-                sdk_version: $sdkVersion,
-                sdk_platform: $sdkPlatform,
-                environment: $environment,
-                proximity_id: $proximityId,
-                proximity_precision_radius: $proximityPrecisionRadius
-            );
-
-            $result = new MusicianResponse($apiResponse->getStatusCode(), $apiResponse, $model);
-        } catch (ApiException $e) {
-            $result = MusicianResponse::BuildForApiException($e);
-        } catch (\Throwable $e) {
-            $result = new MusicianResponse(500, $e->getMessage(), $e->getMessage());
-        }
-
-        $response->getBody()->write(json_encode($result));
-
-        return $response->withHeader('Content-Type', 'application/json');
-    }
-
-    public function getEvents(ServerRequest $request, Response $response): MessageInterface
-    {
-        $queryParams = $request->getQueryParams();
-        $apiKey = $queryParams['apiKey'] ?? '';
-        $region = $queryParams['region'] ?? '';
-        $requestId = $queryParams['requestId'] ?? '';
-
-        $config = Configuration::getDefaultConfiguration($apiKey, $region);
-        $client = new FingerprintApi(
-            new Client(),
-            $config
-        );
-
-        try {
-            list($model, $api_response) = $client->getEvent($requestId);
-            $result = new MusicianResponse($api_response->getStatusCode(), $api_response, $model);
-        } catch (ApiException $e) {
-            $result = MusicianResponse::BuildForApiException($e);
-        } catch (\Throwable $e) {
-            $result = new MusicianResponse(500, $e->getMessage(), $e->getMessage());
-        }
-
-
-        $response->getBody()->write(json_encode($result));
-
-        return $response->withHeader('Content-Type', 'application/json');
+        return FingerprintClient::createResponse($response, fn() => $client->searchEvents(
+            $limit,
+            pagination_key: $paginationKey,
+            visitor_id: $visitorId,
+            bot: $bot,
+            ip_address: $ipAddress,
+            linked_id: $linkedId,
+            start: $start,
+            end: $end,
+            reverse: $reverse,
+            suspect: $suspect,
+            vpn: $vpn,
+            virtual_machine: $virtualMachine,
+            tampering: $tampering,
+            anti_detect_browser: $antiDetectBrowser,
+            incognito: $incognito,
+            privacy_settings: $privacySettings,
+            jailbroken: $jailbroken,
+            frida: $frida,
+            factory_reset: $factoryReset,
+            cloned_app: $clonedApp,
+            emulator: $emulator,
+            root_apps: $rootApps,
+            min_suspect_score: $minSuspectScore,
+            ip_blocklist: $ipBlocklist,
+            datacenter: $datacenter,
+            developer_tools: $developerTools,
+            location_spoofing: $locationSpoofing,
+            mitm_attack: $mitmAttack,
+            proxy: $proxy,
+            sdk_version: $sdkVersion,
+            sdk_platform: $sdkPlatform,
+            environment: $environment,
+            proximity_id: $proximityId,
+            proximity_precision_radius: $proximityPrecisionRadius
+        ));
     }
 
     public function updateEvent(ServerRequest $request, Response $response): MessageInterface
     {
         $queryParams = $request->getQueryParams();
-        $apiKey = $queryParams['apiKey'] ?? '';
-        $region = $queryParams['region'] ?? '';
         $requestId = $queryParams['requestId'] ?? '';
 
         $linkedId = $queryParams['linkedId'] ?? '';
         $suspect = $queryParams['suspect'] ?? null;
         $tag = $queryParams['tag'] ?? null;
-
-        $config = Configuration::getDefaultConfiguration($apiKey, $region);
-        $client = new FingerprintApi(
-            new Client(),
-            $config
-        );
 
         $body = new EventsUpdateRequest();
         if ($linkedId) {
@@ -186,17 +138,8 @@ class EventsController
             $body->setTag($parsedTag);
         }
 
-        try {
-            list($model, $api_response) = $client->updateEvent($body, $requestId);
-            $result = new MusicianResponse($api_response->getStatusCode(), $api_response, $model);
-        } catch (ApiException $e) {
-            $result = MusicianResponse::BuildForApiException($e);
-        } catch (\Throwable $e) {
-            $result = new MusicianResponse(500, $e->getMessage(), $e->getMessage());
-        }
+        $client = FingerprintClient::create($queryParams);
 
-        $response->getBody()->write(json_encode($result));
-
-        return $response->withHeader('Content-Type', 'application/json');
+        return FingerprintClient::createResponse($response, fn() => $client->updateEvent($body, $requestId));
     }
 }

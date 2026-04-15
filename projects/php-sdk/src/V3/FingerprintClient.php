@@ -1,34 +1,31 @@
 <?php
 
-namespace PHP_SDK\Controllers;
+namespace PHP_SDK\V3;
 
 use Fingerprint\ServerAPI\Api\FingerprintApi;
 use Fingerprint\ServerAPI\ApiException;
 use Fingerprint\ServerAPI\Configuration;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\ServerRequest;
 use PHP_SDK\Models\MusicianResponse;
 use Psr\Http\Message\MessageInterface;
 
-class RelatedVisitorsController
+class FingerprintClient
 {
-    public function getRelatedVisitors(ServerRequest $request, Response $response): MessageInterface
+    public static function create(array $queryParams): FingerprintApi
     {
-        $queryParams = $request->getQueryParams();
         $apiKey = $queryParams['apiKey'] ?? '';
         $region = $queryParams['region'] ?? '';
-        $visitorId = $queryParams['visitorId'] ?? '';
-
         $config = Configuration::getDefaultConfiguration($apiKey, $region);
-        $client = new FingerprintApi(
-            new Client(),
-            $config
-        );
 
+        return new FingerprintApi(new Client(), $config);
+    }
+
+    public static function createResponse(Response $response, callable $apiCall): MessageInterface
+    {
         try {
-            list($model, $api_response) = $client->getRelatedVisitors($visitorId);
-            $result = new MusicianResponse($api_response->getStatusCode(), $api_response, $model);
+            list($model, $apiResponse) = $apiCall();
+            $result = new MusicianResponse($apiResponse->getStatusCode(), $apiResponse, $model);
         } catch (ApiException $e) {
             $result = MusicianResponse::BuildForApiException($e);
         } catch (\Throwable $e) {
