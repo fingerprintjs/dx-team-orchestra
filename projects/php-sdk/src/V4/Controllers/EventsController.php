@@ -146,7 +146,6 @@ class EventsController
         $eventId = $queryParams['event_id'] ?? '';
 
         $linkedId = $queryParams['linked_id'] ?? '';
-        $suspect = $queryParams['suspect'] ?? null;
         $tags = $queryParams['tags'] ?? null;
 
         $body = new EventUpdate();
@@ -154,7 +153,8 @@ class EventsController
             $body->setLinkedId($linkedId);
         }
 
-        if ($suspect) {
+        if (isset($queryParams['suspect'])) {
+            $suspect = $queryParams['suspect'];
             $body->setSuspect(filter_var($suspect, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE));
         }
 
