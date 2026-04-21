@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "313063633c2d054aa1c9771aec250e78",
+    "content-hash": "3d2f9d5a49cf51c329b551803656abb3",
     "packages": [
         {
             "name": "fingerprint/fingerprint-pro-server-api-sdk",
-            "version": "6.10.0",
+            "version": "6.11.0-beta.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fingerprintjs/php-sdk.git",
-                "reference": "b8152f48562cd8bab0230edce923d1185f8996c8"
+                "reference": "f20c46d3e0b3b7c937eccec5bdc148def92e6340"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fingerprintjs/php-sdk/zipball/b8152f48562cd8bab0230edce923d1185f8996c8",
-                "reference": "b8152f48562cd8bab0230edce923d1185f8996c8",
+                "url": "https://api.github.com/repos/fingerprintjs/php-sdk/zipball/f20c46d3e0b3b7c937eccec5bdc148def92e6340",
+                "reference": "f20c46d3e0b3b7c937eccec5bdc148def92e6340",
                 "shasum": ""
             },
             "require": {
@@ -72,9 +72,9 @@
             ],
             "support": {
                 "issues": "https://github.com/fingerprintjs/php-sdk/issues",
-                "source": "https://github.com/fingerprintjs/php-sdk/tree/v6.10.0"
+                "source": "https://github.com/fingerprintjs/php-sdk/tree/v6.11.0-beta.0"
             },
-            "time": "2025-09-10T09:56:36+00:00"
+            "time": "2026-04-21T13:57:41+00:00"
         },
         {
             "name": "fingerprint/server-sdk",
@@ -1135,11 +1135,12 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "fingerprint/fingerprint-pro-server-api-sdk": 10,
         "fingerprint/server-sdk": 10
     },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {},
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
