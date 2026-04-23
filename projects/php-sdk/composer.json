@@ -1,7 +1,7 @@
 {
     "require": {
-        "fingerprint/fingerprint-pro-server-api-sdk": "6.11.0-beta.0",
-        "fingerprint/server-sdk": "7.0.0-beta.1",
+        "fingerprint/fingerprint-pro-server-api-sdk": "6.11.0",
+        "fingerprint/server-sdk": "7.0.0",
         "slim/slim": "^4.15.1"
     },
     "autoload": {
