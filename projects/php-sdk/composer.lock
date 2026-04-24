@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a4cf7a861d0b820863718433e898fdaa",
+    "content-hash": "188e38bb18c08be714f0652e929469a4",
     "packages": [
         {
             "name": "fingerprint/fingerprint-pro-server-api-sdk",
-            "version": "6.10.0",
+            "version": "6.11.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk.git",
-                "reference": "b8152f48562cd8bab0230edce923d1185f8996c8"
+                "url": "https://github.com/fingerprintjs/php-sdk.git",
+                "reference": "0b78c222bf6abbc88357ff705a16550e359db16c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fingerprintjs/fingerprint-pro-server-api-php-sdk/zipball/b8152f48562cd8bab0230edce923d1185f8996c8",
-                "reference": "b8152f48562cd8bab0230edce923d1185f8996c8",
+                "url": "https://api.github.com/repos/fingerprintjs/php-sdk/zipball/0b78c222bf6abbc88357ff705a16550e359db16c",
+                "reference": "0b78c222bf6abbc88357ff705a16550e359db16c",
                 "shasum": ""
             },
             "require": {
@@ -71,10 +71,85 @@
                 "visitor-identification"
             ],
             "support": {
-                "issues": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk/issues",
-                "source": "https://github.com/fingerprintjs/fingerprint-pro-server-api-php-sdk/tree/v6.10.0"
+                "issues": "https://github.com/fingerprintjs/php-sdk/issues",
+                "source": "https://github.com/fingerprintjs/php-sdk/tree/v6.11.0"
             },
-            "time": "2025-09-10T09:56:36+00:00"
+            "time": "2026-04-23T16:25:10+00:00"
+        },
+        {
+            "name": "fingerprint/server-sdk",
+            "version": "7.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fingerprintjs/php-sdk.git",
+                "reference": "a6e38824c092beeb27523728c28422c2eda96c42"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fingerprintjs/php-sdk/zipball/a6e38824c092beeb27523728c28422c2eda96c42",
+                "reference": "a6e38824c092beeb27523728c28422c2eda96c42",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "ext-openssl": "*",
+                "ext-zlib": "*",
+                "guzzlehttp/guzzle": "^7.3",
+                "guzzlehttp/psr7": "^1.7 || ^2.0",
+                "php": "^8.2"
+            },
+            "replace": {
+                "symfony/polyfill-php80": "*",
+                "symfony/polyfill-php81": "*"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.5",
+                "phpunit/phpunit": "^11.5",
+                "vlucas/phpdotenv": "^5.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Fingerprint\\ServerSdk\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "fingerprint",
+                    "homepage": "https://github.com/fingerprintjs/php-sdk"
+                }
+            ],
+            "description": "Fingerprint Server API allows you to get, search, and update Events in a server environment. It can be used for data exports, decision-making, and data analysis scenarios. Server API is intended for server-side usage, it's not intended to be used from the client side, whether it's a browser or a mobile device.",
+            "homepage": "https://fingerprint.com",
+            "keywords": [
+                "Fingerprint",
+                "api",
+                "audio-fingerprinting",
+                "browser",
+                "browser-fingerprint",
+                "browser-fingerprinting",
+                "detection",
+                "fingerprinting",
+                "fingerprintjs",
+                "fingerprintjs-pro",
+                "fraud",
+                "fraud-detection",
+                "identification",
+                "php",
+                "sdk",
+                "visitor-identification"
+            ],
+            "support": {
+                "issues": "https://github.com/fingerprintjs/php-sdk/issues",
+                "source": "https://github.com/fingerprintjs/php-sdk/tree/v7.0.0"
+            },
+            "time": "2026-04-16T11:56:27+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -287,16 +362,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "2.8.0",
+            "version": "2.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "21dc724a0583619cd1652f673303492272778051"
+                "reference": "7d0ed42f28e42d61352a7a79de682e5e67fec884"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/21dc724a0583619cd1652f673303492272778051",
-                "reference": "21dc724a0583619cd1652f673303492272778051",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/7d0ed42f28e42d61352a7a79de682e5e67fec884",
+                "reference": "7d0ed42f28e42d61352a7a79de682e5e67fec884",
                 "shasum": ""
             },
             "require": {
@@ -312,6 +387,7 @@
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.8.2",
                 "http-interop/http-factory-tests": "0.9.0",
+                "jshttp/mime-db": "1.54.0.1",
                 "phpunit/phpunit": "^8.5.44 || ^9.6.25"
             },
             "suggest": {
@@ -383,7 +459,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/2.8.0"
+                "source": "https://github.com/guzzle/psr7/tree/2.9.0"
             },
             "funding": [
                 {
@@ -399,7 +475,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-08-23T21:21:41+00:00"
+            "time": "2026-03-10T16:41:02+00:00"
         },
         {
             "name": "nikic/fast-route",
@@ -873,22 +949,22 @@
         },
         {
             "name": "slim/slim",
-            "version": "4.15.0",
+            "version": "4.15.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slimphp/Slim.git",
-                "reference": "17eba5182975878a0ab9b27982cd2e2cfcb67ea2"
+                "reference": "887893516557506f254d950425ce7f5387a26970"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slimphp/Slim/zipball/17eba5182975878a0ab9b27982cd2e2cfcb67ea2",
-                "reference": "17eba5182975878a0ab9b27982cd2e2cfcb67ea2",
+                "url": "https://api.github.com/repos/slimphp/Slim/zipball/887893516557506f254d950425ce7f5387a26970",
+                "reference": "887893516557506f254d950425ce7f5387a26970",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "nikic/fast-route": "^1.3",
-                "php": "~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
+                "php": "~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
                 "psr/container": "^1.0 || ^2.0",
                 "psr/http-factory": "^1.1",
                 "psr/http-message": "^1.1 || ^2.0",
@@ -908,7 +984,7 @@
                 "phpspec/prophecy": "^1.19",
                 "phpspec/prophecy-phpunit": "^2.1",
                 "phpstan/phpstan": "^1 || ^2",
-                "phpunit/phpunit": "^9.6",
+                "phpunit/phpunit": "^9.6 || ^10 || ^11 || ^12",
                 "slim/http": "^1.3",
                 "slim/psr7": "^1.6",
                 "squizlabs/php_codesniffer": "^3.10",
@@ -985,7 +1061,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-08-20T18:16:16+00:00"
+            "time": "2025-11-21T12:23:44+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -1063,5 +1139,5 @@
     "prefer-lowest": false,
     "platform": {},
     "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
