@@ -1,0 +1,48 @@
+ARG SDK_BRANCH=main
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS sdk-builder
+
+ARG SDK_BRANCH
+
+WORKDIR /sdk
+
+RUN apt-get update && apt-get install -y git
+
+RUN git clone --branch ${SDK_BRANCH} --depth 1 https://github.com/fingerprintjs/dotnet-sdk.git .
+
+RUN SDK_VERSION=$(awk -F'"' '/"version"/{print $4; exit}' package.json)-local && \
+    echo "${SDK_VERSION}" > /sdk_version.txt && \
+    sed -i 's|<TargetFrameworks>.*</TargetFrameworks>|<TargetFramework>net9.0</TargetFramework>|' src/Fingerprint.ServerSdk/Fingerprint.ServerSdk.csproj && \
+    dotnet build "src/Fingerprint.ServerSdk/Fingerprint.ServerSdk.csproj" -c Release -p:Version=${SDK_VERSION} && \
+    dotnet pack "src/Fingerprint.ServerSdk/Fingerprint.ServerSdk.csproj" -c Release -p:Version=${SDK_VERSION} --no-build -o /packages
+
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+
+WORKDIR /App
+
+COPY --from=sdk-builder /packages /local-packages
+COPY --from=sdk-builder /sdk_version.txt /sdk_version.txt
+
+RUN dotnet nuget add source /local-packages --name local-packages
+
+COPY . .
+
+RUN SDK_VERSION=$(cat /sdk_version.txt) && \
+    sed -i "s|<PackageReference Include=\"Fingerprint\.ServerSdk\" Version=\"[^\"]*\"|<PackageReference Include=\"Fingerprint.ServerSdk\" Version=\"${SDK_VERSION}\"|g" dotnet-sdk.csproj
+
+RUN dotnet restore
+RUN dotnet publish -c Release -o out
+
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS run
+
+WORKDIR /App
+
+COPY --from=build /App/out .
+
+ENV HTTP_PORTS=5243
+
+EXPOSE 5243
+
+ENTRYPOINT ["dotnet", "dotnet-sdk.dll"]

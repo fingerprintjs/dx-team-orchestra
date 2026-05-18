@@ -1,0 +1,33 @@
+# An override for the docker-compose configuration
+# that can be used to build against a branch of the SDKs
+services:
+  java-sdk:
+    build:
+      dockerfile: Dockerfile.branch
+      args:
+        SDK_BRANCH: ${JAVA_SDK_BRANCH:-main}
+  dotnet-sdk:
+    build:
+      dockerfile: Dockerfile.branch
+      args:
+        SDK_BRANCH: ${DOTNET_SDK_BRANCH:-main}
+  go-sdk:
+    build:
+      dockerfile: Dockerfile.branch
+      args:
+        SDK_BRANCH: ${GO_SDK_BRANCH:-main}
+  node-sdk:
+    build:
+      dockerfile: Dockerfile.branch
+      args:
+        SDK_BRANCH: ${NODE_SDK_BRANCH:-main}
+  php-sdk:
+    build:
+      dockerfile: Dockerfile.branch
+      args:
+        SDK_BRANCH: ${PHP_SDK_BRANCH:-main}
+  python-sdk:
+    build:
+      dockerfile: Dockerfile.branch
+      args:
+        SDK_BRANCH: ${PYTHON_SDK_BRANCH:-main}

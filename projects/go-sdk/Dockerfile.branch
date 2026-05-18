@@ -1,0 +1,23 @@
+ARG SDK_BRANCH=main
+
+FROM golang:1.23-alpine
+
+ARG SDK_BRANCH
+
+RUN apk add --no-cache git
+
+WORKDIR /app
+
+COPY . .
+
+RUN git clone --branch ${SDK_BRANCH} --depth 1 https://github.com/fingerprintjs/go-sdk.git /sdk
+
+RUN go mod edit -replace github.com/fingerprintjs/go-sdk/v8=/sdk
+
+RUN go mod tidy
+
+RUN go build -o myapp .
+
+EXPOSE 8081
+
+CMD ["./myapp"]
