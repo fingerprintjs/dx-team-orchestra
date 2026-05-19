@@ -3,4 +3,4 @@ packages:
   - 'projects/*'
 
 minimumReleaseAgeExclude:
-  '@fingerprintjs/node-sdk@*'
+  '@fingerprint/node-sdk@*'
