@@ -25,6 +25,16 @@ export type DeleteVisitorParams = {
 export type SearchEventsParams = SearchEventsFilter & {
   api_key?: string
   region?: string
+  start_date_time?: string
+  end_date_time?: string
+} & {
+  // TODO remove after the next release of the node SDK
+  bot_info?: string
+  bot_info_category?: string[]
+  bot_info_identity?: string[]
+  bot_info_confidence?: string[]
+  bot_info_provider?: string[]
+  bot_info_name?: string[]
 }
 
 export type GetEventsParams = { api_key: string; region: string; event_id: string }

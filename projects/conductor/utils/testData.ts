@@ -212,4 +212,32 @@ export const testData = {
   },
 }
 
+const DEFAULT_MUSICIAN_PORTS_MAP: Record<string, string> = {
+  '3002': 'node',
+  '8080': 'java',
+  '5243': 'dotnet',
+  '8081': 'go',
+  '3004': 'php',
+  '3003': 'python',
+}
+
+export function supportsStartEndDateTime(): boolean {
+  const musicianPort = process.env.MUSICIAN_PORT
+  if (musicianPort) {
+    const sdk = DEFAULT_MUSICIAN_PORTS_MAP[musicianPort]
+    if (sdk) {
+      switch (sdk) {
+        case 'java':
+        case 'go':
+        case 'dotnet':
+          return true
+        default:
+          break
+      }
+    }
+  }
+
+  return false
+}
+
 export default testData

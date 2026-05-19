@@ -1,5 +1,5 @@
 import { test } from '../../utils/v4/playwright'
-import testData from '../../utils/testData'
+import testData, { supportsStartEndDateTime } from '../../utils/testData'
 import { expect } from '@playwright/test'
 import { delay } from '../../utils/delay'
 import { SearchEventsFilter } from '@fingerprint/node-sdk'
@@ -209,6 +209,12 @@ test.describe('SearchEvents suite', () => {
     const bundleId = event.bundle_id || undefined
     const torNode = event.ip_blocklist.tor_node || undefined
     const packageName = event.package_name || undefined
+    const botInfo = event.bot_info ? 'all' : undefined
+    const botInfoCategory = event.bot_info?.category ? [event.bot_info.category] : undefined
+    const botInfoIdentity = event.bot_info?.identity ? [event.bot_info.identity] : undefined
+    const botInfoConfidence = event.bot_info?.confidence ? [event.bot_info.confidence] : undefined
+    const botInfoProvider = event.bot_info?.provider ? [event.bot_info.provider] : undefined
+    const botInfoName = event.bot_info?.name ? [event.bot_info.name] : undefined
 
     const result = await sdkApi.searchEvents({
       api_key: testData.credentials.maxFeaturesUS.privateKey,
@@ -250,6 +256,12 @@ test.describe('SearchEvents suite', () => {
       bundle_id: bundleId,
       tor_node: torNode,
       package_name: packageName,
+      bot_info: botInfo,
+      bot_info_category: botInfoCategory,
+      bot_info_identity: botInfoIdentity,
+      bot_info_confidence: botInfoConfidence,
+      bot_info_provider: botInfoProvider,
+      bot_info_name: botInfoName,
     })
 
     await assert.thatResponseMatch({
@@ -413,6 +425,27 @@ test.describe('SearchEvents suite', () => {
     })
 
     expect(dataWithFilter.events).toHaveLength(1)
+    expect(dataWithFilter.events[0].linked_id).toBe(linkedId)
+
+    if (supportsStartEndDateTime()) {
+      const { data: dataWithFilter } = await sdkApi.searchEvents({
+        limit: 2,
+        visitor_id: event.identification.visitor_id,
+        api_key: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        // If start_date_time and end_date_time are supported, it is expected that the
+        // test app will give them higher precedence. If they aren't supported correctly,
+        // this time period will not return any events.
+        start: event.timestamp - 1000,
+        end: event.timestamp - 500,
+        start_date_time: new Date(event.timestamp - 10).toISOString(),
+        end_date_time: new Date(event.timestamp + 10).toISOString(),
+        linked_id: linkedId,
+      })
+
+      expect(dataWithFilter.events).toHaveLength(1)
+      expect(dataWithFilter.events[0].linked_id).toBe(linkedId)
+    }
   })
 
   test('with invalid token', async ({ assert }) => {
