@@ -1,3 +1,6 @@
 packages:
   # all packages in direct subdirs of projects/
   - 'projects/*'
+
+minimumReleaseAgeExclude:
+  '@fingerprintjs/node-sdk@*'
