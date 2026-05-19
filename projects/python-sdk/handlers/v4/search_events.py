@@ -51,6 +51,12 @@ def search_events():
         "proximity_id": request.args.get('proximity_id'),
         "total_hits": request.args.get('total_hits', type=int),
         "tor_node": _parse_bool(request.args.get('tor_node')),
+        "bot_info": request.args.get('bot_info'),
+        "bot_info_category": request.args.getlist('bot_info_category'),
+        "bot_info_identity": request.args.getlist('bot_info_identity'),
+        "bot_info_confidence": request.args.getlist('bot_info_confidence'),
+        "bot_info_provider": request.args.getlist('bot_info_provider'),
+        "bot_info_name": request.args.getlist('bot_info_name'),
     }
 
     filtered_additional_params = {key: value for key, value in additional_params.items() if value is not None}
