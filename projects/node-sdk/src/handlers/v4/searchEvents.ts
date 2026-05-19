@@ -7,7 +7,7 @@ type V4SearchEventsFilter = NonNullable<SearchEventsFilter>
 type QueryParams = Omit<{ [K in keyof V4SearchEventsFilter]?: string }, 'environment'> & {
   api_key?: string
   region?: string
-  // Only environment can be multiple values
+  // Parameters that can have multiple values
   environment?: string | string[]
 }
 
@@ -21,6 +21,12 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     pagination_key,
     visitor_id,
     bot,
+    bot_info,
+    bot_info_category,
+    bot_info_identity,
+    bot_info_confidence,
+    bot_info_provider,
+    bot_info_name,
     ip_address,
     linked_id,
     start,
@@ -77,6 +83,30 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     if (bot !== undefined) {
       filter.bot = bot as NonNullable<V4SearchEventsFilter['bot']>
     }
+    if (bot_info !== undefined) {
+      filter.bot_info = bot_info as NonNullable<V4SearchEventsFilter['bot_info']>
+    }
+    if (bot_info_category !== undefined) {
+      filter.bot_info_category = (
+        Array.isArray(bot_info_category) ? bot_info_category : [bot_info_category]
+      ) as NonNullable<V4SearchEventsFilter['bot_info_category']>
+    }
+    if (bot_info_identity !== undefined) {
+      filter.bot_info_identity = (
+        Array.isArray(bot_info_identity) ? bot_info_identity : [bot_info_identity]
+      ) as NonNullable<V4SearchEventsFilter['bot_info_identity']>
+    }
+    if (bot_info_confidence !== undefined) {
+      filter.bot_info_confidence = (
+        Array.isArray(bot_info_confidence) ? bot_info_confidence : [bot_info_confidence]
+      ) as NonNullable<V4SearchEventsFilter['bot_info_confidence']>
+    }
+    if (bot_info_provider !== undefined) {
+      filter.bot_info_provider = Array.isArray(bot_info_provider) ? bot_info_provider : [bot_info_provider]
+    }
+    if (bot_info_name !== undefined) {
+      filter.bot_info_name = Array.isArray(bot_info_name) ? bot_info_name : [bot_info_name]
+    }
     if (ip_address !== undefined) {
       filter.ip_address = ip_address
     }
@@ -84,10 +114,12 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
       filter.linked_id = linked_id
     }
     if (start !== undefined) {
-      filter.start = parseNumberFromString(start, 'start')
+      const numStart = Number(start)
+      filter.start = Number.isFinite(numStart) ? numStart : start
     }
     if (end !== undefined) {
-      filter.end = parseNumberFromString(end, 'end')
+      const numEnd = Number(end)
+      filter.end = Number.isFinite(numEnd) ? numEnd : end
     }
     if (reverse !== undefined) {
       filter.reverse = parseBooleanFromString(reverse, 'reverse')
