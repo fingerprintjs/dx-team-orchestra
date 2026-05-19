@@ -420,7 +420,7 @@ test.describe('SearchEvents suite', () => {
       api_key: testData.credentials.maxFeaturesUS.privateKey,
       region: testData.credentials.maxFeaturesUS.region,
       start: event.timestamp - 10,
-      end: event.timestamp + 10,
+      end: supportsStartEndDateTime() ? event.timestamp + 10 : new Date(event.timestamp + 10).toISOString(),
       linked_id: linkedId,
     })
 
