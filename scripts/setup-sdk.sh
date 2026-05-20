@@ -91,7 +91,7 @@ case $LANGUAGE in
         pip install "fingerprint-server-sdk==$SDK_VERSION"
         ;;
     "php")
-        composer require fingerprint/fingerprint-pro-server-api-sdk:$SDK_VERSION --update-with-dependencies
+        composer require fingerprint/server-sdk:$SDK_VERSION --update-with-dependencies
         ;;
     *)
         echo "Unknown language: $LANGUAGE"
