@@ -106,6 +106,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Wait for Node SDK availability on registry
+        if: ${{ github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.sdk-version != '' && inputs.sdk-version != 'latest') }}
+        working-directory: ./projects/node-sdk
+        run: ../../scripts/wait-for-sdk-availability.sh node ${{ github.event.client_payload.sdk-version || inputs.sdk-version }}
+
       - name: Set up Node SDK version
         if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/node-sdk
@@ -262,6 +267,11 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
+      - name: Wait for Java SDK availability on registry
+        if: ${{ github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.sdk-version != '' && inputs.sdk-version != 'latest') }}
+        working-directory: ./projects/java-sdk
+        run: ../../scripts/wait-for-sdk-availability.sh java ${{ github.event.client_payload.sdk-version || inputs.sdk-version }}
+
       - name: Set up Java SDK version
         if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/java-sdk
@@ -411,6 +421,11 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore ./projects/dotnet-sdk
+
+      - name: Wait for .NET SDK availability on registry
+        if: ${{ github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.sdk-version != '' && inputs.sdk-version != 'latest') }}
+        working-directory: ./projects/dotnet-sdk
+        run: ../../scripts/wait-for-sdk-availability.sh dotnet ${{ github.event.client_payload.sdk-version || inputs.sdk-version }}
 
       - name: Set up .NET SDK version
         if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
@@ -569,6 +584,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-mod-
 
+      - name: Wait for Go SDK availability on registry
+        if: ${{ github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.sdk-version != '' && inputs.sdk-version != 'latest') }}
+        working-directory: ./projects/go-sdk
+        run: ../../scripts/wait-for-sdk-availability.sh go ${{ github.event.client_payload.sdk-version || inputs.sdk-version }}
+
       - name: Set up Go SDK version
         if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/go-sdk
@@ -726,6 +746,11 @@ jobs:
         run: |
           pip install -r requirements.txt
 
+      - name: Wait for Python SDK availability on registry
+        if: ${{ github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.sdk-version != '' && inputs.sdk-version != 'latest') }}
+        working-directory: ./projects/python-sdk
+        run: ../../scripts/wait-for-sdk-availability.sh python ${{ github.event.client_payload.sdk-version || inputs.sdk-version }}
+
       - name: Set up Python SDK version
         if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/python-sdk
@@ -881,6 +906,11 @@ jobs:
         working-directory: ./projects/php-sdk
         run: |
           composer install --no-interaction
+
+      - name: Wait for PHP SDK availability on registry
+        if: ${{ github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.sdk-version != '' && inputs.sdk-version != 'latest') }}
+        working-directory: ./projects/php-sdk
+        run: ../../scripts/wait-for-sdk-availability.sh php ${{ github.event.client_payload.sdk-version || inputs.sdk-version }}
 
       - name: Set up PHP SDK version
         if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
