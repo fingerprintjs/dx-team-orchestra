@@ -43,7 +43,7 @@ case $LANGUAGE in
         ;;
     "php")
         VERSION="$strip_v"
-        CHECK_URL="https://repo.packagist.org/p2/fingerprint/fingerprint-pro-server-api-sdk.json"
+        CHECK_URL="https://repo.packagist.org/p2/fingerprint/server-sdk.json"
         ;;
     *)
         echo "Unknown language: $LANGUAGE"
@@ -55,7 +55,7 @@ check_version_available() {
     # PHP requires parsing the JSON response to find the specific version
     if [[ "$LANGUAGE" == "php" ]]; then
         curl -sf "$CHECK_URL" | \
-            jq -e ".packages[\"fingerprint/fingerprint-pro-server-api-sdk\"][] | select(.version == \"$VERSION\")" > /dev/null
+            jq -e ".packages[\"fingerprint/server-sdk\"][] | select(.version == \"$VERSION\")" > /dev/null
     else
         curl "${CURL_OPTS[@]}" "$CHECK_URL"
     fi
