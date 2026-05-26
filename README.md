@@ -300,5 +300,5 @@ There are two supported ways to bump Server SDK versions: via the helper script 
 
    ```shell
    cd projects/php-sdk
-   composer require fingerprint/fingerprint-pro-server-api-sdk:<version> --update-with-dependencies
+   composer require fingerprint/server-sdk:<version> --update-with-dependencies
    ```

@@ -82,7 +82,15 @@ public class EventsController(FingerprintV4Factory factory) : ControllerBase
         [FromQuery(Name = "origin")] string? origin,
         [FromQuery(Name = "bundle_id")] string? bundleId,
         [FromQuery(Name = "tor_node")] bool? torNode,
-        [FromQuery(Name = "package_name")] string? packageName
+        [FromQuery(Name = "package_name")] string? packageName,
+        [FromQuery(Name = "bot_info")] string? botInfo,
+        [FromQuery(Name = "bot_info_category")] List<string>? botInfoCategory,
+        [FromQuery(Name = "bot_info_identity")] List<string>? botInfoIdentity,
+        [FromQuery(Name = "bot_info_confidence")] List<string>? botInfoConfidence,
+        [FromQuery(Name = "bot_info_provider")] List<string>? botInfoProvider,
+        [FromQuery(Name = "bot_info_name")] List<string>? botInfoName,
+        [FromQuery(Name = "start_date_time")] DateTime? startDateTime,
+        [FromQuery(Name = "end_date_time")] DateTime? endDateTime
     )
     {
         try
@@ -96,7 +104,9 @@ public class EventsController(FingerprintV4Factory factory) : ControllerBase
             if (linkedId != null) request = request.WithLinkedId(linkedId);
             if (ipAddress != null) request = request.WithIpAddress(ipAddress);
             if (start.HasValue) request = request.WithStart(start.Value);
+            if (startDateTime.HasValue) request = request.WithStartDateTime(startDateTime.Value);
             if (end.HasValue) request = request.WithEnd(end.Value);
+            if (endDateTime.HasValue) request = request.WithEndDateTime(endDateTime.Value);
             if (reverse.HasValue) request = request.WithReverse(reverse.Value);
             if (suspect.HasValue) request = request.WithSuspect(suspect.Value);
             if (vpn.HasValue) request = request.WithVpn(vpn.Value);
@@ -122,6 +132,28 @@ public class EventsController(FingerprintV4Factory factory) : ControllerBase
                 try { request = request.WithBot(SearchEventsBotValueConverter.FromString(bot)); }
                 catch { throw new ApiException("Invalid bot filter", HttpStatusCode.BadRequest, "{\"error\":{\"code\":\"request_cannot_be_parsed\",\"message\":\"invalid bot type\"}}"); }
             }
+            if (botInfo != null)
+            {
+                try { request = request.WithBotInfo(SearchEventsBotInfoValueConverter.FromString(botInfo)); }
+                catch { throw new ApiException("Invalid bot_info filter", HttpStatusCode.BadRequest, "{\"error\":{\"code\":\"request_cannot_be_parsed\",\"message\":\"invalid bot info\"}}"); }
+            }
+            if (botInfoCategory is { Count: > 0 })
+            {
+                try { request = request.WithBotInfoCategory(botInfoCategory.Select(BotInfoCategoryValueConverter.FromString).ToList()); }
+                catch { throw new ApiException("Invalid bot_info_category filter", HttpStatusCode.BadRequest, "{\"error\":{\"code\":\"request_cannot_be_parsed\",\"message\":\"invalid bot info category\"}}"); }
+            }
+            if (botInfoIdentity is { Count: > 0 })
+            {
+                try { request = request.WithBotInfoIdentity(botInfoIdentity.Select(BotInfoIdentityValueConverter.FromString).ToList()); }
+                catch { throw new ApiException("Invalid bot_info_identity filter", HttpStatusCode.BadRequest, "{\"error\":{\"code\":\"request_cannot_be_parsed\",\"message\":\"invalid bot info identity\"}}"); }
+            }
+            if (botInfoConfidence is { Count: > 0 })
+            {
+                try { request = request.WithBotInfoConfidence(botInfoConfidence.Select(BotInfoConfidenceValueConverter.FromString).ToList()); }
+                catch { throw new ApiException("Invalid bot_info_confidence filter", HttpStatusCode.BadRequest, "{\"error\":{\"code\":\"request_cannot_be_parsed\",\"message\":\"invalid bot info confidence\"}}"); }
+            }
+            if (botInfoProvider is { Count: > 0 }) request = request.WithBotInfoProvider(botInfoProvider);
+            if (botInfoName is { Count: > 0 }) request = request.WithBotInfoName(botInfoName);
             if (sdkVersion != null) request = request.WithSdkVersion(sdkVersion);
             if (sdkPlatform != null)
             {

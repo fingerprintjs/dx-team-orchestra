@@ -2,9 +2,11 @@ package handlersv4
 
 import (
 	"encoding/json"
-	"go-sdk/fingerprintv4"
 	"net/http"
 	"strconv"
+	"time"
+
+	"go-sdk/fingerprintv4"
 
 	fingerprint "github.com/fingerprintjs/go-sdk/v8"
 )
@@ -19,7 +21,9 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 
 	var start *int64
+	var startDateTime *time.Time
 	var end *int64
+	var endDateTime *time.Time
 	var limit int32 = 10
 	var reverse *bool
 	var suspect *bool
@@ -44,10 +48,15 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	var sdkPlatform *string
 	var environment []string
 	var proximityId *string
+	var botInfo *string
+	var botInfoCategory []fingerprint.BotInfoCategory
+	var botInfoIdentity []fingerprint.BotInfoIdentity
+	var botInfoConfidence []fingerprint.BotInfoConfidence
+	var botInfoProvider []string
+	var botInfoName []string
 
 	if query.Has("limit") {
-		limitInt64, _ :=
-			strconv.ParseInt(query.Get("limit"), 10, 32)
+		limitInt64, _ := strconv.ParseInt(query.Get("limit"), 10, 32)
 		limit = int32(limitInt64)
 	}
 	if query.Has("start") {
@@ -55,9 +64,19 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 			start = &startInt64
 		}
 	}
+	if query.Has("start_date_time") {
+		if val, err := time.Parse(time.RFC3339, query.Get("start_date_time")); err == nil {
+			startDateTime = &val
+		}
+	}
 	if query.Has("end") {
 		if endInt64, err := strconv.ParseInt(query.Get("end"), 10, 64); err == nil {
 			end = &endInt64
+		}
+	}
+	if query.Has("end_date_time") {
+		if val, err := time.Parse(time.RFC3339, query.Get("end_date_time")); err == nil {
+			endDateTime = &val
 		}
 	}
 	if query.Has("reverse") {
@@ -171,6 +190,25 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 		val := query.Get("proximity_id")
 		proximityId = &val
 	}
+	if query.Has("bot_info") {
+		val := query.Get("bot_info")
+		botInfo = &val
+	}
+	if query.Has("bot_info_category") {
+		botInfoCategory = convertStrSlice[fingerprint.BotInfoCategory](query["bot_info_category"])
+	}
+	if query.Has("bot_info_identity") {
+		botInfoIdentity = convertStrSlice[fingerprint.BotInfoIdentity](query["bot_info_identity"])
+	}
+	if query.Has("bot_info_confidence") {
+		botInfoConfidence = convertStrSlice[fingerprint.BotInfoConfidence](query["bot_info_confidence"])
+	}
+	if query.Has("bot_info_provider") {
+		botInfoProvider = query["bot_info_provider"]
+	}
+	if query.Has("bot_info_name") {
+		botInfoName = query["bot_info_name"]
+	}
 
 	paginationKey := query.Get("pagination_key")
 	visitorId := query.Get("visitor_id")
@@ -194,8 +232,14 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	if start != nil {
 		searchEventsReq = searchEventsReq.Start(*start)
 	}
+	if startDateTime != nil {
+		searchEventsReq = searchEventsReq.StartDateTime(*startDateTime)
+	}
 	if end != nil {
 		searchEventsReq = searchEventsReq.End(*end)
+	}
+	if endDateTime != nil {
+		searchEventsReq = searchEventsReq.EndDateTime(*endDateTime)
 	}
 	if reverse != nil {
 		searchEventsReq = searchEventsReq.Reverse(*reverse)
@@ -275,6 +319,25 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	if vpnConfidence != "" {
 		searchEventsReq = searchEventsReq.VPNConfidence(fingerprint.SearchEventsVPNConfidence(vpnConfidence))
 	}
+	if botInfo != nil {
+		searchEventsReq = searchEventsReq.BotInfo(fingerprint.SearchEventsBotInfo(*botInfo))
+	}
+	if len(botInfoCategory) > 0 {
+		searchEventsReq = searchEventsReq.BotInfoCategory(botInfoCategory)
+	}
+	if len(botInfoIdentity) > 0 {
+		searchEventsReq = searchEventsReq.BotInfoIdentity(botInfoIdentity)
+	}
+	if len(botInfoConfidence) > 0 {
+		searchEventsReq = searchEventsReq.BotInfoConfidence(botInfoConfidence)
+	}
+	if len(botInfoProvider) > 0 {
+		searchEventsReq = searchEventsReq.BotInfoProvider(botInfoProvider)
+	}
+	if len(botInfoName) > 0 {
+		searchEventsReq = searchEventsReq.BotInfoName(botInfoName)
+	}
+
 	queryParams := searchEventsQueryParams{
 		ApiKey:  query.Get("api_key"),
 		Region:  query.Get("region"),
@@ -287,4 +350,12 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 	json.NewEncoder(w).Encode(response)
+}
+
+func convertStrSlice[To ~string, From ~string](input []From) []To {
+	result := make([]To, len(input))
+	for i, v := range input {
+		result[i] = To(v)
+	}
+	return result
 }

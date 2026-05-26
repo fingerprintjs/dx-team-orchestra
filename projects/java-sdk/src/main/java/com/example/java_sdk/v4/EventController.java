@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -69,13 +69,20 @@ public class EventController {
             @RequestParam(required = false) List<String> environment,
             @RequestParam(required = false) String proximity_id,
             @RequestParam(required = false) Long total_hits,
-            @RequestParam(required = false) Boolean tor_node
+            @RequestParam(required = false) Boolean tor_node,
+            @RequestParam(required = false) OffsetDateTime start_date_time,
+            @RequestParam(required = false) OffsetDateTime end_date_time,
+            @RequestParam(required = false) String bot_info,
+            @RequestParam(required = false) List<String> bot_info_category,
+            @RequestParam(required = false) List<String> bot_info_identity,
+            @RequestParam(required = false) List<String> bot_info_confidence,
+            @RequestParam(required = false) List<String> bot_info_provider,
+            @RequestParam(required = false) List<String> bot_info_name
     ) {
         ApiClient client = Configuration.getDefaultApiClient(api_key, Utils.getRegion(region));
         FingerprintApi api = new FingerprintApi(client);
         try {
-            final ApiResponse<EventSearch> apiResponse =
-                    api.searchEventsWithHttpInfo(new FingerprintApi.SearchEventsOptionalParams()
+            final FingerprintApi.SearchEventsOptionalParams params = new FingerprintApi.SearchEventsOptionalParams()
                             .setLimit(limit)
                             .setPaginationKey(pagination_key)
                             .setVisitorId(visitor_id)
@@ -115,7 +122,21 @@ public class EventController {
                             .setProximityId(proximity_id)
                             .setTotalHits(total_hits)
                             .setTorNode(tor_node)
-                    );
+                            .setBotInfo(bot_info != null ? SearchEventsBotInfo.fromValue(bot_info) : null)
+                            .setBotInfoCategory(bot_info_category != null ? bot_info_category.stream().map(BotInfoCategory::fromValue).toList() : null)
+                            .setBotInfoIdentity(bot_info_identity != null ? bot_info_identity.stream().map(BotInfoIdentity::fromValue).toList() : null)
+                            .setBotInfoConfidence(bot_info_confidence != null ? bot_info_confidence.stream().map(BotInfoConfidence::fromValue).toList() : null)
+                            .setBotInfoProvider(bot_info_provider)
+                            .setBotInfoName(bot_info_name);
+
+            if (start_date_time != null) {
+                params.setStartDateTime(start_date_time);
+            }
+            if (end_date_time != null) {
+                params.setEndDateTime(end_date_time);
+            }
+
+            final ApiResponse<EventSearch> apiResponse = api.searchEventsWithHttpInfo(params);
             final EventSearch events = apiResponse.getData();
             final int code = apiResponse.getStatusCode();
             final MusicianResponse response = new MusicianResponse(code, events, events);
@@ -131,13 +152,12 @@ public class EventController {
             @RequestParam(required = false, value = "") String api_key,
             @RequestParam(required = false, value = "") String region,
             @RequestParam(required = false, value = "") String event_id,
-            @RequestParam(required = false, value = "") String ruleset_id
-    ) {
+            @RequestParam(required = false, value = "") String ruleset_id) {
         ApiClient client = Configuration.getDefaultApiClient(api_key, Utils.getRegion(region));
         FingerprintApi api = new FingerprintApi(client);
         try {
-            final ApiResponse<Event> apiResponse = api.getEventWithHttpInfo(event_id, new FingerprintApi
-                    .GetEventOptionalParams().setRulesetId(ruleset_id));
+            final ApiResponse<Event> apiResponse = api.getEventWithHttpInfo(event_id,
+                    new FingerprintApi.GetEventOptionalParams().setRulesetId(ruleset_id));
             final Event event = apiResponse.getData();
             final int code = apiResponse.getStatusCode();
             final MusicianResponse response = new MusicianResponse(code, event, event);
@@ -155,8 +175,7 @@ public class EventController {
             @RequestParam(required = false, value = "") String event_id,
             @RequestParam(required = false) String linked_id,
             @RequestParam(required = false) String tags,
-            @RequestParam(required = false) Boolean suspect
-    ) {
+            @RequestParam(required = false) Boolean suspect) {
         ApiClient client = Configuration.getDefaultApiClient(api_key, Utils.getRegion(region));
         FingerprintApi api = new FingerprintApi(client);
         try {
@@ -165,16 +184,18 @@ public class EventController {
             eventsUpdateRequest.setSuspect(suspect);
             if (tags != null) {
                 try {
-                    Map<String, Object> parsedTag = objectMapper.readValue(tags, new TypeReference<Map<String, Object>>() {
-                    });
+                    Map<String, Object> parsedTag = objectMapper.readValue(tags,
+                            new TypeReference<Map<String, Object>>() {});
                     eventsUpdateRequest.setTags(parsedTag);
                 } catch (JsonProcessingException e) {
                 }
             }
 
-            final ApiResponse<Void> apiResponse = api.updateEventWithHttpInfo(event_id, eventsUpdateRequest);
+            final ApiResponse<Void> apiResponse =
+                    api.updateEventWithHttpInfo(event_id, eventsUpdateRequest);
             final int code = apiResponse.getStatusCode();
-            final MusicianResponse response = new MusicianResponse(code, apiResponse.getData(), apiResponse.getData());
+            final MusicianResponse response =
+                    new MusicianResponse(code, apiResponse.getData(), apiResponse.getData());
             return ResponseEntity.ok(response);
         } catch (ApiException e) {
             final MusicianResponse response = new MusicianResponse(e);

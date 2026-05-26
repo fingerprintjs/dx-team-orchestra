@@ -2,8 +2,12 @@
 
 namespace PHP_SDK\V4\Controllers;
 
+use Fingerprint\ServerSdk\Model\BotInfoCategory;
+use Fingerprint\ServerSdk\Model\BotInfoConfidence;
+use Fingerprint\ServerSdk\Model\BotInfoIdentity;
 use Fingerprint\ServerSdk\Model\EventUpdate;
 use Fingerprint\ServerSdk\Model\SearchEventsBot;
+use Fingerprint\ServerSdk\Model\SearchEventsBotInfo;
 use Fingerprint\ServerSdk\Model\SearchEventsIncrementalIdentificationStatus;
 use Fingerprint\ServerSdk\Model\SearchEventsSdkPlatform;
 use Fingerprint\ServerSdk\Model\SearchEventsVpnConfidence;
@@ -34,6 +38,7 @@ class EventsController
             $visitorId = $queryParams['visitor_id'] ?? null;
             $highRecallId = $queryParams['high_recall_id'] ?? null;
             $bot = isset($queryParams['bot']) ? SearchEventsBot::from($queryParams['bot']) : null;
+            $botInfo = isset($queryParams['bot_info']) ? SearchEventsBotInfo::from($queryParams['bot_info']) : null;
             $ipAddress = $queryParams['ip_address'] ?? null;
             $asn = $queryParams['asn'] ?? null;
             $linkedId = $queryParams['linked_id'] ?? null;
@@ -41,8 +46,8 @@ class EventsController
             $bundleId = $queryParams['bundle_id'] ?? null;
             $packageName = $queryParams['package_name'] ?? null;
             $origin = $queryParams['origin'] ?? null;
-            $start = isset($queryParams['start']) ? (int) $queryParams['start'] : null;
-            $end = isset($queryParams['end']) ? (int) $queryParams['end'] : null;
+            $start = isset($queryParams['start']) ? (is_numeric($queryParams['start']) ? (int) $queryParams['start'] : new \DateTime($queryParams['start'])) : null;
+            $end = isset($queryParams['end']) ? (is_numeric($queryParams['end']) ? (int) $queryParams['end'] : new \DateTime($queryParams['end'])) : null;
             $reverse = isset($queryParams['reverse']) ? filter_var($queryParams['reverse'], FILTER_VALIDATE_BOOLEAN) : null;
             $suspect = isset($queryParams['suspect']) ? filter_var($queryParams['suspect'], FILTER_VALIDATE_BOOLEAN) : null;
             $vpn = isset($queryParams['vpn']) ? filter_var($queryParams['vpn'], FILTER_VALIDATE_BOOLEAN) : null;
@@ -71,23 +76,50 @@ class EventsController
             $incrementalIdentificationStatus = isset($queryParams['incremental_identification_status']) ? SearchEventsIncrementalIdentificationStatus::from($queryParams['incremental_identification_status']) : null;
             $simulator = isset($queryParams['simulator']) ? filter_var($queryParams['simulator'], FILTER_VALIDATE_BOOLEAN) : null;
 
-            // Parse environment from raw query string since repeated keys (environment=a&environment=b)
+            // Parse array parameters from raw query string since repeated keys (key=a&key=b)
             // are collapsed to the last value by PHP's parse_str / getQueryParams().
             $environment = null;
+            $botInfoCategory = null;
+            $botInfoIdentity = null;
+            $botInfoConfidence = null;
+            $botInfoProvider = null;
+            $botInfoName = null;
             $rawQuery = $request->getUri()->getQuery();
             if ($rawQuery) {
-                $environmentValues = [];
+                $arrayParams = [
+                    'environment' => [],
+                    'bot_info_category' => [],
+                    'bot_info_identity' => [],
+                    'bot_info_confidence' => [],
+                    'bot_info_provider' => [],
+                    'bot_info_name' => [],
+                ];
                 foreach (explode('&', $rawQuery) as $pair) {
                     $parts = explode('=', $pair, 2);
-                    if ($parts[0] === 'environment' && isset($parts[1])) {
+                    if (isset($parts[1]) && array_key_exists($parts[0], $arrayParams)) {
                         $value = trim(urldecode($parts[1]));
                         if ($value !== '') {
-                            $environmentValues[] = $value;
+                            $arrayParams[$parts[0]][] = $value;
                         }
                     }
                 }
-                if (!empty($environmentValues)) {
-                    $environment = $environmentValues;
+                if (!empty($arrayParams['environment'])) {
+                    $environment = $arrayParams['environment'];
+                }
+                if (!empty($arrayParams['bot_info_category'])) {
+                    $botInfoCategory = array_map(fn($v) => BotInfoCategory::from($v), $arrayParams['bot_info_category']);
+                }
+                if (!empty($arrayParams['bot_info_identity'])) {
+                    $botInfoIdentity = array_map(fn($v) => BotInfoIdentity::from($v), $arrayParams['bot_info_identity']);
+                }
+                if (!empty($arrayParams['bot_info_confidence'])) {
+                    $botInfoConfidence = array_map(fn($v) => BotInfoConfidence::from($v), $arrayParams['bot_info_confidence']);
+                }
+                if (!empty($arrayParams['bot_info_provider'])) {
+                    $botInfoProvider = $arrayParams['bot_info_provider'];
+                }
+                if (!empty($arrayParams['bot_info_name'])) {
+                    $botInfoName = $arrayParams['bot_info_name'];
                 }
             }
 
@@ -99,6 +131,12 @@ class EventsController
                 visitor_id: $visitorId,
                 high_recall_id: $highRecallId,
                 bot: $bot,
+                bot_info: $botInfo,
+                bot_info_category: $botInfoCategory,
+                bot_info_identity: $botInfoIdentity,
+                bot_info_confidence: $botInfoConfidence,
+                bot_info_provider: $botInfoProvider,
+                bot_info_name: $botInfoName,
                 ip_address: $ipAddress,
                 asn: $asn,
                 linked_id: $linkedId,

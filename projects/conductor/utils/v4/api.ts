@@ -25,6 +25,8 @@ export type DeleteVisitorParams = {
 export type SearchEventsParams = SearchEventsFilter & {
   api_key?: string
   region?: string
+  start_date_time?: string
+  end_date_time?: string
 }
 
 export type GetEventsParams = { api_key: string; region: string; event_id: string }

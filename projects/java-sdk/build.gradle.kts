@@ -27,7 +27,7 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:v7.12.0")
-	implementation("com.github.fingerprintjs:java-sdk:v8.1.0")
+	implementation("com.github.fingerprintjs:java-sdk:v8.3.0-rc.1")
 }
 
 tasks.withType<Test> {
