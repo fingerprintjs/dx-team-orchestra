@@ -4,11 +4,11 @@ import { Handler, MusicianResponse } from '../../types'
 import { getV4Region, parseBooleanFromString, parseNumberFromString, unwrapV4Error } from '../../utils'
 
 type V4SearchEventsFilter = NonNullable<SearchEventsFilter>
-type QueryParams = Omit<{ [K in keyof V4SearchEventsFilter]?: string }, 'environment'> & {
+type QueryParams = {
+  [K in keyof V4SearchEventsFilter]?: NonNullable<V4SearchEventsFilter[K]> extends readonly unknown[] ? string[] : string
+} & {
   api_key?: string
   region?: string
-  // Parameters that can have multiple values
-  environment?: string | string[]
 }
 
 export const searchEvents: Handler<QueryParams> = async (req, res) => {
