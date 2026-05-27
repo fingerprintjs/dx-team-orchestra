@@ -206,12 +206,12 @@ Suppose we’re adding `/getRelatedVisitors`:
 Each SDK project has a `Dockerfile.branch` file that supports building against a branch in the SDK GitHub repo.
 
 The Makefile has targets for using this `Dockerfile`. Use the `NAME_SDK_BRANCH` environment variable to specify
-the branch name, replacing `NAME` with an SDK name e.g., `DOTNET_SDK_VERSION`, `NODE_SDK_VERSION`, etc.
+the branch name, replacing `NAME` with an SDK name e.g., `DOTNET_SDK_BRANCH`, `NODE_SDK_BRANCH`, etc.
 
 Use the `start-all-same-branch` target to run the tests against schema sync PRs in the SDK repos:
 
 ```
-$ make start-all-same-branch SDK_VERSION=feat/open-api-v3.3.1
+$ make start-all-same-branch SDK_BRANCH=feat/open-api-v3.3.1
 ```
 
 ## Updating SDK versions
