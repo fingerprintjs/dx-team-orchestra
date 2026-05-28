@@ -8,6 +8,11 @@ on:
         required: false
         type: string
         default: 'latest'
+      package-name:
+        description: 'Custom package name for the SDK (defaults to new SDK package name if not provided)'
+        required: false
+        type: string
+        default: ''
       run-node-sdk-tests:
         description: 'Should we run Node SDK tests?'
         required: false
@@ -109,12 +114,12 @@ jobs:
       - name: Wait for Node SDK availability on registry
         if: ${{ github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.sdk-version != '' && inputs.sdk-version != 'latest') }}
         working-directory: ./projects/node-sdk
-        run: ../../scripts/wait-for-sdk-availability.sh node ${{ github.event.client_payload.sdk-version || inputs.sdk-version }}
+        run: ../../scripts/wait-for-sdk-availability.sh node ${{ github.event.client_payload.sdk-version || inputs.sdk-version }} "${{ github.event.client_payload.package-name || inputs.package-name }}"
 
       - name: Set up Node SDK version
         if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/node-sdk
-        run: ../../scripts/setup-sdk.sh node ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }}
+        run: ../../scripts/setup-sdk.sh node ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }} "${{ github.event.client_payload.package-name || inputs.package-name }}"
 
       - name: Install Playwright browsers
         working-directory: ./projects/conductor
@@ -270,12 +275,12 @@ jobs:
       - name: Wait for Java SDK availability on registry
         if: ${{ github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.sdk-version != '' && inputs.sdk-version != 'latest') }}
         working-directory: ./projects/java-sdk
-        run: ../../scripts/wait-for-sdk-availability.sh java ${{ github.event.client_payload.sdk-version || inputs.sdk-version }}
+        run: ../../scripts/wait-for-sdk-availability.sh java ${{ github.event.client_payload.sdk-version || inputs.sdk-version }} "${{ github.event.client_payload.package-name || inputs.package-name }}"
 
       - name: Set up Java SDK version
         if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/java-sdk
-        run: ../../scripts/setup-sdk.sh java ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }}
+        run: ../../scripts/setup-sdk.sh java ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }} "${{ github.event.client_payload.package-name || inputs.package-name }}"
 
       - name: Build with Gradle
         working-directory: ./projects/java-sdk
@@ -425,12 +430,12 @@ jobs:
       - name: Wait for .NET SDK availability on registry
         if: ${{ github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.sdk-version != '' && inputs.sdk-version != 'latest') }}
         working-directory: ./projects/dotnet-sdk
-        run: ../../scripts/wait-for-sdk-availability.sh dotnet ${{ github.event.client_payload.sdk-version || inputs.sdk-version }}
+        run: ../../scripts/wait-for-sdk-availability.sh dotnet ${{ github.event.client_payload.sdk-version || inputs.sdk-version }} "${{ github.event.client_payload.package-name || inputs.package-name }}"
 
       - name: Set up .NET SDK version
         if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/dotnet-sdk
-        run: ../../scripts/setup-sdk.sh dotnet ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }}
+        run: ../../scripts/setup-sdk.sh dotnet ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }} "${{ github.event.client_payload.package-name || inputs.package-name }}"
 
       - name: Build the project
         run: dotnet publish ./projects/dotnet-sdk --configuration Release --output ./projects/dotnet-sdk/out
@@ -587,12 +592,12 @@ jobs:
       - name: Wait for Go SDK availability on registry
         if: ${{ github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.sdk-version != '' && inputs.sdk-version != 'latest') }}
         working-directory: ./projects/go-sdk
-        run: ../../scripts/wait-for-sdk-availability.sh go ${{ github.event.client_payload.sdk-version || inputs.sdk-version }}
+        run: ../../scripts/wait-for-sdk-availability.sh go ${{ github.event.client_payload.sdk-version || inputs.sdk-version }} "${{ github.event.client_payload.package-name || inputs.package-name }}"
 
       - name: Set up Go SDK version
         if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/go-sdk
-        run: ../../scripts/setup-sdk.sh go ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }}
+        run: ../../scripts/setup-sdk.sh go ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }} "${{ github.event.client_payload.package-name || inputs.package-name }}"
 
       - name: Install dependencies
         working-directory: ./projects/go-sdk
@@ -749,12 +754,12 @@ jobs:
       - name: Wait for Python SDK availability on registry
         if: ${{ github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.sdk-version != '' && inputs.sdk-version != 'latest') }}
         working-directory: ./projects/python-sdk
-        run: ../../scripts/wait-for-sdk-availability.sh python ${{ github.event.client_payload.sdk-version || inputs.sdk-version }}
+        run: ../../scripts/wait-for-sdk-availability.sh python ${{ github.event.client_payload.sdk-version || inputs.sdk-version }} "${{ github.event.client_payload.package-name || inputs.package-name }}"
 
       - name: Set up Python SDK version
         if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/python-sdk
-        run: ../../scripts/setup-sdk.sh python ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }}
+        run: ../../scripts/setup-sdk.sh python ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }} "${{ github.event.client_payload.package-name || inputs.package-name }}"
 
       - name: Run Python application
         working-directory: ./projects/python-sdk
@@ -910,12 +915,12 @@ jobs:
       - name: Wait for PHP SDK availability on registry
         if: ${{ github.event_name == 'repository_dispatch' || (github.event_name == 'workflow_dispatch' && inputs.sdk-version != '' && inputs.sdk-version != 'latest') }}
         working-directory: ./projects/php-sdk
-        run: ../../scripts/wait-for-sdk-availability.sh php ${{ github.event.client_payload.sdk-version || inputs.sdk-version }}
+        run: ../../scripts/wait-for-sdk-availability.sh php ${{ github.event.client_payload.sdk-version || inputs.sdk-version }} "${{ github.event.client_payload.package-name || inputs.package-name }}"
 
       - name: Set up PHP SDK version
         if: ${{ github.event_name != 'push' && github.event_name != 'pull_request' }}
         working-directory: ./projects/php-sdk
-        run: ../../scripts/setup-sdk.sh php ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }}
+        run: ../../scripts/setup-sdk.sh php ${{ github.event_name }} ${{ github.event.client_payload.sdk-version || github.event.inputs.sdk-version }} "${{ github.event.client_payload.package-name || inputs.package-name }}"
 
       - name: Run PHP built-in server
         working-directory: ./projects/php-sdk
