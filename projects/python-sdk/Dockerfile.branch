@@ -1,0 +1,21 @@
+ARG SDK_BRANCH=main
+
+FROM python:3.9-slim
+
+ARG SDK_BRANCH
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y git
+
+COPY requirements.txt requirements.txt
+
+RUN grep -v "^fingerprint[-_]server[-_]sdk" requirements.txt > /tmp/requirements_no_sdk.txt && \
+    pip install --no-cache-dir -r /tmp/requirements_no_sdk.txt && \
+    pip install --no-cache-dir git+https://github.com/fingerprintjs/python-sdk@${SDK_BRANCH}
+
+COPY . .
+
+EXPOSE 3003
+
+CMD ["python", "main.py"]

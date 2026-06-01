@@ -201,6 +201,19 @@ Suppose we’re adding `/getRelatedVisitors`:
 - If a test mutates shared state or depends on prior artifacts, put it in a serial describe and add a short header comment explaining the dependency (future readers will thank you).
 - If you hit API limits, add conservative timeouts and retries only for the affected tests; avoid blanket retries that can hide real issues.
 
+### Running tests against an unreleased SDK branch
+
+Each SDK project has a `Dockerfile.branch` file that supports building against a branch in the SDK GitHub repo.
+
+The Makefile has targets for using this `Dockerfile`. Use the `NAME_SDK_BRANCH` environment variable to specify
+the branch name, replacing `NAME` with an SDK name e.g., `DOTNET_SDK_BRANCH`, `NODE_SDK_BRANCH`, etc.
+
+Use the `start-all-same-branch` target to run the tests against schema sync PRs in the SDK repos:
+
+```
+$ make start-all-same-branch SDK_BRANCH=feat/open-api-v3.3.1
+```
+
 ## Updating SDK versions
 
 There are two supported ways to bump Server SDK versions: via the helper script (recommended) or manually per language.

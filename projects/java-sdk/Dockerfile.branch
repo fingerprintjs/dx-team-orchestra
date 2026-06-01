@@ -1,0 +1,52 @@
+ARG SDK_BRANCH=main
+
+FROM gradle:8.11.1-jdk17 AS sdk-builder
+
+ARG SDK_BRANCH
+
+RUN apt-get update && apt-get install -y --no-install-recommends git
+
+USER gradle
+
+WORKDIR /home/gradle/sdk
+
+RUN git clone --branch ${SDK_BRANCH} --depth 1 https://github.com/fingerprintjs/java-sdk.git .
+
+# JITPACK=true skips openApiGenerate, format, and downloadGoogleJavaFormat tasks,
+# building directly from committed sources as JitPack itself does.
+RUN JITPACK=true gradle :sdk:publishToMavenLocal --no-daemon -PjavaVersion=17 -Dmaven.repo.local=/home/gradle/m2
+
+RUN grep "^projectVersion" gradle.properties | awk -F'=' '{print $2}' | tr -d ' ' > /home/gradle/sdk_version.txt
+
+
+FROM gradle:8.11.1-jdk17 AS build
+
+USER gradle
+
+WORKDIR /home/gradle/app
+
+COPY --chown=gradle:gradle --from=sdk-builder /home/gradle/m2 /home/gradle/m2
+COPY --chown=gradle:gradle --from=sdk-builder /home/gradle/sdk_version.txt /home/gradle/sdk_version.txt
+
+COPY --chown=gradle:gradle build.gradle.kts settings.gradle.kts ./
+
+RUN SDK_VERSION=$(cat /home/gradle/sdk_version.txt) && \
+    sed -i 's|repositories {|repositories {\n\t\tmaven { url = uri("file:///home/gradle/m2") }|' build.gradle.kts && \
+    sed -i "s|com.github.fingerprintjs:java-sdk:[^\"]*|com.github.fingerprintjs:java-sdk:${SDK_VERSION}|g" build.gradle.kts
+
+RUN gradle build --no-daemon
+
+COPY --chown=gradle:gradle src /home/gradle/app/src
+
+RUN gradle clean build --no-daemon
+
+
+FROM eclipse-temurin:17-jre-focal AS start-webserver
+
+WORKDIR /app
+
+COPY --from=build /home/gradle/app/build/libs/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

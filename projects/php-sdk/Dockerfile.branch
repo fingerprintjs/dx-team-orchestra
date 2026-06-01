@@ -1,0 +1,22 @@
+ARG SDK_BRANCH=main
+
+FROM php:8.2-cli
+
+ARG SDK_BRANCH
+
+RUN apt-get update -y && apt-get install -y git
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+RUN git clone --branch ${SDK_BRANCH} --depth 1 https://github.com/fingerprintjs/php-sdk.git /sdk
+
+COPY . /app
+WORKDIR /app
+
+RUN composer config minimum-stability dev && \
+    composer config prefer-stable true && \
+    composer config repositories.fp-server-sdk '{"type":"path","url":"/sdk","options":{"symlink":false}}' && \
+    composer require fingerprint/server-sdk:'*' --no-interaction
+
+EXPOSE 3004
+
+CMD ["php", "-S", "0.0.0.0:3004", "-t", "public"]
