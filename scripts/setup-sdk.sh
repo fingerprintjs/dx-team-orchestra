@@ -4,6 +4,7 @@ set -e
 LANGUAGE=$1        # node, java, dotnet, go, python, php
 EVENT_NAME=$2      # workflow_dispatch, push, pull_request, schedule
 SDK_VERSION=$3     # SDK version or "latest"
+PACKAGE_NAME=$4    # Optional: custom package name (empty = use default)
 
 GITHUB_REPO="fingerprintjs"
 
@@ -39,7 +40,7 @@ fi
 if [[ "$LANGUAGE" == "node" ]]; then
     # Node.js: If SDK_VERSION has only version without full tag, add the correct package name
     if [[ "$SDK_VERSION" != @* ]]; then
-        SDK_VERSION="@fingerprint/node-sdk@$SDK_VERSION"
+        SDK_VERSION="${PACKAGE_NAME:-@fingerprint/node-sdk}@$SDK_VERSION"
     fi
 fi
 
@@ -50,8 +51,10 @@ fi
 
 replace_java_dep() {
   local file="build.gradle.kts"
-  local pattern="com.github.fingerprintjs:java-sdk:[^\"' ]*"
-  local replacement="com.github.fingerprintjs:java-sdk:$SDK_VERSION"
+  local group_artifact="${PACKAGE_NAME:-com.github.fingerprintjs:java-sdk}"
+  local escaped_ga=$(echo "$group_artifact" | sed 's/\./\\./g')
+  local pattern="${escaped_ga}:[^\"' ]*"
+  local replacement="${group_artifact}:$SDK_VERSION"
 
   if command -v gsed >/dev/null 2>&1; then
     # GNU sed (often installed as gsed on macOS via Homebrew)
@@ -81,17 +84,17 @@ case $LANGUAGE in
         ./gradlew dependencies --refresh-dependencies
         ;;
     "dotnet")
-        dotnet add package Fingerprint.ServerSdk --version $SDK_VERSION
+        dotnet add package "${PACKAGE_NAME:-Fingerprint.ServerSdk}" --version $SDK_VERSION
         ;;
     "go")
         MAJOR_VERSION=$(echo $SDK_VERSION | cut -d'.' -f1)
-        go get github.com/fingerprintjs/go-sdk/$MAJOR_VERSION@$SDK_VERSION
+        go get "${PACKAGE_NAME:-github.com/fingerprintjs/go-sdk}"/$MAJOR_VERSION@$SDK_VERSION
         ;;
     "python")
-        pip install "fingerprint-server-sdk==$SDK_VERSION"
+        pip install "${PACKAGE_NAME:-fingerprint-server-sdk}==$SDK_VERSION"
         ;;
     "php")
-        composer require fingerprint/server-sdk:$SDK_VERSION --update-with-dependencies
+        composer require "${PACKAGE_NAME:-fingerprint/server-sdk}":$SDK_VERSION --update-with-dependencies
         ;;
     *)
         echo "Unknown language: $LANGUAGE"
