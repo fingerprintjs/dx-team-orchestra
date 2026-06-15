@@ -1,4 +1,4 @@
 fingerprint_pro_server_api_sdk==8.13.0
-fingerprint-server-sdk==9.3.0-rc.0
+fingerprint-server-sdk==9.3.0
 flask>=3.1
 pydantic>=2
