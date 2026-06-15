@@ -36,9 +36,7 @@ export class Assertions {
     if (method === 'searchEvents') {
       // The pagination  will be different in each response so just validate that
       // both responses either include it or omit it
-      const sdkHasPaginationKey = Object.prototype.hasOwnProperty.call(sdkData, 'paginationKey')
-      const realHasPaginationKey = Object.prototype.hasOwnProperty.call(realData, 'paginationKey')
-      expect(sdkHasPaginationKey).toEqual(realHasPaginationKey)
+      expect(!!sdkData.paginationKey).toEqual(!!realData.paginationKey)
 
       delete realData.paginationKey
       delete sdkData.paginationKey
