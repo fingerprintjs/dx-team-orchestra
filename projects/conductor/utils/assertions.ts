@@ -1,4 +1,4 @@
-import { ExtractFingerprintApiReturnType, FingerprintApi, GetEventsParams } from './api';
+import { ExtractFingerprintApiReturnType, FingerprintApi, GetEventsParams } from './api'
 import { expect } from '@playwright/test'
 import { JsonResponse } from './http'
 import { EventsGetResponse } from '@fingerprintjs/fingerprintjs-pro-server-api'
@@ -30,15 +30,21 @@ export class Assertions {
     const realResponse: JsonResponse<any> = await this.fingerprintApi[method].call(this.fingerprintApi, ...params)
     const sdkResponse: JsonResponse<any> = await this.sdksApi[method].call(this.sdksApi, ...params)
 
+    const realData = { ...realResponse.data }
+    const sdkData = { ...sdkResponse.data }
+
     if (method === 'searchEvents') {
       // The pagination  will be different in each response so just validate that
-      // the truthiness of the pagination keys match
-      expect(!!sdkResponse.data?.paginationKey).toEqual(!!realResponse.data?.paginationKey)
-      delete sdkResponse.data?.paginationKey
-      delete realResponse.data?.paginationKey
+      // both responses either include it or omit it
+      const sdkHasPaginationKey = Object.prototype.hasOwnProperty.call(sdkData, 'paginationKey')
+      const realHasPaginationKey = Object.prototype.hasOwnProperty.call(realData, 'paginationKey')
+      expect(sdkHasPaginationKey).toEqual(realHasPaginationKey)
+
+      delete realData.paginationKey
+      delete sdkData.paginationKey
     }
 
-    expect(sdkResponse.data).toMatchObject(realResponse.data)
+    expect(sdkData).toMatchObject(realData)
     return sdkResponse.data
   }
 

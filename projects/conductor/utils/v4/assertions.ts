@@ -30,15 +30,21 @@ export class AssertionsV4 {
     const realResponse: JsonResponse<any> = await this.fingerprintApi[method].call(this.fingerprintApi, ...params)
     const sdkResponse: JsonResponse<any> = await this.sdksApi[method].call(this.sdksApi, ...params)
 
+    const realData = { ...realResponse.data }
+    const sdkData = { ...sdkResponse.data }
+
     if (method === 'searchEvents') {
       // The pagination  will be different in each response so just validate that
-      // the truthiness of the pagination keys match
-      expect(!!sdkResponse.data?.pagination_key).toEqual(!!realResponse.data?.pagination_key)
-      delete sdkResponse.data?.pagination_key
-      delete realResponse.data?.pagination_key
+      // both responses either include it or omit it
+      const sdkHasPaginationKey = Object.prototype.hasOwnProperty.call(sdkData, 'pagination_key')
+      const realHasPaginationKey = Object.prototype.hasOwnProperty.call(realData, 'pagination_key')
+      expect(sdkHasPaginationKey).toEqual(realHasPaginationKey)
+
+      delete realData.pagination_key
+      delete sdkData.pagination_key
     }
 
-    expect(sdkResponse.data).toMatchObject(realResponse.data)
+    expect(sdkData).toMatchObject(realData)
     return sdkResponse.data
   }
 
