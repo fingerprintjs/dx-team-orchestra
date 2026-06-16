@@ -25,7 +25,6 @@ test.describe('DeleteVisitorData Suite', () => {
     await waitBeforeFetch()
 
     await assert.thatResponseMatch({
-      strict: false,
       expectedStatusCode: 404,
       callback: (api) =>
         api.getVisitor({
