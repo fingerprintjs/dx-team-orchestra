@@ -177,7 +177,8 @@ export class RealFingerprintApi implements FingerprintApi {
     return await jsonRequest<void>({
       request: this.request,
       url: `${testData.config.apiUrl}/events/${requestId}`,
-      data,
+      params: data,
+      method: 'put',
       headers: {
         'Auth-API-Key': apiKey,
         'content-type': 'application/json',
@@ -309,6 +310,7 @@ export class RealFingerprintApi implements FingerprintApi {
     return await jsonRequest<void>({
       request: this.request,
       url: `${testData.config.apiUrl}/visitors/${params.visitorId}`,
+      method: 'delete',
       headers: {
         'Auth-API-Key': params.apiKey,
         'content-type': 'application/json',
