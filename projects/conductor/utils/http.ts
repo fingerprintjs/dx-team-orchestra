@@ -71,7 +71,7 @@ export async function jsonRequest<T = any>({
     if (queryString) {
       finalUrl = url.includes('?') ? `${url}&${queryString}` : `${url}?${queryString}`
     }
-  } else if (['post', 'patch', 'put'].includes(method)) {
+  } else if (['post', 'patch', 'put', 'delete'].includes(method)) {
     args.data = params
   }
 
