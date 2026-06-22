@@ -5,7 +5,7 @@ export type RequestParams = Record<string, Primitive | Primitive[]>
 
 type MethodVariants =
   | { method?: 'get'; params?: RequestParams }
-  | { method: 'post' | 'patch'| 'delete'; params?: any }
+  | { method: 'post' | 'patch'| 'delete' | 'put'; params?: any }
 
 type JsonRequestOptions = {
   request: APIRequestContext
@@ -71,7 +71,7 @@ export async function jsonRequest<T = any>({
     if (queryString) {
       finalUrl = url.includes('?') ? `${url}&${queryString}` : `${url}?${queryString}`
     }
-  } else if (['post', 'patch'].includes(method)) {
+  } else if (['post', 'patch', 'put', 'delete'].includes(method)) {
     args.data = params
   }
 
