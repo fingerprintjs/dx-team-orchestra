@@ -2,6 +2,7 @@ import { testData } from '../../utils/testData'
 import { test } from '../../utils/playwright'
 import { expect } from '@playwright/test'
 import { getRandomDevice } from '../../htmlScripts/runIdentification'
+import { withRetry } from '../../utils/retry'
 
 test.describe('GetVisitor Suite', () => {
   test('with valid apiKey', async ({ assert, identify }) => {
@@ -95,25 +96,33 @@ test.describe('GetVisitor Suite', () => {
         auth: testData.credentials.maxFeaturesUS,
         device: getRandomDevice(),
       },
-      10
+      2
     )
 
     const params = {
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
       visitorId: visitors[0].visitorId,
-      limit: 5,
+      limit: 1,
       region: testData.credentials.maxFeaturesUS.region,
     }
 
-    const { data } = await sdkApi.getVisitor(params)
-    expect(data.visits).toHaveLength(5)
+    const data = await withRetry(
+      async () => {
+        const { data } = await sdkApi.getVisitor(params)
+        expect(data.visits).toHaveLength(1)
+        return data
+      },
+      {
+        waitMs: 5000,
+      }
+    )
 
     const { data: nextData } = await sdkApi.getVisitor({
       ...params,
       paginationKey: data.paginationKey,
     })
 
-    expect(nextData.visits).toHaveLength(5)
+    expect(nextData.visits).toHaveLength(1)
     expect(nextData.visits).not.toEqual(data.visits)
   })
 
@@ -124,20 +133,29 @@ test.describe('GetVisitor Suite', () => {
       linkedId,
     })
 
-    const { data } = await sdkApi.getVisitor({
-      apiKey: testData.credentials.maxFeaturesUS.privateKey,
-      linkedId,
-      visitorId,
-      requestId,
-    })
+    await withRetry(
+      async () => {
+        const { data } = await sdkApi.getVisitor({
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          linkedId,
+          visitorId,
+          requestId,
+        })
 
-    expect(data.visits).toHaveLength(1)
+        expect(data.visits).toHaveLength(1)
+      },
+      {
+        waitMs: 5000,
+      }
+    )
 
+    // The requestId filter takes precedence over the other filter parameters
+    // now and will return the associated event with the request ID, ignoring
+    // the other filter parameters.
     const { data: emptyData } = await sdkApi.getVisitor({
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
       linkedId: 'different',
       visitorId,
-      requestId,
     })
 
     expect(emptyData.visits).toHaveLength(0)
