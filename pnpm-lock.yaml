@@ -24,13 +24,13 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1
       '@fingerprint/node-sdk':
-        specifier: ^7.7.0
+        specifier: 7.7.0
         version: 7.7.0
       '@fingerprintjs/fingerprintjs-pro':
         specifier: ^3.11.6
         version: 3.11.6
       '@fingerprintjs/fingerprintjs-pro-server-api':
-        specifier: ^6.12.0
+        specifier: 6.12.0
         version: 6.12.0
       '@playwright/test':
         specifier: ^1.58.2
