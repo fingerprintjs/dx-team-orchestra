@@ -90,7 +90,8 @@ public class EventsController(FingerprintV4Factory factory) : ControllerBase
         [FromQuery(Name = "bot_info_provider")] List<string>? botInfoProvider,
         [FromQuery(Name = "bot_info_name")] List<string>? botInfoName,
         [FromQuery(Name = "start_date_time")] DateTime? startDateTime,
-        [FromQuery(Name = "end_date_time")] DateTime? endDateTime
+        [FromQuery(Name = "end_date_time")] DateTime? endDateTime,
+        [FromQuery(Name = "activeCall")] bool? activeCall,
     )
     {
         try
@@ -175,6 +176,7 @@ public class EventsController(FingerprintV4Factory factory) : ControllerBase
             if (bundleId != null) request = request.WithBundleId(bundleId);
             if (torNode.HasValue) request = request.WithTorNode(torNode.Value);
             if (packageName != null) request = request.WithPackageName(packageName);
+            if (activeCall.HasValue) request = request.WithActiveCall(activeCall.Value);
 
             var apiResponse = await api.SearchEventsAsync(request);
 

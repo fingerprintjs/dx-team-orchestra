@@ -215,6 +215,7 @@ test.describe('SearchEvents suite', () => {
     const botInfoConfidence = event.bot_info?.confidence ? [event.bot_info.confidence] : undefined
     const botInfoProvider = event.bot_info?.provider ? [event.bot_info.provider] : undefined
     const botInfoName = event.bot_info?.name ? [event.bot_info.name] : undefined
+    const activeCall = event.active_call || undefined
 
     const result = await sdkApi.searchEvents({
       api_key: testData.credentials.maxFeaturesUS.privateKey,
@@ -262,6 +263,7 @@ test.describe('SearchEvents suite', () => {
       bot_info_confidence: botInfoConfidence,
       bot_info_provider: botInfoProvider,
       bot_info_name: botInfoName,
+      active_call: activeCall,
     })
 
     await assert.thatResponseMatch({
