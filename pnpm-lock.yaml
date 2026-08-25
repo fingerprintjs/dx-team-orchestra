@@ -24,14 +24,14 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1
       '@fingerprint/node-sdk':
-        specifier: 7.3.0-test.0
-        version: 7.3.0-test.0
+        specifier: ^7.7.0
+        version: 7.7.0
       '@fingerprintjs/fingerprintjs-pro':
         specifier: ^3.11.6
         version: 3.11.6
       '@fingerprintjs/fingerprintjs-pro-server-api':
-        specifier: 6.11.0
-        version: 6.11.0
+        specifier: ^6.12.0
+        version: 6.12.0
       '@playwright/test':
         specifier: ^1.58.2
         version: 1.58.2
@@ -48,11 +48,11 @@ importers:
   projects/node-sdk:
     dependencies:
       '@fingerprint/node-sdk':
-        specifier: 7.3.0
-        version: 7.3.0
+        specifier: ^7.7.0
+        version: 7.7.0
       '@fingerprintjs/fingerprintjs-pro-server-api':
-        specifier: 6.11.0
-        version: 6.11.0
+        specifier: ^6.12.0
+        version: 6.12.0
       express:
         specifier: ^5.0.1
         version: 5.0.1
@@ -103,12 +103,8 @@ packages:
   '@fingerprint/agent@4.0.1':
     resolution: {integrity: sha512-8+XUD3vP60Q5wpunaf932kp1lW2xWyXgI7f50EDAjoVNaNB7Y4T9qKam19y3WkgbipXnLdmekvNGtxEeyF+r9A==}
 
-  '@fingerprint/node-sdk@7.3.0':
-    resolution: {integrity: sha512-y0gv2ZF4PJDz2u98p4AZR3smM4DP21DfSo9tQoJQc7g5Y0nYVc1CJouoS5eqIUyrVSk8JZET0DZZvHomoNjodg==}
-    engines: {node: '>=18.17.0'}
-
-  '@fingerprint/node-sdk@7.3.0-test.0':
-    resolution: {integrity: sha512-42U8P9R5wkRrx9d53+6MXfOSzvuX36cLmTkxCnx8hpqtMBeC14aJgefXY7YT+z2bbFIc6CsflaQZpwEeXz0NTA==}
+  '@fingerprint/node-sdk@7.7.0':
+    resolution: {integrity: sha512-7FjFJpI4CoV/alS3fGvR6yBo89eSG2jkQOrhHM9CPqgzEYglU2pBdJbQALcJOw7hmJItdV4ozj4+Tx1+lFHpPQ==}
     engines: {node: '>=18.17.0'}
 
   '@fingerprintjs/eslint-config-dx-team@0.1.0':
@@ -116,8 +112,8 @@ packages:
     peerDependencies:
       prettier: '>=3'
 
-  '@fingerprintjs/fingerprintjs-pro-server-api@6.11.0':
-    resolution: {integrity: sha512-WkzgfWbxCommi+bMqjEiguYWIsAhAKL0iR4DDktF2ZzE7zATur6YXErDNrfV1QXIx79IlfwJYrjPiztz4QQGIQ==}
+  '@fingerprintjs/fingerprintjs-pro-server-api@6.12.0':
+    resolution: {integrity: sha512-Wl68u0a/U+62rgjqqkGsPqPPaiXilnL9k1J0GAOfQFXsG+ntUdMWR80aOfBwtJbRf/NQqLMgh0t2bxXE8HZFcQ==}
     engines: {node: '>=18.17.0'}
 
   '@fingerprintjs/fingerprintjs-pro@3.11.6':
@@ -1123,9 +1119,7 @@ snapshots:
 
   '@fingerprint/agent@4.0.1': {}
 
-  '@fingerprint/node-sdk@7.3.0': {}
-
-  '@fingerprint/node-sdk@7.3.0-test.0': {}
+  '@fingerprint/node-sdk@7.7.0': {}
 
   '@fingerprintjs/eslint-config-dx-team@0.1.0(prettier@3.8.1)(typescript@5.6.3)':
     dependencies:
@@ -1140,7 +1134,7 @@ snapshots:
       - supports-color
       - typescript
 
-  '@fingerprintjs/fingerprintjs-pro-server-api@6.11.0': {}
+  '@fingerprintjs/fingerprintjs-pro-server-api@6.12.0': {}
 
   '@fingerprintjs/fingerprintjs-pro@3.11.6':
     dependencies:
