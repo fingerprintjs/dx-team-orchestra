@@ -211,7 +211,9 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 		botInfoName = query["bot_info_name"]
 	}
 	if query.Has("active_call") {
-		activeCall = query["active_call"]
+        if val, err := strconv.ParseBool(query.Get("active_call")); err == nil {
+            activeCall = &val
+        }
 	}
 
 	paginationKey := query.Get("pagination_key")

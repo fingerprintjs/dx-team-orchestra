@@ -91,7 +91,7 @@ public class EventsController(FingerprintV4Factory factory) : ControllerBase
         [FromQuery(Name = "bot_info_name")] List<string>? botInfoName,
         [FromQuery(Name = "start_date_time")] DateTime? startDateTime,
         [FromQuery(Name = "end_date_time")] DateTime? endDateTime,
-        [FromQuery(Name = "activeCall")] bool? activeCall,
+        [FromQuery(Name = "activeCall")] bool? activeCall
     )
     {
         try

@@ -77,8 +77,8 @@ public class EventController {
             @RequestParam(required = false) List<String> bot_info_identity,
             @RequestParam(required = false) List<String> bot_info_confidence,
             @RequestParam(required = false) List<String> bot_info_provider,
-            @RequestParam(required = false) List<String> bot_info_name
-            @RequestParam(required = false) Boolean active_call,
+            @RequestParam(required = false) List<String> bot_info_name,
+            @RequestParam(required = false) Boolean active_call
     ) {
         ApiClient client = Configuration.getDefaultApiClient(api_key, Utils.getRegion(region));
         FingerprintApi api = new FingerprintApi(client);
