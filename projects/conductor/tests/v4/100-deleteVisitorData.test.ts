@@ -28,9 +28,12 @@ test.describe('DeleteVisitorData Suite', () => {
     await assert.thatResponseMatch({
       strict: false,
       expectedResponse: {
-        events: [],
+        error: {
+          code: 'visitor_not_found',
+          message: 'visitor not found',
+        },
       },
-      expectedStatusCode: 200,
+      expectedStatusCode: 404,
       callback: (api) =>
         api.searchEvents({
           visitor_id,
