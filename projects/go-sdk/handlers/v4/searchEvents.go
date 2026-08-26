@@ -54,6 +54,7 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	var botInfoConfidence []fingerprint.BotInfoConfidence
 	var botInfoProvider []string
 	var botInfoName []string
+	var activeCall *bool
 
 	if query.Has("limit") {
 		limitInt64, _ := strconv.ParseInt(query.Get("limit"), 10, 32)
@@ -209,6 +210,11 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	if query.Has("bot_info_name") {
 		botInfoName = query["bot_info_name"]
 	}
+	if query.Has("active_call") {
+        if val, err := strconv.ParseBool(query.Get("active_call")); err == nil {
+            activeCall = &val
+        }
+	}
 
 	paginationKey := query.Get("pagination_key")
 	visitorId := query.Get("visitor_id")
@@ -336,6 +342,9 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	}
 	if len(botInfoName) > 0 {
 		searchEventsReq = searchEventsReq.BotInfoName(botInfoName)
+	}
+	if activeCall != nil {
+		searchEventsReq = searchEventsReq.ActiveCall(*activeCall)
 	}
 
 	queryParams := searchEventsQueryParams{

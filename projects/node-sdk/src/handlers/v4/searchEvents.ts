@@ -59,6 +59,7 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     proximity_id,
     tor_node,
     url,
+    active_call,
     total_hits,
   } = req.query
 
@@ -204,6 +205,9 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     }
     if (url !== undefined) {
       filter.url = url
+    }
+    if (active_call !== undefined) {
+      filter.active_call = parseBooleanFromString(active_call, 'active_call')
     }
     if (total_hits !== undefined) {
       filter.total_hits = parseNumberFromString(total_hits, 'total_hits')

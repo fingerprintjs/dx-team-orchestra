@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fingerprint.ServerSdk" Version="8.3.0" />
-    <PackageReference Include="FingerprintPro.ServerSdk" Version="7.11.0" />
+    <PackageReference Include="Fingerprint.ServerSdk" Version="8.8.0" />
+    <PackageReference Include="FingerprintPro.ServerSdk" Version="7.12.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
