@@ -39,7 +39,7 @@ async function cleanupVisitor(api: FingerprintApi, visitor: VisitorData): Promis
   const { response } = await api.deleteVisitor({
     visitorId: visitor.visitorId,
     region: visitor.auth.region,
-    apiKey: visitor.auth.privateKey,
+    apiKey: visitor.auth.deletionKey,
   })
 
   if (response.ok()) {

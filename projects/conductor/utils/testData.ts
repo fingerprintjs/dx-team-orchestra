@@ -3,6 +3,7 @@ const accounts = {
     region: 'us',
     publicKey: process.env.MINIMUM_US_DEFAULT_PUBLIC_KEY,
     privateKey: process.env.MINIMUM_US_DEFAULT_PRIVATE_KEY,
+    deletionPrivateKey: process.env.MINIMUM_US_DELETION_PRIVATE_KEY,
     sealedPublicKey: process.env.MINIMUM_US_SEALED_PUBLIC_KEY,
     sealedPrivateKey: process.env.MINIMUM_US_SEALED_PRIVATE_KEY,
     sealedEncryptionKey: process.env.MINIMUM_US_SEALED_ENCRYPTION_KEY,
@@ -11,6 +12,7 @@ const accounts = {
     region: 'us',
     publicKey: process.env.MAXIMUM_US_DEFAULT_PUBLIC_KEY,
     privateKey: process.env.MAXIMUM_US_DEFAULT_PRIVATE_KEY,
+    deletionPrivateKey: process.env.MAXIMUM_US_DELETION_PRIVATE_KEY,
     deletedPrivateKey: process.env.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY,
     sealedPublicKey: process.env.MAXIMUM_US_SEALED_PUBLIC_KEY,
     sealedPrivateKey: process.env.MAXIMUM_US_SEALED_PRIVATE_KEY,
@@ -28,6 +30,7 @@ export type Credential = {
   publicKey: string
   privateKey: string
   encryptionKey?: string
+  deletionKey?: string
 }
 
 export type Credentials = {
@@ -56,11 +59,13 @@ const credentials: Credentials = {
     region: accounts.maximumFeatures.region,
     publicKey: accounts.maximumFeatures.publicKey,
     privateKey: accounts.maximumFeatures.privateKey,
+    deletionKey: accounts.maximumFeatures.deletionPrivateKey,
   },
   minFeaturesUS: {
     region: accounts.minimumFeatures.region,
     publicKey: accounts.minimumFeatures.publicKey,
     privateKey: accounts.minimumFeatures.privateKey,
+    deletionKey: accounts.minimumFeatures.deletionPrivateKey,
   },
   regularEU: {
     region: accounts.regular.region,
@@ -72,12 +77,14 @@ const credentials: Credentials = {
     publicKey: accounts.maximumFeatures.sealedPublicKey,
     privateKey: accounts.maximumFeatures.privateKey,
     encryptionKey: accounts.maximumFeatures.sealedEncryptionKey,
+    deletionKey: accounts.maximumFeatures.deletionPrivateKey,
   },
   sealedMinimumFeaturesUs: {
     region: accounts.minimumFeatures.region,
     publicKey: accounts.minimumFeatures.sealedPublicKey,
     privateKey: accounts.minimumFeatures.sealedPrivateKey,
     encryptionKey: accounts.minimumFeatures.sealedEncryptionKey,
+    deletionKey: accounts.minimumFeatures.deletionPrivateKey,
   },
   invalid: {
     publicKey: 'ftxPJdxnMlP',

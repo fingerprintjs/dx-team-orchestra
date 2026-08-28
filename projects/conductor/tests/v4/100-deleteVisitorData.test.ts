@@ -19,7 +19,7 @@ test.describe('DeleteVisitorData Suite', () => {
 
     await sdkApi.deleteVisitor({
       visitor_id,
-      api_key: testData.credentials.maxFeaturesUS.privateKey,
+      api_key: testData.credentials.maxFeaturesUS.deletionKey,
       region: testData.credentials.maxFeaturesUS.region,
     })
 
@@ -55,7 +55,7 @@ test.describe('DeleteVisitorData Suite', () => {
         },
         callback: (api) =>
           api.deleteVisitor({
-            api_key: testData.credentials.maxFeaturesUS.privateKey,
+            api_key: testData.credentials.maxFeaturesUS.deletionKey,
             region: testData.credentials.maxFeaturesUS.region,
           }),
       })
@@ -98,7 +98,7 @@ test.describe('DeleteVisitorData Suite', () => {
         callback: (api) =>
           api.deleteVisitor({
             visitor_id: testData.invalid.visitorId,
-            api_key: testData.credentials.maxFeaturesUS.privateKey,
+            api_key: testData.credentials.maxFeaturesUS.deletionKey,
             region: testData.credentials.maxFeaturesUS.region,
           }),
       })
