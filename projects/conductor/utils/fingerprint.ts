@@ -1,5 +1,6 @@
 import { Credential } from './testData'
 import { delay } from './delay'
+import { isRequestError } from './http'
 import { FingerprintApi } from './api'
 
 const fingerprintApis = {
@@ -9,10 +10,6 @@ const fingerprintApis = {
 }
 
 type Region = keyof typeof fingerprintApis
-
-export function getFingerprintEndpoint(region: Region) {
-  return fingerprintApis[region]
-}
 
 export function assertValidRegion(region: string): asserts region is Region {
   if (!(region in fingerprintApis)) {
@@ -33,33 +30,30 @@ async function cleanupVisitor(api: FingerprintApi, visitor: VisitorData): Promis
   const region = visitor.auth.region ?? 'us'
   assertValidRegion(region)
 
-  const url = new URL(getFingerprintEndpoint(region))
-  url.pathname = `visitors/${visitor.visitorId}`
-
-  const { response } = await api.deleteVisitor({
-    visitorId: visitor.visitorId,
-    region: visitor.auth.region,
-    apiKey: visitor.auth.deletionKey,
-  })
-
-  if (response.ok()) {
-    return
-  }
-
-  if (response.status() === 429) {
-    let retryAfter = parseInt(response.headers()?.['Retry-After'])
-    if (Number.isNaN(retryAfter)) {
-      retryAfter = 1
+  try {
+    await api.deleteVisitor({
+      visitorId: visitor.visitorId,
+      region: visitor.auth.region,
+      apiKey: visitor.auth.deletionKey,
+    })
+  } catch (error) {
+    if (!isRequestError(error)) {
+      throw error
     }
 
-    console.warn(`Too many requests while trying to delete visitor ${visitor.visitorId}. Retrying after ${retryAfter}s`)
+    // A missing visitor is the only non-fatal cleanup outcome (e.g. a duplicate
+    // cleanup already deleted it), but still surface it. Anything else must throw.
+    if (error.status === 404) {
+      console.warn(`Visitor ${visitor.visitorId} not found during cleanup (already deleted?), skipping.`)
+      return
+    }
 
-    await delay(retryAfter * 1000)
+    if (error.status === 429) {
+      console.warn(`Too many requests while deleting visitor ${visitor.visitorId}, retrying.`)
+      await delay(1000)
+      return cleanupVisitor(api, visitor)
+    }
 
-    return cleanupVisitor(api, visitor)
+    throw error
   }
-
-  console.error(`Failed to delete visitor ${visitor.visitorId} with status ${response.status()}.`, {
-    body: await response.json(),
-  })
 }

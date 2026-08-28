@@ -1,5 +1,6 @@
 import { Credential } from '../testData'
 import { delay } from '../delay'
+import { isRequestError } from '../http'
 import { FingerprintV4Api } from './api'
 
 const fingerprintApis = {
@@ -29,25 +30,30 @@ async function cleanupVisitor(api: FingerprintV4Api, visitor: VisitorData): Prom
   const region = visitor.auth.region ?? 'us'
   assertValidRegion(region)
 
-  const { response } = await api.deleteVisitor({
-    visitor_id: visitor.visitorId,
-    region: visitor.auth.region,
-    api_key: visitor.auth.deletionKey,
-  })
+  try {
+    await api.deleteVisitor({
+      visitor_id: visitor.visitorId,
+      region: visitor.auth.region,
+      api_key: visitor.auth.deletionKey,
+    })
+  } catch (error) {
+    if (!isRequestError(error)) {
+      throw error
+    }
 
-  if (response.ok()) {
-    return
+    // A missing visitor is the only non-fatal cleanup outcome (e.g. a duplicate
+    // cleanup already deleted it), but still surface it. Anything else must throw.
+    if (error.status === 404) {
+      console.warn(`Visitor ${visitor.visitorId} not found during cleanup (already deleted?), skipping.`)
+      return
+    }
+
+    if (error.status === 429) {
+      console.warn(`Too many requests while deleting visitor ${visitor.visitorId}, retrying.`)
+      await delay(1000)
+      return cleanupVisitor(api, visitor)
+    }
+
+    throw error
   }
-
-  if (response.status() === 429) {
-    console.warn(`Too many requests while trying to delete visitor ${visitor.visitorId}. Retrying after.`)
-
-    await delay(1000)
-
-    return cleanupVisitor(api, visitor)
-  }
-
-  console.error(`Failed to delete visitor ${visitor.visitorId} with status ${response.status()}.`, {
-    body: await response.json(),
-  })
 }

@@ -5,7 +5,7 @@ export type RequestParams = Record<string, Primitive | Primitive[]>
 
 type MethodVariants =
   | { method?: 'get'; params?: RequestParams }
-  | { method: 'post' | 'patch'| 'delete' | 'put'; params?: any }
+  | { method: 'post' | 'patch' | 'delete' | 'put'; params?: any }
 
 type JsonRequestOptions = {
   request: APIRequestContext
@@ -16,6 +16,14 @@ type JsonRequestOptions = {
 export type JsonResponse<T> = {
   data: T
   response: APIResponse
+}
+
+export interface RequestError extends Error {
+  status: number
+}
+
+export function isRequestError(error: unknown): error is RequestError {
+  return error instanceof Error && typeof (error as RequestError).status === 'number'
 }
 
 function buildQuery(
@@ -84,7 +92,9 @@ export async function jsonRequest<T = any>({
       headers,
       text,
     })
-    throw new Error(`Request failed with status ${response.status()} | Response Text: ${text}`)
+    const error = new Error(`Request failed with status ${response.status()} | Response Text: ${text}`) as RequestError
+    error.status = response.status()
+    throw error
   }
 
   return { data: (text ? JSON.parse(text) : undefined) as T, response }
