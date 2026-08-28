@@ -127,13 +127,36 @@ test.describe('SearchEvents suite', () => {
     })
   })
 
-  test('with environment as incorrect array params', async ({ identify, assert }) => {
+  test('with incorrect environment array params and an unscoped key', async ({ identify, assert }) => {
     const { visitor_id } = await identify({
       auth: testData.credentials.maxFeaturesUS,
     })
 
+    // An unscoped key is not environment-restricted, so incorrect environment
+    // values are effectively ignored and the request still succeeds.
     await assert.thatResponseMatch({
       expectedStatusCode: 200,
+      callback: (api) =>
+        api.searchEvents({
+          api_key: testData.credentials.maxFeaturesUS.deletionKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          limit: 10,
+          visitor_id,
+          environment: [null, undefined],
+        }),
+    })
+  })
+
+  test('with incorrect environment array params and a scoped key', async ({ identify, assert }) => {
+    const { visitor_id } = await identify({
+      auth: testData.credentials.maxFeaturesUS,
+    })
+
+    // A scoped key may only query environments it owns, so incorrect/foreign
+    // environment values are rejected.
+    await assert.thatResponseMatch({
+      expectedStatusCode: 403,
+      expectedResponse: { error: { code: 'environment_restricted', message: 'forbidden' } },
       callback: (api) =>
         api.searchEvents({
           api_key: testData.credentials.maxFeaturesUS.privateKey,
