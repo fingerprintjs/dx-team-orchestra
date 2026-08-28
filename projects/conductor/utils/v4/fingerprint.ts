@@ -3,20 +3,6 @@ import { delay } from '../delay'
 import { isRequestError } from '../http'
 import { FingerprintV4Api } from './api'
 
-const fingerprintApis = {
-  us: 'https://api.fpjs.io/v4',
-  eu: 'https://eu.api.fpjs.io/v4',
-  ap: 'https://ap.api.fpjs.io/v4',
-}
-
-type Region = keyof typeof fingerprintApis
-
-export function assertValidRegion(region: string): asserts region is Region {
-  if (!(region in fingerprintApis)) {
-    throw new Error('Invalid region')
-  }
-}
-
 export type VisitorData = {
   visitorId: string
   auth: Credential
@@ -27,9 +13,6 @@ export async function cleanupVisitors(api: FingerprintV4Api, visitors: VisitorDa
 }
 
 async function cleanupVisitor(api: FingerprintV4Api, visitor: VisitorData): Promise<void> {
-  const region = visitor.auth.region ?? 'us'
-  assertValidRegion(region)
-
   try {
     await api.deleteVisitor({
       visitor_id: visitor.visitorId,
