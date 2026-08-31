@@ -17,7 +17,7 @@ async function cleanupVisitor(api: FingerprintV4Api, visitor: VisitorData): Prom
     await api.deleteVisitor({
       visitor_id: visitor.visitorId,
       region: visitor.auth.region,
-      api_key: visitor.auth.deletionKey,
+      api_key: visitor.auth.unscopedKey,
     })
   } catch (error) {
     if (!isRequestError(error)) {

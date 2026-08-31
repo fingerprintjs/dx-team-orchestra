@@ -43,8 +43,8 @@ test.describe('SearchEvents suite', () => {
     })
 
     // Events live in two different environments (default + sealed). A scoped key only
-    // sees its own environment, so use the unscoped deletion key to see across both.
-    const unscopedKey = testData.credentials.maxFeaturesUS.deletionKey
+    // sees its own environment, so use the unscoped key to see across both.
+    const unscopedKey = testData.credentials.maxFeaturesUS.unscopedKey
 
     // Poll until both events (from the two environments) have propagated.
     let environmentIds: (string | undefined)[] = []
@@ -145,7 +145,7 @@ test.describe('SearchEvents suite', () => {
       expectedStatusCode: 200,
       callback: (api) =>
         api.searchEvents({
-          api_key: testData.credentials.maxFeaturesUS.deletionKey,
+          api_key: testData.credentials.maxFeaturesUS.unscopedKey,
           region: testData.credentials.maxFeaturesUS.region,
           limit: 10,
           visitor_id,
