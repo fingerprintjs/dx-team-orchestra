@@ -17,7 +17,8 @@ test.describe('GetVisitor Suite', () => {
       visitorId,
     }
 
-    await assert.thatResponsesMatch('getVisitor', params)
+    // Poll until the visit has propagated and both APIs agree.
+    await withRetry(() => assert.thatResponsesMatch('getVisitor', params), { retries: 6, waitMs: 5000 })
   })
 
   test('with invalid visitor ID and api key', async ({ assert }) => {
@@ -106,24 +107,23 @@ test.describe('GetVisitor Suite', () => {
       region: testData.credentials.maxFeaturesUS.region,
     }
 
-    const data = await withRetry(
+    // Poll the whole pagination flow: both visits must have propagated so that
+    // page 1 and page 2 each return one distinct visit.
+    await withRetry(
       async () => {
         const { data } = await sdkApi.getVisitor(params)
         expect(data.visits).toHaveLength(1)
-        return data
+
+        const { data: nextData } = await sdkApi.getVisitor({
+          ...params,
+          paginationKey: data.paginationKey,
+        })
+
+        expect(nextData.visits).toHaveLength(1)
+        expect(nextData.visits).not.toEqual(data.visits)
       },
-      {
-        waitMs: 5000,
-      }
+      { retries: 8, waitMs: 5000 }
     )
-
-    const { data: nextData } = await sdkApi.getVisitor({
-      ...params,
-      paginationKey: data.paginationKey,
-    })
-
-    expect(nextData.visits).toHaveLength(1)
-    expect(nextData.visits).not.toEqual(data.visits)
   })
 
   test('with linked id', async ({ sdkApi, identify }) => {

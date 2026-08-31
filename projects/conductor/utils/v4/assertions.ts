@@ -1,6 +1,7 @@
 import { ExtractFingerprintV4ApiReturnType, FingerprintV4Api, GetEventsParams } from './api'
 import { expect } from '@playwright/test'
 import { JsonResponse } from '../http'
+import { withRetry } from '../retry'
 import { Event } from '@fingerprint/node-sdk'
 
 interface ThatResponseMatchParams {
@@ -47,7 +48,11 @@ export class AssertionsV4 {
   }
 
   async thatUnsealedDataMatches(sealedData: Event, params: GetEventsParams) {
-    const { data: originalEvent } = await this.fingerprintApi.getEvent(params)
+    // Poll until the event has propagated instead of failing on a not-yet-ready event.
+    const { data: originalEvent } = await withRetry(() => this.fingerprintApi.getEvent(params), {
+      retries: 6,
+      waitMs: 5000,
+    })
     expect(sealedData).toMatchObject(originalEvent)
   }
 

@@ -2,6 +2,7 @@ import { expect } from '@playwright/test'
 import { testData } from '../../utils/testData'
 import { test } from '../../utils/playwright'
 import { delay } from '../../utils/delay'
+import { withRetry } from '../../utils/retry'
 import { EventsGetResponse } from '@fingerprintjs/fingerprintjs-pro-server-api'
 
 function checkUpdatedEvent(updatedEvent: EventsGetResponse) {
@@ -25,18 +26,22 @@ test.describe('UpdateEvents Suite', () => {
       auth: testData.credentials.maxFeaturesUS,
     })
 
-    await waitBeforeUpdate()
+    // Poll the update until the event is ready (avoids 409 state-not-ready).
+    await withRetry(
+      async () => {
+        const { response } = await sdkApi.updateEvent({
+          requestId,
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          linkedId: testData.updateEvent.linkedId,
+          suspect: testData.updateEvent.suspect,
+          tag: testData.updateEvent.tag,
+        })
 
-    const { response } = await sdkApi.updateEvent({
-      requestId,
-      apiKey: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      linkedId: testData.updateEvent.linkedId,
-      suspect: testData.updateEvent.suspect,
-      tag: testData.updateEvent.tag,
-    })
-
-    expect(response.status()).toEqual(200)
+        expect(response.status()).toEqual(200)
+      },
+      { retries: 12, waitMs: 5000 }
+    )
 
     const { data: updatedEvent } = await fingerprintApi.getEvent({
       apiKey: testData.credentials.maxFeaturesUS.privateKey,
@@ -52,17 +57,22 @@ test.describe('UpdateEvents Suite', () => {
       auth: testData.credentials.minFeaturesUS,
     })
 
-    await waitBeforeUpdate()
+    // Poll the update until the event is ready (avoids 409 state-not-ready).
+    await withRetry(
+      async () => {
+        const { response } = await sdkApi.updateEvent({
+          requestId,
+          apiKey: testData.credentials.minFeaturesUS.privateKey,
+          region: testData.credentials.minFeaturesUS.region,
+          linkedId: testData.updateEvent.linkedId,
+          suspect: testData.updateEvent.suspect,
+          tag: testData.updateEvent.tag,
+        })
 
-    const { response } = await sdkApi.updateEvent({
-      requestId,
-      apiKey: testData.credentials.minFeaturesUS.privateKey,
-      region: testData.credentials.minFeaturesUS.region,
-      linkedId: testData.updateEvent.linkedId,
-      suspect: testData.updateEvent.suspect,
-      tag: testData.updateEvent.tag,
-    })
-    expect(response.status()).toEqual(200)
+        expect(response.status()).toEqual(200)
+      },
+      { retries: 12, waitMs: 5000 }
+    )
 
     const { data: updatedEvent } = await fingerprintApi.getEvent({
       requestId,
@@ -83,15 +93,20 @@ test.describe('UpdateEvents Suite', () => {
     })
     const initialResponseBody = initialEvent.products.identification.data
 
-    await waitBeforeUpdate()
+    // Poll the update until the event is ready (avoids 409 state-not-ready).
+    await withRetry(
+      async () => {
+        const { response } = await sdkApi.updateEvent({
+          requestId,
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          tag: testData.updateEventComplexTag.tag,
+        })
 
-    const { response } = await sdkApi.updateEvent({
-      requestId,
-      apiKey: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      tag: testData.updateEventComplexTag.tag,
-    })
-    expect(response.status()).toEqual(200)
+        expect(response.status()).toEqual(200)
+      },
+      { retries: 12, waitMs: 5000 }
+    )
 
     const { data: updatedEvent } = await fingerprintApi.getEvent({
       requestId,
@@ -115,15 +130,20 @@ test.describe('UpdateEvents Suite', () => {
     })
     const initialResponseBody = initialEvent.products.identification.data
 
-    await waitBeforeUpdate()
+    // Poll the update until the event is ready (avoids 409 state-not-ready).
+    await withRetry(
+      async () => {
+        const { response } = await sdkApi.updateEvent({
+          requestId,
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          linkedId: testData.updateEvent.linkedId,
+        })
 
-    const { response } = await sdkApi.updateEvent({
-      requestId,
-      apiKey: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      linkedId: testData.updateEvent.linkedId,
-    })
-    expect(response.status()).toEqual(200)
+        expect(response.status()).toEqual(200)
+      },
+      { retries: 12, waitMs: 5000 }
+    )
 
     const { data: updatedEvent } = await fingerprintApi.getEvent({
       requestId,
@@ -148,15 +168,20 @@ test.describe('UpdateEvents Suite', () => {
       })
       const initialResponseBody = initialEvent.products.identification.data
 
-      await waitBeforeUpdate()
+      // Poll the update until the event is ready (avoids 409 state-not-ready).
+      await withRetry(
+        async () => {
+          const { response } = await sdkApi.updateEvent({
+            requestId,
+            apiKey: testData.validSmartSignal.apiKey,
+            region: testData.validSmartSignal.region,
+            suspect,
+          })
 
-      const { response } = await sdkApi.updateEvent({
-        requestId,
-        apiKey: testData.validSmartSignal.apiKey,
-        region: testData.validSmartSignal.region,
-        suspect,
-      })
-      expect(response.status()).toEqual(200)
+          expect(response.status()).toEqual(200)
+        },
+        { retries: 12, waitMs: 5000 }
+      )
 
       const { data: updatedEvent } = await fingerprintApi.getEvent({
         requestId,

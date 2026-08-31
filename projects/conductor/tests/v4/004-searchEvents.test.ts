@@ -3,6 +3,7 @@ import testData, { supportsStartEndDateTime } from '../../utils/testData'
 import { expect } from '@playwright/test'
 import { delay } from '../../utils/delay'
 import { SearchEventsFilter } from '@fingerprint/node-sdk'
+import { SearchEventsParams } from '../../utils/v4/api'
 import { withRetry } from '../../utils/retry'
 
 test.describe('SearchEvents suite', () => {
@@ -41,24 +42,32 @@ test.describe('SearchEvents suite', () => {
       linkedId,
     })
 
-    // Wait for event to propagate
-    await delay(5000)
+    // Events live in two different environments (default + sealed). A scoped key only
+    // sees its own environment, so use the unscoped deletion key to see across both.
+    const unscopedKey = testData.credentials.maxFeaturesUS.deletionKey
 
-    const result = await sdkApi.searchEvents({
-      api_key: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      limit: 10,
-      linked_id: linkedId,
-    })
+    // Poll until both events (from the two environments) have propagated.
+    let environmentIds: (string | undefined)[] = []
+    await withRetry(
+      async () => {
+        const result = await sdkApi.searchEvents({
+          api_key: unscopedKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          limit: 10,
+          linked_id: linkedId,
+        })
 
-    const environmentIds = result.data?.events?.map((event) => event.environment_id)?.filter(Boolean) ?? []
+        environmentIds = result.data?.events?.map((event) => event.environment_id)?.filter(Boolean) ?? []
 
-    expect(environmentIds).toHaveLength(2)
+        expect(environmentIds).toHaveLength(2)
+      },
+      { retries: 6, waitMs: 5000 }
+    )
 
     await withRetry(
       async () => {
         const sdkResultsByEnv = await sdkApi.searchEvents({
-          api_key: testData.credentials.maxFeaturesUS.privateKey,
+          api_key: unscopedKey,
           region: testData.credentials.maxFeaturesUS.region,
           limit: 10,
           environment: environmentIds,
@@ -67,9 +76,7 @@ test.describe('SearchEvents suite', () => {
 
         expect(sdkResultsByEnv.data?.events ?? []).toHaveLength(2)
       },
-      {
-        waitMs: 5000,
-      }
+      { retries: 6, waitMs: 5000 }
     )
   })
 
@@ -169,20 +176,24 @@ test.describe('SearchEvents suite', () => {
   })
 
   test('with all params', async ({ identify, assert, fingerprintApi, sdkApi }) => {
-    let linkedId = `test_all_params_${Date.now()}`
+    test.slow()
+
+    const linkedId = `test_all_params_${Date.now()}`
     const { visitor_id, event_id } = await identify({
       auth: testData.credentials.maxFeaturesUS,
       linkedId,
     })
 
-    // Wait for event to propagate
-    await delay(5000)
-
-    const { data: event } = await fingerprintApi.getEvent({
-      api_key: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      event_id,
-    })
+    // Poll until the event has propagated instead of waiting a fixed amount of time.
+    const { data: event } = await withRetry(
+      () =>
+        fingerprintApi.getEvent({
+          api_key: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          event_id,
+        }),
+      { retries: 6, waitMs: 5000 }
+    )
 
     // Use timestamp from the event to create start and end times
     const timestamp = event.timestamp || Date.now()
@@ -207,7 +218,6 @@ test.describe('SearchEvents suite', () => {
         botValue = 'all'
     }
 
-    const ipValue = `${event.ip_address || '127.0.0.1'}/24`
     const vpnValue = event.vpn || undefined
     const tampering = event.tampering || undefined
     const antiDetectBrowser = event.tampering_details?.anti_detect_browser || undefined
@@ -228,7 +238,9 @@ test.describe('SearchEvents suite', () => {
     const proximityId = event.proximity?.id || undefined
     const asn = event.ip_info.v4.asn || event.ip_info.v6.asn || undefined
     const url = event.url || undefined
-    const origin = event.vpn_origin_country || undefined
+    // 'unknown' is a sentinel (no VPN), not a real origin country — don't filter by it.
+    const origin =
+      event.vpn_origin_country && event.vpn_origin_country !== 'unknown' ? event.vpn_origin_country : undefined
     const bundleId = event.bundle_id || undefined
     const torNode = event.ip_blocklist.tor_node || undefined
     const packageName = event.package_name || undefined
@@ -240,7 +252,7 @@ test.describe('SearchEvents suite', () => {
     const botInfoName = event.bot_info?.name ? [event.bot_info.name] : undefined
     const activeCall = event.active_call ?? undefined
 
-    const result = await sdkApi.searchEvents({
+    const searchParams: SearchEventsParams = {
       api_key: testData.credentials.maxFeaturesUS.privateKey,
       region: testData.credentials.maxFeaturesUS.region,
       limit: 10,
@@ -249,7 +261,6 @@ test.describe('SearchEvents suite', () => {
       linked_id: linkedId,
       start,
       end,
-      //ip_address: ipValue,
       reverse: false,
       suspect: event.suspect || undefined,
       vpn: vpnValue,
@@ -287,17 +298,25 @@ test.describe('SearchEvents suite', () => {
       bot_info_provider: botInfoProvider,
       bot_info_name: botInfoName,
       active_call: activeCall,
-    })
+    }
 
-    await assert.thatResponseMatch({
-      expectedStatusCode: 200,
-      expectedResponse: {
-        events: expect.any(Array),
+    // Poll until the event is indexed for search instead of asserting once.
+    await withRetry(
+      async () => {
+        const result = await sdkApi.searchEvents(searchParams)
+
+        await assert.thatResponseMatch({
+          expectedStatusCode: 200,
+          expectedResponse: {
+            events: expect.any(Array),
+          },
+          callback: async () => result,
+        })
+
+        expect(result.data.events).toHaveLength(1)
       },
-      callback: async () => result,
-    })
-
-    expect(result.data.events).toHaveLength(1)
+      { retries: 6, waitMs: 5000 }
+    )
   })
 
   test('with reverse params', async ({ sdkApi }) => {

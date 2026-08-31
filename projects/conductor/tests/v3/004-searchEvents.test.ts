@@ -1,7 +1,7 @@
 import { test } from '../../utils/playwright'
 import testData from '../../utils/testData'
 import { expect } from '@playwright/test'
-import { delay } from '../../utils/delay'
+import { withRetry } from '../../utils/retry'
 
 test.describe('SearchEvents suite', () => {
   test('with valid api key and limit', async ({ assert, identify }) => {
@@ -25,7 +25,6 @@ test.describe('SearchEvents suite', () => {
 
   test('with multiple environments', async ({ identify, sdkApi }) => {
     const linkedId = `test_multi_env_${Date.now()}`
-    console.log({ linkedId })
 
     await identify({
       auth: testData.credentials.maxFeaturesUS,
@@ -37,29 +36,39 @@ test.describe('SearchEvents suite', () => {
       linkedId,
     })
 
-    await delay(15_000)
+    // Poll until both events (from the two environments) have propagated.
+    let environmentIds: string[] = []
+    await withRetry(
+      async () => {
+        const result = await sdkApi.searchEvents({
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          limit: 10,
+          linkedId,
+        })
 
-    const result = await sdkApi.searchEvents({
-      apiKey: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      limit: 10,
-      linkedId,
-    })
+        environmentIds =
+          result.data?.events?.map((event) => event.products.identification.data.environmentId)?.filter((t) => t) ?? []
 
-    const environmentIds =
-      result.data?.events?.map((event) => event.products.identification.data.environmentId)?.filter((t) => t) ?? []
+        expect(environmentIds).toHaveLength(2)
+      },
+      { retries: 6, waitMs: 5000 }
+    )
 
-    expect(environmentIds).toHaveLength(2)
+    await withRetry(
+      async () => {
+        const sdkResultsByEnv = await sdkApi.searchEvents({
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          limit: 10,
+          environment: environmentIds,
+          linkedId,
+        })
 
-    const sdkResultsByEnv = await sdkApi.searchEvents({
-      apiKey: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      limit: 10,
-      environment: environmentIds,
-      linkedId,
-    })
-
-    expect(sdkResultsByEnv.data?.events ?? []).toHaveLength(2)
+        expect(sdkResultsByEnv.data?.events ?? []).toHaveLength(2)
+      },
+      { retries: 6, waitMs: 5000 }
+    )
   })
 
   test('with invalid limit', async ({ assert }) => {
@@ -338,29 +347,49 @@ test.describe('SearchEvents suite', () => {
       10
     )
 
-    // Wait for events to propagate
-    await delay(30_000)
+    // Poll until all 10 events have propagated instead of waiting a fixed amount of time.
+    const event = await withRetry(
+      async () => {
+        const { data } = await sdkApi.searchEvents({
+          limit: 10,
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+        })
 
-    const { data: dataWithoutDateFilter } = await sdkApi.searchEvents({
+        expect(data.events).toHaveLength(10)
+
+        return data.events[0]
+      },
+      { retries: 8, waitMs: 5000 }
+    )
+
+    const { visitorId, timestamp } = event.products.identification.data
+    const apiKey = testData.credentials.maxFeaturesUS.privateKey
+    const region = testData.credentials.maxFeaturesUS.region
+
+    // A window covering the event's timestamp returns it. (bulk identify can produce
+    // several events on the same visitor, so assert presence, not an exact count.)
+    const { data: withinWindow } = await sdkApi.searchEvents({
       limit: 10,
-      apiKey: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
+      visitorId,
+      apiKey,
+      region,
+      start: timestamp - 10,
+      end: timestamp + 10,
     })
+    expect((withinWindow.events ?? []).length).toBeGreaterThanOrEqual(1)
 
-    expect(dataWithoutDateFilter.events).toHaveLength(10)
-
-    const [event] = dataWithoutDateFilter.events
-
-    const { data: dataWithFilter } = await sdkApi.searchEvents({
+    // A window entirely before the event returns nothing — proves the date filter applies.
+    const hourMs = 60 * 60 * 1000
+    const { data: beforeWindow } = await sdkApi.searchEvents({
       limit: 10,
-      visitorId: event.products.identification.data.visitorId,
-      apiKey: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      start: event.products.identification.data.timestamp - 10,
-      end: event.products.identification.data.timestamp + 10,
+      visitorId,
+      apiKey,
+      region,
+      start: timestamp - hourMs,
+      end: timestamp - hourMs + 10,
     })
-
-    expect(dataWithFilter.events).toHaveLength(1)
+    expect(beforeWindow.events ?? []).toHaveLength(0)
   })
 
   test('with invalid token', async ({ assert }) => {
