@@ -75,7 +75,7 @@ const credentials: Credentials = {
   sealedMaximumFeaturesUs: {
     region: accounts.maximumFeatures.region,
     publicKey: accounts.maximumFeatures.sealedPublicKey,
-    privateKey: accounts.maximumFeatures.privateKey,
+    privateKey: accounts.maximumFeatures.sealedPrivateKey,
     encryptionKey: accounts.maximumFeatures.sealedEncryptionKey,
     deletionKey: accounts.maximumFeatures.deletionPrivateKey,
   },
@@ -153,7 +153,7 @@ export const testData = {
   sealedMaximumFeaturesUs: {
     region: accounts.maximumFeatures.region,
     publicKey: accounts.maximumFeatures.sealedPublicKey,
-    privateKey: accounts.maximumFeatures.privateKey,
+    privateKey: accounts.maximumFeatures.sealedPrivateKey,
     encryptionKey: accounts.maximumFeatures.sealedEncryptionKey,
   },
 
