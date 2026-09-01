@@ -52,10 +52,7 @@ export class AssertionsV4 {
 
   async thatUnsealedDataMatches(sealedData: Event, params: GetEventsParams) {
     // Poll until the event has propagated instead of failing on a not-yet-ready event.
-    const { data: originalEvent } = await withRetry(() => this.fingerprintApi.getEvent(params), {
-      retries: 6,
-      waitMs: 5000,
-    })
+    const { data: originalEvent } = await withRetry(() => this.fingerprintApi.getEvent(params))
     expect(normalizeTimestamps(sealedData)).toMatchObject(normalizeTimestamps(originalEvent) as Record<string, unknown>)
   }
 

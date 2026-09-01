@@ -38,37 +38,31 @@ test.describe('SearchEvents suite', () => {
 
     // Poll until both events (from the two environments) have propagated.
     let environmentIds: string[] = []
-    await withRetry(
-      async () => {
-        const result = await sdkApi.searchEvents({
-          apiKey: testData.credentials.maxFeaturesUS.privateKey,
-          region: testData.credentials.maxFeaturesUS.region,
-          limit: 10,
-          linkedId,
-        })
+    await withRetry(async () => {
+      const result = await sdkApi.searchEvents({
+        apiKey: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        limit: 10,
+        linkedId,
+      })
 
-        environmentIds =
-          result.data?.events?.map((event) => event.products.identification.data.environmentId)?.filter((t) => t) ?? []
+      environmentIds =
+        result.data?.events?.map((event) => event.products.identification.data.environmentId)?.filter((t) => t) ?? []
 
-        expect(environmentIds).toHaveLength(2)
-      },
-      { retries: 6, waitMs: 5000 }
-    )
+      expect(environmentIds).toHaveLength(2)
+    })
 
-    await withRetry(
-      async () => {
-        const sdkResultsByEnv = await sdkApi.searchEvents({
-          apiKey: testData.credentials.maxFeaturesUS.privateKey,
-          region: testData.credentials.maxFeaturesUS.region,
-          limit: 10,
-          environment: environmentIds,
-          linkedId,
-        })
+    await withRetry(async () => {
+      const sdkResultsByEnv = await sdkApi.searchEvents({
+        apiKey: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        limit: 10,
+        environment: environmentIds,
+        linkedId,
+      })
 
-        expect(sdkResultsByEnv.data?.events ?? []).toHaveLength(2)
-      },
-      { retries: 6, waitMs: 5000 }
-    )
+      expect(sdkResultsByEnv.data?.events ?? []).toHaveLength(2)
+    })
   })
 
   test('with invalid limit', async ({ assert }) => {
@@ -233,30 +227,27 @@ test.describe('SearchEvents suite', () => {
 
   test('with reverse params', async ({ sdkApi }) => {
     // Relies on events already existing in the workspace — poll until enough have propagated.
-    await withRetry(
-      async () => {
-        const { data: normalData } = await sdkApi.searchEvents({
-          apiKey: testData.credentials.maxFeaturesUS.privateKey,
-          region: testData.credentials.maxFeaturesUS.region,
-          limit: 10,
-          reverse: false,
-        })
-        const { data: reversedData } = await sdkApi.searchEvents({
-          apiKey: testData.credentials.maxFeaturesUS.privateKey,
-          region: testData.credentials.maxFeaturesUS.region,
-          limit: 10,
-          reverse: true,
-        })
+    await withRetry(async () => {
+      const { data: normalData } = await sdkApi.searchEvents({
+        apiKey: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        limit: 10,
+        reverse: false,
+      })
+      const { data: reversedData } = await sdkApi.searchEvents({
+        apiKey: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        limit: 10,
+        reverse: true,
+      })
 
-        expect(normalData.events).toHaveLength(10)
-        expect(reversedData.events).toHaveLength(10)
+      expect(normalData.events).toHaveLength(10)
+      expect(reversedData.events).toHaveLength(10)
 
-        expect(normalData.events[0].products.identification.data.timestamp).toBeGreaterThanOrEqual(
-          reversedData.events[0].products.identification.data.timestamp
-        )
-      },
-      { retries: 6, waitMs: 5000 }
-    )
+      expect(normalData.events[0].products.identification.data.timestamp).toBeGreaterThanOrEqual(
+        reversedData.events[0].products.identification.data.timestamp
+      )
+    })
   })
 
   test('with paginationKey', async ({ fingerprintApi, assert }) => {
@@ -354,20 +345,17 @@ test.describe('SearchEvents suite', () => {
     )
 
     // Poll until all 10 events have propagated instead of waiting a fixed amount of time.
-    const event = await withRetry(
-      async () => {
-        const { data } = await sdkApi.searchEvents({
-          limit: 10,
-          apiKey: testData.credentials.maxFeaturesUS.privateKey,
-          region: testData.credentials.maxFeaturesUS.region,
-        })
+    const event = await withRetry(async () => {
+      const { data } = await sdkApi.searchEvents({
+        limit: 10,
+        apiKey: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+      })
 
-        expect(data.events).toHaveLength(10)
+      expect(data.events).toHaveLength(10)
 
-        return data.events[0]
-      },
-      { retries: 8, waitMs: 5000 }
-    )
+      return data.events[0]
+    })
 
     const { visitorId, timestamp } = event.products.identification.data
     const apiKey = testData.credentials.maxFeaturesUS.privateKey

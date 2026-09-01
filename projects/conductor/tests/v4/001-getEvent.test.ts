@@ -14,7 +14,7 @@ test.describe('GetEvent Suite', () => {
     }
 
     // Poll until the event has propagated and both APIs agree.
-    await withRetry(() => assert.thatResponsesMatch('getEvent', requestData), { retries: 6, waitMs: 5000 })
+    await withRetry(() => assert.thatResponsesMatch('getEvent', requestData))
   })
 
   test('for valid apiKey and event_id without Smart Signals', async ({ identify, assert }) => {
@@ -28,7 +28,7 @@ test.describe('GetEvent Suite', () => {
     }
 
     // Poll until the event has propagated and both APIs agree.
-    await withRetry(() => assert.thatResponsesMatch('getEvent', requestData), { retries: 6, waitMs: 5000 })
+    await withRetry(() => assert.thatResponsesMatch('getEvent', requestData))
   })
 
   test('for missing parameters', async ({ assert }) => {

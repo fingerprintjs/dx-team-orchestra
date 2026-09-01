@@ -20,18 +20,16 @@ test.describe('SearchEvents suite', () => {
     const end = new Date().getTime() + 60_000
 
     // Poll until the event has propagated and both APIs agree.
-    await withRetry(
-      () =>
-        assert.thatResponsesMatch('searchEvents', {
-          visitor_id,
-          linked_id: linkedId,
-          start,
-          end,
-          limit: 10,
-          api_key: testData.credentials.maxFeaturesUS.privateKey,
-          region: testData.credentials.maxFeaturesUS.region,
-        }),
-      { retries: 6, waitMs: 5000 }
+    await withRetry(() =>
+      assert.thatResponsesMatch('searchEvents', {
+        visitor_id,
+        linked_id: linkedId,
+        start,
+        end,
+        limit: 10,
+        api_key: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+      })
     )
   })
 
@@ -54,36 +52,30 @@ test.describe('SearchEvents suite', () => {
 
     // Poll until both events (from the two environments) have propagated.
     let environmentIds: (string | undefined)[] = []
-    await withRetry(
-      async () => {
-        const result = await sdkApi.searchEvents({
-          api_key: unscopedKey,
-          region: testData.credentials.maxFeaturesUS.region,
-          limit: 10,
-          linked_id: linkedId,
-        })
+    await withRetry(async () => {
+      const result = await sdkApi.searchEvents({
+        api_key: unscopedKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        limit: 10,
+        linked_id: linkedId,
+      })
 
-        environmentIds = result.data?.events?.map((event) => event.environment_id)?.filter(Boolean) ?? []
+      environmentIds = result.data?.events?.map((event) => event.environment_id)?.filter(Boolean) ?? []
 
-        expect(environmentIds).toHaveLength(2)
-      },
-      { retries: 6, waitMs: 5000 }
-    )
+      expect(environmentIds).toHaveLength(2)
+    })
 
-    await withRetry(
-      async () => {
-        const sdkResultsByEnv = await sdkApi.searchEvents({
-          api_key: unscopedKey,
-          region: testData.credentials.maxFeaturesUS.region,
-          limit: 10,
-          environment: environmentIds,
-          linked_id: linkedId,
-        })
+    await withRetry(async () => {
+      const sdkResultsByEnv = await sdkApi.searchEvents({
+        api_key: unscopedKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        limit: 10,
+        environment: environmentIds,
+        linked_id: linkedId,
+      })
 
-        expect(sdkResultsByEnv.data?.events ?? []).toHaveLength(2)
-      },
-      { retries: 6, waitMs: 5000 }
-    )
+      expect(sdkResultsByEnv.data?.events ?? []).toHaveLength(2)
+    })
   })
 
   test('with invalid limit', async ({ assert }) => {
@@ -191,14 +183,12 @@ test.describe('SearchEvents suite', () => {
     })
 
     // Poll until the event has propagated instead of waiting a fixed amount of time.
-    const { data: event } = await withRetry(
-      () =>
-        fingerprintApi.getEvent({
-          api_key: testData.credentials.maxFeaturesUS.privateKey,
-          region: testData.credentials.maxFeaturesUS.region,
-          event_id,
-        }),
-      { retries: 6, waitMs: 5000 }
+    const { data: event } = await withRetry(() =>
+      fingerprintApi.getEvent({
+        api_key: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        event_id,
+      })
     )
 
     // Use timestamp from the event to create start and end times
@@ -307,48 +297,42 @@ test.describe('SearchEvents suite', () => {
     }
 
     // Poll until the event is indexed for search instead of asserting once.
-    await withRetry(
-      async () => {
-        const result = await sdkApi.searchEvents(searchParams)
+    await withRetry(async () => {
+      const result = await sdkApi.searchEvents(searchParams)
 
-        await assert.thatResponseMatch({
-          expectedStatusCode: 200,
-          expectedResponse: {
-            events: expect.any(Array),
-          },
-          callback: async () => result,
-        })
+      await assert.thatResponseMatch({
+        expectedStatusCode: 200,
+        expectedResponse: {
+          events: expect.any(Array),
+        },
+        callback: async () => result,
+      })
 
-        expect(result.data.events).toHaveLength(1)
-      },
-      { retries: 6, waitMs: 5000 }
-    )
+      expect(result.data.events).toHaveLength(1)
+    })
   })
 
   test('with reverse params', async ({ sdkApi }) => {
     // Relies on events already existing in the workspace — poll until enough have propagated.
-    await withRetry(
-      async () => {
-        const { data: normalData } = await sdkApi.searchEvents({
-          api_key: testData.credentials.maxFeaturesUS.privateKey,
-          region: testData.credentials.maxFeaturesUS.region,
-          limit: 10,
-          reverse: false,
-        })
-        const { data: reversedData } = await sdkApi.searchEvents({
-          api_key: testData.credentials.maxFeaturesUS.privateKey,
-          region: testData.credentials.maxFeaturesUS.region,
-          limit: 10,
-          reverse: true,
-        })
+    await withRetry(async () => {
+      const { data: normalData } = await sdkApi.searchEvents({
+        api_key: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        limit: 10,
+        reverse: false,
+      })
+      const { data: reversedData } = await sdkApi.searchEvents({
+        api_key: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        limit: 10,
+        reverse: true,
+      })
 
-        expect(normalData.events).toHaveLength(10)
-        expect(reversedData.events).toHaveLength(10)
+      expect(normalData.events).toHaveLength(10)
+      expect(reversedData.events).toHaveLength(10)
 
-        expect(normalData.events[0].timestamp).toBeGreaterThanOrEqual(reversedData.events[0].timestamp)
-      },
-      { retries: 6, waitMs: 5000 }
-    )
+      expect(normalData.events[0].timestamp).toBeGreaterThanOrEqual(reversedData.events[0].timestamp)
+    })
   })
 
   test('with paginationKey', async ({ fingerprintApi, assert }) => {
@@ -450,68 +434,57 @@ test.describe('SearchEvents suite', () => {
 
     await delay(5000)
 
-    const dataWithoutDateFilter = await withRetry(
-      async () => {
-        const { data } = await sdkApi.searchEvents({
-          limit: 2,
-          api_key: testData.credentials.maxFeaturesUS.privateKey,
-          region: testData.credentials.maxFeaturesUS.region,
-          linked_id: linkedId,
-        })
+    const dataWithoutDateFilter = await withRetry(async () => {
+      const { data } = await sdkApi.searchEvents({
+        limit: 2,
+        api_key: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        linked_id: linkedId,
+      })
 
-        expect(data.events).toHaveLength(2)
+      expect(data.events).toHaveLength(2)
 
-        return data
-      },
-      {
-        waitMs: 5000,
-      }
-    )
+      return data
+    })
 
     const [event] = dataWithoutDateFilter.events
 
     // Poll until the date-filtered query is indexed.
-    await withRetry(
-      async () => {
+    await withRetry(async () => {
+      const { data: dataWithFilter } = await sdkApi.searchEvents({
+        limit: 2,
+        visitor_id: event.identification.visitor_id,
+        api_key: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        start: event.timestamp - 10,
+        end: supportsStartEndDateTime() ? event.timestamp + 10 : new Date(event.timestamp + 10).toISOString(),
+        linked_id: linkedId,
+      })
+
+      expect(dataWithFilter.events).toHaveLength(1)
+      expect(dataWithFilter.events[0].linked_id).toBe(linkedId)
+    })
+
+    if (supportsStartEndDateTime()) {
+      await withRetry(async () => {
         const { data: dataWithFilter } = await sdkApi.searchEvents({
           limit: 2,
           visitor_id: event.identification.visitor_id,
           api_key: testData.credentials.maxFeaturesUS.privateKey,
           region: testData.credentials.maxFeaturesUS.region,
-          start: event.timestamp - 10,
-          end: supportsStartEndDateTime() ? event.timestamp + 10 : new Date(event.timestamp + 10).toISOString(),
+          // If start_date_time and end_date_time are supported, it is expected that the
+          // test app will give them higher precedence. If they aren't supported correctly,
+          // this time period will not return any events.
+          start: event.timestamp - 1000,
+          end: event.timestamp - 500,
+          start_date_time: new Date(event.timestamp - 10).toISOString(),
+          end_date_time: new Date(event.timestamp + 10).toISOString(),
           linked_id: linkedId,
         })
 
         expect(dataWithFilter.events).toHaveLength(1)
         expect(dataWithFilter.events[0].linked_id).toBe(linkedId)
-      },
-      { retries: 6, waitMs: 5000 }
-    )
-
-    if (supportsStartEndDateTime()) {
-      await withRetry(
-        async () => {
-          const { data: dataWithFilter } = await sdkApi.searchEvents({
-            limit: 2,
-            visitor_id: event.identification.visitor_id,
-            api_key: testData.credentials.maxFeaturesUS.privateKey,
-            region: testData.credentials.maxFeaturesUS.region,
-            // If start_date_time and end_date_time are supported, it is expected that the
-            // test app will give them higher precedence. If they aren't supported correctly,
-            // this time period will not return any events.
-            start: event.timestamp - 1000,
-            end: event.timestamp - 500,
-            start_date_time: new Date(event.timestamp - 10).toISOString(),
-            end_date_time: new Date(event.timestamp + 10).toISOString(),
-            linked_id: linkedId,
-          })
-
-          expect(dataWithFilter.events).toHaveLength(1)
-          expect(dataWithFilter.events[0].linked_id).toBe(linkedId)
-        },
-        { retries: 6, waitMs: 5000 }
-      )
+      })
     }
   })
 
