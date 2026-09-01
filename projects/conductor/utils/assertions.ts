@@ -2,6 +2,7 @@ import { ExtractFingerprintApiReturnType, FingerprintApi, GetEventsParams } from
 import { expect } from '@playwright/test'
 import { JsonResponse } from './http'
 import { withRetry } from './retry'
+import { normalizeTimestamps } from './normalizeTimestamps'
 import { EventsGetResponse } from '@fingerprintjs/fingerprintjs-pro-server-api'
 
 interface ThatResponseMatchParams {
@@ -31,8 +32,10 @@ export class Assertions {
     const realResponse: JsonResponse<any> = await this.fingerprintApi[method].call(this.fingerprintApi, ...params)
     const sdkResponse: JsonResponse<any> = await this.sdksApi[method].call(this.sdksApi, ...params)
 
-    const realData = { ...realResponse.data }
-    const sdkData = { ...sdkResponse.data }
+    // Normalize timestamp formatting (some SDKs trim trailing zeros in the ms
+    // fraction) so equivalent instants compare equal.
+    const realData = normalizeTimestamps({ ...realResponse.data })
+    const sdkData = normalizeTimestamps({ ...sdkResponse.data })
 
     if (method === 'searchEvents') {
       // The pagination  will be different in each response so just validate that
@@ -53,7 +56,7 @@ export class Assertions {
       retries: 6,
       waitMs: 5000,
     })
-    expect(sealedData).toMatchObject(originalEvent)
+    expect(normalizeTimestamps(sealedData)).toMatchObject(normalizeTimestamps(originalEvent) as Record<string, unknown>)
   }
 
   /**

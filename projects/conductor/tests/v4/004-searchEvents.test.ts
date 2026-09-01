@@ -15,18 +15,24 @@ test.describe('SearchEvents suite', () => {
       linkedId,
     })
 
-    // Wait for event to propagate
-    await delay(5000)
+    // Fixed window captured once so polling does not shift it past the event.
+    const start = new Date().getTime() - 10_000
+    const end = new Date().getTime() + 60_000
 
-    await assert.thatResponsesMatch('searchEvents', {
-      visitor_id,
-      linked_id: linkedId,
-      start: new Date().getTime() - 10_000,
-      end: new Date().getTime() + 10_000,
-      limit: 10,
-      api_key: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-    })
+    // Poll until the event has propagated and both APIs agree.
+    await withRetry(
+      () =>
+        assert.thatResponsesMatch('searchEvents', {
+          visitor_id,
+          linked_id: linkedId,
+          start,
+          end,
+          limit: 10,
+          api_key: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+        }),
+      { retries: 6, waitMs: 5000 }
+    )
   })
 
   test('with multiple environments', async ({ identify, sdkApi }) => {
@@ -320,23 +326,29 @@ test.describe('SearchEvents suite', () => {
   })
 
   test('with reverse params', async ({ sdkApi }) => {
-    const { data: normalData } = await sdkApi.searchEvents({
-      api_key: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      limit: 10,
-      reverse: false,
-    })
-    const { data: reversedData } = await sdkApi.searchEvents({
-      api_key: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      limit: 10,
-      reverse: true,
-    })
+    // Relies on events already existing in the workspace — poll until enough have propagated.
+    await withRetry(
+      async () => {
+        const { data: normalData } = await sdkApi.searchEvents({
+          api_key: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          limit: 10,
+          reverse: false,
+        })
+        const { data: reversedData } = await sdkApi.searchEvents({
+          api_key: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          limit: 10,
+          reverse: true,
+        })
 
-    expect(normalData.events).toHaveLength(10)
-    expect(reversedData.events).toHaveLength(10)
+        expect(normalData.events).toHaveLength(10)
+        expect(reversedData.events).toHaveLength(10)
 
-    expect(normalData.events[0].timestamp).toBeGreaterThanOrEqual(reversedData.events[0].timestamp)
+        expect(normalData.events[0].timestamp).toBeGreaterThanOrEqual(reversedData.events[0].timestamp)
+      },
+      { retries: 6, waitMs: 5000 }
+    )
   })
 
   test('with paginationKey', async ({ fingerprintApi, assert }) => {
@@ -355,7 +367,7 @@ test.describe('SearchEvents suite', () => {
       region: testData.credentials.maxFeaturesUS.region,
     })
 
-    expect(originalResult.events.length).toBe(1)
+    expect(paginatedResult.events.length).toBe(1)
     expect(paginatedResult.events[0].event_id).not.toEqual(originalResult.events[0].event_id)
   })
 
@@ -377,7 +389,7 @@ test.describe('SearchEvents suite', () => {
       region: testData.credentials.maxFeaturesUS.region,
     })
 
-    expect(originalResult.events.length).toBe(1)
+    expect(paginatedResult.events.length).toBe(1)
     expect(paginatedResult.events[0].event_id).not.toEqual(originalResult.events[0].event_id)
   })
 
@@ -458,37 +470,48 @@ test.describe('SearchEvents suite', () => {
 
     const [event] = dataWithoutDateFilter.events
 
-    const { data: dataWithFilter } = await sdkApi.searchEvents({
-      limit: 2,
-      visitor_id: event.identification.visitor_id,
-      api_key: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      start: event.timestamp - 10,
-      end: supportsStartEndDateTime() ? event.timestamp + 10 : new Date(event.timestamp + 10).toISOString(),
-      linked_id: linkedId,
-    })
+    // Poll until the date-filtered query is indexed.
+    await withRetry(
+      async () => {
+        const { data: dataWithFilter } = await sdkApi.searchEvents({
+          limit: 2,
+          visitor_id: event.identification.visitor_id,
+          api_key: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          start: event.timestamp - 10,
+          end: supportsStartEndDateTime() ? event.timestamp + 10 : new Date(event.timestamp + 10).toISOString(),
+          linked_id: linkedId,
+        })
 
-    expect(dataWithFilter.events).toHaveLength(1)
-    expect(dataWithFilter.events[0].linked_id).toBe(linkedId)
+        expect(dataWithFilter.events).toHaveLength(1)
+        expect(dataWithFilter.events[0].linked_id).toBe(linkedId)
+      },
+      { retries: 6, waitMs: 5000 }
+    )
 
     if (supportsStartEndDateTime()) {
-      const { data: dataWithFilter } = await sdkApi.searchEvents({
-        limit: 2,
-        visitor_id: event.identification.visitor_id,
-        api_key: testData.credentials.maxFeaturesUS.privateKey,
-        region: testData.credentials.maxFeaturesUS.region,
-        // If start_date_time and end_date_time are supported, it is expected that the
-        // test app will give them higher precedence. If they aren't supported correctly,
-        // this time period will not return any events.
-        start: event.timestamp - 1000,
-        end: event.timestamp - 500,
-        start_date_time: new Date(event.timestamp - 10).toISOString(),
-        end_date_time: new Date(event.timestamp + 10).toISOString(),
-        linked_id: linkedId,
-      })
+      await withRetry(
+        async () => {
+          const { data: dataWithFilter } = await sdkApi.searchEvents({
+            limit: 2,
+            visitor_id: event.identification.visitor_id,
+            api_key: testData.credentials.maxFeaturesUS.privateKey,
+            region: testData.credentials.maxFeaturesUS.region,
+            // If start_date_time and end_date_time are supported, it is expected that the
+            // test app will give them higher precedence. If they aren't supported correctly,
+            // this time period will not return any events.
+            start: event.timestamp - 1000,
+            end: event.timestamp - 500,
+            start_date_time: new Date(event.timestamp - 10).toISOString(),
+            end_date_time: new Date(event.timestamp + 10).toISOString(),
+            linked_id: linkedId,
+          })
 
-      expect(dataWithFilter.events).toHaveLength(1)
-      expect(dataWithFilter.events[0].linked_id).toBe(linkedId)
+          expect(dataWithFilter.events).toHaveLength(1)
+          expect(dataWithFilter.events[0].linked_id).toBe(linkedId)
+        },
+        { retries: 6, waitMs: 5000 }
+      )
     }
   })
 

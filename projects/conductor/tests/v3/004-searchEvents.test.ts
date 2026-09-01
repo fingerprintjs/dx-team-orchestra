@@ -232,24 +232,30 @@ test.describe('SearchEvents suite', () => {
   })
 
   test('with reverse params', async ({ sdkApi }) => {
-    const { data: normalData } = await sdkApi.searchEvents({
-      apiKey: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      limit: 10,
-      reverse: false,
-    })
-    const { data: reversedData } = await sdkApi.searchEvents({
-      apiKey: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      limit: 10,
-      reverse: true,
-    })
+    // Relies on events already existing in the workspace — poll until enough have propagated.
+    await withRetry(
+      async () => {
+        const { data: normalData } = await sdkApi.searchEvents({
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          limit: 10,
+          reverse: false,
+        })
+        const { data: reversedData } = await sdkApi.searchEvents({
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          limit: 10,
+          reverse: true,
+        })
 
-    expect(normalData.events).toHaveLength(10)
-    expect(reversedData.events).toHaveLength(10)
+        expect(normalData.events).toHaveLength(10)
+        expect(reversedData.events).toHaveLength(10)
 
-    expect(normalData.events[0].products.identification.data.timestamp).toBeGreaterThanOrEqual(
-      reversedData.events[0].products.identification.data.timestamp
+        expect(normalData.events[0].products.identification.data.timestamp).toBeGreaterThanOrEqual(
+          reversedData.events[0].products.identification.data.timestamp
+        )
+      },
+      { retries: 6, waitMs: 5000 }
     )
   })
 
@@ -269,7 +275,7 @@ test.describe('SearchEvents suite', () => {
       region: testData.credentials.maxFeaturesUS.region,
     })
 
-    expect(originalResult.events.length).toBe(1)
+    expect(paginatedResult.events.length).toBe(1)
     expect(paginatedResult.events[0].products.identification.data.requestId).not.toEqual(
       originalResult.events[0].products.identification.data.requestId
     )
@@ -293,7 +299,7 @@ test.describe('SearchEvents suite', () => {
       region: testData.credentials.maxFeaturesUS.region,
     })
 
-    expect(originalResult.events.length).toBe(1)
+    expect(paginatedResult.events.length).toBe(1)
     expect(paginatedResult.events[0].products.identification.data.requestId).not.toEqual(
       originalResult.events[0].products.identification.data.requestId
     )
