@@ -1,6 +1,6 @@
 import { test as pwTest } from '@playwright/test'
 import { identify, IdentifyOptions, IdentifyResult } from '../../htmlScripts/runIdentification_v4'
-import { cleanupVisitors, VisitorData } from './fingerprint'
+import { recordVisitorForCleanup } from '../cleanupCollector'
 import { Credential } from '../testData'
 import { DecryptionAlgorithm, unsealEventsResponse } from '@fingerprint/node-sdk'
 import { FingerprintV4Api, RealFingerprintV4Api, SdkFingerprintV4Api } from './api'
@@ -27,9 +27,7 @@ export const test = pwTest.extend<Fixture>({
 
     await use(identifyBulk)
   },
-  identify: async ({ browser, fingerprintApi }, use) => {
-    const visitors: VisitorData[] = []
-
+  identify: async ({ browser }, use) => {
     const wrappedIdentify = async (options: Readonly<TestIdentifyOptions>) => {
       const result = await identify(browser, {
         ...options,
@@ -55,18 +53,13 @@ export const test = pwTest.extend<Fixture>({
           visitorId = result.visitor_id
         }
 
-        visitors.push({
-          visitorId,
-          auth: options.auth,
-        })
+        recordVisitorForCleanup(visitorId, options.auth.keyRef)
       }
 
       return result
     }
 
     await use(wrappedIdentify)
-
-    await cleanupVisitors(fingerprintApi, visitors)
   },
   fingerprintApi: async ({ request }, use) => {
     await use(new RealFingerprintV4Api(request))

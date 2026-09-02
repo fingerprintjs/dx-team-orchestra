@@ -213,6 +213,15 @@ jobs:
           sha: ${{ env.COMMIT_SHA }}
           target_url: ${{ env.TARGET_URL }}
 
+      - name: Upload collected visitor ids for cleanup
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visitors-${{ github.job }}
+          path: projects/conductor/.cleanup/visitors.jsonl
+          if-no-files-found: ignore
+          retention-days: 1
+
   run-java-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-java-sdk-tests || github.event.client_payload.run-java-sdk-tests }}
     runs-on: ubuntu-latest
@@ -379,6 +388,15 @@ jobs:
           sha: ${{ env.COMMIT_SHA }}
           target_url: ${{ env.TARGET_URL }}
 
+      - name: Upload collected visitor ids for cleanup
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visitors-${{ github.job }}
+          path: projects/conductor/.cleanup/visitors.jsonl
+          if-no-files-found: ignore
+          retention-days: 1
+
   run-dotnet-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-dotnet-sdk-tests || github.event.client_payload.run-dotnet-sdk-tests }}
     runs-on: ubuntu-latest
@@ -538,6 +556,15 @@ jobs:
           state: 'success'
           sha: ${{ env.COMMIT_SHA }}
           target_url: ${{ env.TARGET_URL }}
+
+      - name: Upload collected visitor ids for cleanup
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visitors-${{ github.job }}
+          path: projects/conductor/.cleanup/visitors.jsonl
+          if-no-files-found: ignore
+          retention-days: 1
 
   run-go-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-go-sdk-tests || github.event.client_payload.run-go-sdk-tests }}
@@ -711,6 +738,15 @@ jobs:
           sha: ${{ env.COMMIT_SHA }}
           target_url: ${{ env.TARGET_URL }}
 
+      - name: Upload collected visitor ids for cleanup
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visitors-${{ github.job }}
+          path: projects/conductor/.cleanup/visitors.jsonl
+          if-no-files-found: ignore
+          retention-days: 1
+
   run-python-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-python-sdk-tests || github.event.client_payload.run-python-sdk-tests }}
     runs-on: ubuntu-latest
@@ -867,6 +903,15 @@ jobs:
           state: 'success'
           sha: ${{ env.COMMIT_SHA }}
           target_url: ${{ env.TARGET_URL }}
+
+      - name: Upload collected visitor ids for cleanup
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visitors-${{ github.job }}
+          path: projects/conductor/.cleanup/visitors.jsonl
+          if-no-files-found: ignore
+          retention-days: 1
 
   run-php-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-php-sdk-tests || github.event.client_payload.run-php-sdk-tests }}
@@ -1033,6 +1078,49 @@ jobs:
           state: 'success'
           sha: ${{ env.COMMIT_SHA }}
           target_url: ${{ env.TARGET_URL }}
+
+      - name: Upload collected visitor ids for cleanup
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visitors-${{ github.job }}
+          path: projects/conductor/.cleanup/visitors.jsonl
+          if-no-files-found: ignore
+          retention-days: 1
+
+  cleanup-visitors:
+    name: 'Cleanup visitors'
+    needs:
+      - run-node-sdk-tests
+      - run-java-sdk-tests
+      - run-dotnet-sdk-tests
+      - run-go-sdk-tests
+      - run-python-sdk-tests
+      - run-php-sdk-tests
+    # Runs after all SDK jobs regardless of their outcome. It is independent from
+    # check-test-results, so publishing the test result never waits for cleanup.
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 'lts/*'
+
+      - name: Download collected visitor ids
+        uses: actions/download-artifact@v8
+        with:
+          path: collected
+          pattern: visitors-*
+
+      - name: Delete collected visitors
+        env:
+          MAXIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_UNSCOPED_PRIVATE_KEY }}
+          MINIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_UNSCOPED_PRIVATE_KEY }}
+        run: node projects/conductor/scripts/cleanup-visitors.ts collected
 
   check-test-results:
     needs:

@@ -3,7 +3,7 @@ import { FingerprintApi, RealFingerprintApi, SdkFingerprintApi } from './api'
 import { Assertions } from './assertions'
 import { identify, IdentifyOptions } from '../htmlScripts/runIdentification'
 import { ExtendedGetResult } from '@fingerprintjs/fingerprintjs-pro'
-import { cleanupVisitors, VisitorData } from './fingerprint'
+import { recordVisitorForCleanup } from './cleanupCollector'
 import { Credential } from './testData'
 import { DecryptionAlgorithm, unsealEventsResponse } from '@fingerprintjs/fingerprintjs-pro-server-api'
 
@@ -28,9 +28,7 @@ export const test = pwTest.extend<Fixture>({
 
     await use(identifyBulk)
   },
-  identify: async ({ browser, fingerprintApi }, use) => {
-    const visitors: VisitorData[] = []
-
+  identify: async ({ browser }, use) => {
     const wrappedIdentify = async (options: Readonly<TestIdentifyOptions>) => {
       const result = await identify(browser, {
         ...options,
@@ -56,18 +54,13 @@ export const test = pwTest.extend<Fixture>({
           visitorId = result.visitorId
         }
 
-        visitors.push({
-          visitorId,
-          auth: options.auth,
-        })
+        recordVisitorForCleanup(visitorId, options.auth.keyRef)
       }
 
       return result
     }
 
     await use(wrappedIdentify)
-
-    await cleanupVisitors(fingerprintApi, visitors)
   },
   fingerprintApi: async ({ request }, use) => {
     await use(new RealFingerprintApi(request))
