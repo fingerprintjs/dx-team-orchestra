@@ -1,7 +1,6 @@
 import { testData } from '../../utils/testData'
 import { test } from '../../utils/v4/playwright'
 import { delay } from '../../utils/delay'
-import { expect } from '@playwright/test'
 
 function waitBeforeFetch() {
   // Wait before fetching visitor after deletion
@@ -12,14 +11,14 @@ test.slow()
 
 test.describe('DeleteVisitorData Suite', () => {
   test('for valid apiKey and visitor_id with Smart Signals', async ({ identify, sdkApi, assert }) => {
-    const { visitor_id, event_id } = await identify({
+    const { visitor_id } = await identify({
       auth: testData.credentials.maxFeaturesUS,
       skipCleanup: true,
     })
 
     await sdkApi.deleteVisitor({
       visitor_id,
-      api_key: testData.credentials.maxFeaturesUS.privateKey,
+      api_key: testData.credentials.maxFeaturesUS.unscopedKey,
       region: testData.credentials.maxFeaturesUS.region,
     })
 
@@ -55,7 +54,7 @@ test.describe('DeleteVisitorData Suite', () => {
         },
         callback: (api) =>
           api.deleteVisitor({
-            api_key: testData.credentials.maxFeaturesUS.privateKey,
+            api_key: testData.credentials.maxFeaturesUS.unscopedKey,
             region: testData.credentials.maxFeaturesUS.region,
           }),
       })
@@ -98,7 +97,7 @@ test.describe('DeleteVisitorData Suite', () => {
         callback: (api) =>
           api.deleteVisitor({
             visitor_id: testData.invalid.visitorId,
-            api_key: testData.credentials.maxFeaturesUS.privateKey,
+            api_key: testData.credentials.maxFeaturesUS.unscopedKey,
             region: testData.credentials.maxFeaturesUS.region,
           }),
       })

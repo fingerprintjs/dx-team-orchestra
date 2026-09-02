@@ -17,7 +17,8 @@ test.describe('GetVisitor Suite', () => {
       visitorId,
     }
 
-    await assert.thatResponsesMatch('getVisitor', params)
+    // Poll until the visit has propagated and both APIs agree.
+    await withRetry(() => assert.thatResponsesMatch('getVisitor', params))
   })
 
   test('with invalid visitor ID and api key', async ({ assert }) => {
@@ -106,24 +107,20 @@ test.describe('GetVisitor Suite', () => {
       region: testData.credentials.maxFeaturesUS.region,
     }
 
-    const data = await withRetry(
-      async () => {
-        const { data } = await sdkApi.getVisitor(params)
-        expect(data.visits).toHaveLength(1)
-        return data
-      },
-      {
-        waitMs: 5000,
-      }
-    )
+    // Poll the whole pagination flow: both visits must have propagated so that
+    // page 1 and page 2 each return one distinct visit.
+    await withRetry(async () => {
+      const { data } = await sdkApi.getVisitor(params)
+      expect(data.visits).toHaveLength(1)
 
-    const { data: nextData } = await sdkApi.getVisitor({
-      ...params,
-      paginationKey: data.paginationKey,
+      const { data: nextData } = await sdkApi.getVisitor({
+        ...params,
+        paginationKey: data.paginationKey,
+      })
+
+      expect(nextData.visits).toHaveLength(1)
+      expect(nextData.visits).not.toEqual(data.visits)
     })
-
-    expect(nextData.visits).toHaveLength(1)
-    expect(nextData.visits).not.toEqual(data.visits)
   })
 
   test('with linked id', async ({ sdkApi, identify }) => {
@@ -133,21 +130,16 @@ test.describe('GetVisitor Suite', () => {
       linkedId,
     })
 
-    await withRetry(
-      async () => {
-        const { data } = await sdkApi.getVisitor({
-          apiKey: testData.credentials.maxFeaturesUS.privateKey,
-          linkedId,
-          visitorId,
-          requestId,
-        })
+    await withRetry(async () => {
+      const { data } = await sdkApi.getVisitor({
+        apiKey: testData.credentials.maxFeaturesUS.privateKey,
+        linkedId,
+        visitorId,
+        requestId,
+      })
 
-        expect(data.visits).toHaveLength(1)
-      },
-      {
-        waitMs: 5000,
-      }
-    )
+      expect(data.visits).toHaveLength(1)
+    })
 
     // The requestId filter takes precedence over the other filter parameters
     // now and will return the associated event with the request ID, ignoring

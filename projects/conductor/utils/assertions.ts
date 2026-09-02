@@ -1,6 +1,8 @@
 import { ExtractFingerprintApiReturnType, FingerprintApi, GetEventsParams } from './api'
 import { expect } from '@playwright/test'
 import { JsonResponse } from './http'
+import { withRetry } from './retry'
+import { normalizeTimestamps } from './normalizeTimestamps'
 import { EventsGetResponse } from '@fingerprintjs/fingerprintjs-pro-server-api'
 
 interface ThatResponseMatchParams {
@@ -30,8 +32,10 @@ export class Assertions {
     const realResponse: JsonResponse<any> = await this.fingerprintApi[method].call(this.fingerprintApi, ...params)
     const sdkResponse: JsonResponse<any> = await this.sdksApi[method].call(this.sdksApi, ...params)
 
-    const realData = { ...realResponse.data }
-    const sdkData = { ...sdkResponse.data }
+    // Normalize timestamp formatting (some SDKs trim trailing zeros in the ms
+    // fraction) so equivalent instants compare equal.
+    const realData = normalizeTimestamps({ ...realResponse.data })
+    const sdkData = normalizeTimestamps({ ...sdkResponse.data })
 
     if (method === 'searchEvents') {
       // The pagination  will be different in each response so just validate that
@@ -47,8 +51,9 @@ export class Assertions {
   }
 
   async thatUnsealedDataMatches(sealedData: EventsGetResponse, params: GetEventsParams) {
-    const { data: originalEvent } = await this.fingerprintApi.getEvent(params)
-    expect(sealedData).toMatchObject(originalEvent)
+    // Poll until the event has propagated instead of failing on a not-yet-ready event.
+    const { data: originalEvent } = await withRetry(() => this.fingerprintApi.getEvent(params))
+    expect(normalizeTimestamps(sealedData)).toMatchObject(normalizeTimestamps(originalEvent) as Record<string, unknown>)
   }
 
   /**

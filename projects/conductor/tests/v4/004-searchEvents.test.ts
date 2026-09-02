@@ -3,6 +3,7 @@ import testData, { supportsStartEndDateTime } from '../../utils/testData'
 import { expect } from '@playwright/test'
 import { delay } from '../../utils/delay'
 import { SearchEventsFilter } from '@fingerprint/node-sdk'
+import { SearchEventsParams } from '../../utils/v4/api'
 import { withRetry } from '../../utils/retry'
 
 test.describe('SearchEvents suite', () => {
@@ -14,18 +15,22 @@ test.describe('SearchEvents suite', () => {
       linkedId,
     })
 
-    // Wait for event to propagate
-    await delay(5000)
+    // Fixed window captured once so polling does not shift it past the event.
+    const start = new Date().getTime() - 10_000
+    const end = new Date().getTime() + 60_000
 
-    await assert.thatResponsesMatch('searchEvents', {
-      visitor_id,
-      linked_id: linkedId,
-      start: new Date().getTime() - 10_000,
-      end: new Date().getTime() + 10_000,
-      limit: 10,
-      api_key: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-    })
+    // Poll until the event has propagated and both APIs agree.
+    await withRetry(() =>
+      assert.thatResponsesMatch('searchEvents', {
+        visitor_id,
+        linked_id: linkedId,
+        start,
+        end,
+        limit: 10,
+        api_key: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+      })
+    )
   })
 
   test('with multiple environments', async ({ identify, sdkApi }) => {
@@ -41,36 +46,36 @@ test.describe('SearchEvents suite', () => {
       linkedId,
     })
 
-    // Wait for event to propagate
-    await delay(5000)
+    // Events live in two different environments (default + sealed). A scoped key only
+    // sees its own environment, so use the unscoped key to see across both.
+    const unscopedKey = testData.credentials.maxFeaturesUS.unscopedKey
 
-    const result = await sdkApi.searchEvents({
-      api_key: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      limit: 10,
-      linked_id: linkedId,
+    // Poll until both events (from the two environments) have propagated.
+    let environmentIds: (string | undefined)[] = []
+    await withRetry(async () => {
+      const result = await sdkApi.searchEvents({
+        api_key: unscopedKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        limit: 10,
+        linked_id: linkedId,
+      })
+
+      environmentIds = result.data?.events?.map((event) => event.environment_id)?.filter(Boolean) ?? []
+
+      expect(environmentIds).toHaveLength(2)
     })
 
-    const environmentIds = result.data?.events?.map((event) => event.environment_id)?.filter(Boolean) ?? []
+    await withRetry(async () => {
+      const sdkResultsByEnv = await sdkApi.searchEvents({
+        api_key: unscopedKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        limit: 10,
+        environment: environmentIds,
+        linked_id: linkedId,
+      })
 
-    expect(environmentIds).toHaveLength(2)
-
-    await withRetry(
-      async () => {
-        const sdkResultsByEnv = await sdkApi.searchEvents({
-          api_key: testData.credentials.maxFeaturesUS.privateKey,
-          region: testData.credentials.maxFeaturesUS.region,
-          limit: 10,
-          environment: environmentIds,
-          linked_id: linkedId,
-        })
-
-        expect(sdkResultsByEnv.data?.events ?? []).toHaveLength(2)
-      },
-      {
-        waitMs: 5000,
-      }
-    )
+      expect(sdkResultsByEnv.data?.events ?? []).toHaveLength(2)
+    })
   })
 
   test('with invalid limit', async ({ assert }) => {
@@ -127,13 +132,36 @@ test.describe('SearchEvents suite', () => {
     })
   })
 
-  test('with environment as incorrect array params', async ({ identify, assert }) => {
+  test('with incorrect environment array params and an unscoped key', async ({ identify, assert }) => {
     const { visitor_id } = await identify({
       auth: testData.credentials.maxFeaturesUS,
     })
 
+    // An unscoped key is not environment-restricted, so incorrect environment
+    // values are effectively ignored and the request still succeeds.
     await assert.thatResponseMatch({
       expectedStatusCode: 200,
+      callback: (api) =>
+        api.searchEvents({
+          api_key: testData.credentials.maxFeaturesUS.unscopedKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          limit: 10,
+          visitor_id,
+          environment: [null, undefined],
+        }),
+    })
+  })
+
+  test('with incorrect environment array params and a scoped key', async ({ identify, assert }) => {
+    const { visitor_id } = await identify({
+      auth: testData.credentials.maxFeaturesUS,
+    })
+
+    // A scoped key may only query environments it owns, so incorrect/foreign
+    // environment values are rejected.
+    await assert.thatResponseMatch({
+      expectedStatusCode: 403,
+      expectedResponse: { error: { code: 'environment_restricted', message: 'forbidden' } },
       callback: (api) =>
         api.searchEvents({
           api_key: testData.credentials.maxFeaturesUS.privateKey,
@@ -146,20 +174,22 @@ test.describe('SearchEvents suite', () => {
   })
 
   test('with all params', async ({ identify, assert, fingerprintApi, sdkApi }) => {
-    let linkedId = `test_all_params_${Date.now()}`
+    test.slow()
+
+    const linkedId = `test_all_params_${Date.now()}`
     const { visitor_id, event_id } = await identify({
       auth: testData.credentials.maxFeaturesUS,
       linkedId,
     })
 
-    // Wait for event to propagate
-    await delay(5000)
-
-    const { data: event } = await fingerprintApi.getEvent({
-      api_key: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      event_id,
-    })
+    // Poll until the event has propagated instead of waiting a fixed amount of time.
+    const { data: event } = await withRetry(() =>
+      fingerprintApi.getEvent({
+        api_key: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        event_id,
+      })
+    )
 
     // Use timestamp from the event to create start and end times
     const timestamp = event.timestamp || Date.now()
@@ -184,7 +214,6 @@ test.describe('SearchEvents suite', () => {
         botValue = 'all'
     }
 
-    const ipValue = `${event.ip_address || '127.0.0.1'}/24`
     const vpnValue = event.vpn || undefined
     const tampering = event.tampering || undefined
     const antiDetectBrowser = event.tampering_details?.anti_detect_browser || undefined
@@ -205,7 +234,9 @@ test.describe('SearchEvents suite', () => {
     const proximityId = event.proximity?.id || undefined
     const asn = event.ip_info.v4.asn || event.ip_info.v6.asn || undefined
     const url = event.url || undefined
-    const origin = event.vpn_origin_country || undefined
+    // 'unknown' is a sentinel (no VPN), not a real origin country — don't filter by it.
+    const origin =
+      event.vpn_origin_country && event.vpn_origin_country !== 'unknown' ? event.vpn_origin_country : undefined
     const bundleId = event.bundle_id || undefined
     const torNode = event.ip_blocklist.tor_node || undefined
     const packageName = event.package_name || undefined
@@ -217,7 +248,7 @@ test.describe('SearchEvents suite', () => {
     const botInfoName = event.bot_info?.name ? [event.bot_info.name] : undefined
     const activeCall = event.active_call ?? undefined
 
-    const result = await sdkApi.searchEvents({
+    const searchParams: SearchEventsParams = {
       api_key: testData.credentials.maxFeaturesUS.privateKey,
       region: testData.credentials.maxFeaturesUS.region,
       limit: 10,
@@ -226,7 +257,6 @@ test.describe('SearchEvents suite', () => {
       linked_id: linkedId,
       start,
       end,
-      //ip_address: ipValue,
       reverse: false,
       suspect: event.suspect || undefined,
       vpn: vpnValue,
@@ -264,37 +294,45 @@ test.describe('SearchEvents suite', () => {
       bot_info_provider: botInfoProvider,
       bot_info_name: botInfoName,
       active_call: activeCall,
-    })
+    }
 
-    await assert.thatResponseMatch({
-      expectedStatusCode: 200,
-      expectedResponse: {
-        events: expect.any(Array),
-      },
-      callback: async () => result,
-    })
+    // Poll until the event is indexed for search instead of asserting once.
+    await withRetry(async () => {
+      const result = await sdkApi.searchEvents(searchParams)
 
-    expect(result.data.events).toHaveLength(1)
+      await assert.thatResponseMatch({
+        expectedStatusCode: 200,
+        expectedResponse: {
+          events: expect.any(Array),
+        },
+        callback: async () => result,
+      })
+
+      expect(result.data.events).toHaveLength(1)
+    })
   })
 
   test('with reverse params', async ({ sdkApi }) => {
-    const { data: normalData } = await sdkApi.searchEvents({
-      api_key: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      limit: 10,
-      reverse: false,
-    })
-    const { data: reversedData } = await sdkApi.searchEvents({
-      api_key: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      limit: 10,
-      reverse: true,
-    })
+    // Relies on events already existing in the workspace — poll until enough have propagated.
+    await withRetry(async () => {
+      const { data: normalData } = await sdkApi.searchEvents({
+        api_key: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        limit: 10,
+        reverse: false,
+      })
+      const { data: reversedData } = await sdkApi.searchEvents({
+        api_key: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        limit: 10,
+        reverse: true,
+      })
 
-    expect(normalData.events).toHaveLength(10)
-    expect(reversedData.events).toHaveLength(10)
+      expect(normalData.events).toHaveLength(10)
+      expect(reversedData.events).toHaveLength(10)
 
-    expect(normalData.events[0].timestamp).toBeGreaterThanOrEqual(reversedData.events[0].timestamp)
+      expect(normalData.events[0].timestamp).toBeGreaterThanOrEqual(reversedData.events[0].timestamp)
+    })
   })
 
   test('with paginationKey', async ({ fingerprintApi, assert }) => {
@@ -313,7 +351,7 @@ test.describe('SearchEvents suite', () => {
       region: testData.credentials.maxFeaturesUS.region,
     })
 
-    expect(originalResult.events.length).toBe(1)
+    expect(paginatedResult.events.length).toBe(1)
     expect(paginatedResult.events[0].event_id).not.toEqual(originalResult.events[0].event_id)
   })
 
@@ -335,7 +373,7 @@ test.describe('SearchEvents suite', () => {
       region: testData.credentials.maxFeaturesUS.region,
     })
 
-    expect(originalResult.events.length).toBe(1)
+    expect(paginatedResult.events.length).toBe(1)
     expect(paginatedResult.events[0].event_id).not.toEqual(originalResult.events[0].event_id)
   })
 
@@ -396,57 +434,57 @@ test.describe('SearchEvents suite', () => {
 
     await delay(5000)
 
-    const dataWithoutDateFilter = await withRetry(
-      async () => {
-        const { data } = await sdkApi.searchEvents({
-          limit: 2,
-          api_key: testData.credentials.maxFeaturesUS.privateKey,
-          region: testData.credentials.maxFeaturesUS.region,
-          linked_id: linkedId,
-        })
+    const dataWithoutDateFilter = await withRetry(async () => {
+      const { data } = await sdkApi.searchEvents({
+        limit: 2,
+        api_key: testData.credentials.maxFeaturesUS.privateKey,
+        region: testData.credentials.maxFeaturesUS.region,
+        linked_id: linkedId,
+      })
 
-        expect(data.events).toHaveLength(2)
+      expect(data.events).toHaveLength(2)
 
-        return data
-      },
-      {
-        waitMs: 5000,
-      }
-    )
+      return data
+    })
 
     const [event] = dataWithoutDateFilter.events
 
-    const { data: dataWithFilter } = await sdkApi.searchEvents({
-      limit: 2,
-      visitor_id: event.identification.visitor_id,
-      api_key: testData.credentials.maxFeaturesUS.privateKey,
-      region: testData.credentials.maxFeaturesUS.region,
-      start: event.timestamp - 10,
-      end: supportsStartEndDateTime() ? event.timestamp + 10 : new Date(event.timestamp + 10).toISOString(),
-      linked_id: linkedId,
-    })
-
-    expect(dataWithFilter.events).toHaveLength(1)
-    expect(dataWithFilter.events[0].linked_id).toBe(linkedId)
-
-    if (supportsStartEndDateTime()) {
+    // Poll until the date-filtered query is indexed.
+    await withRetry(async () => {
       const { data: dataWithFilter } = await sdkApi.searchEvents({
         limit: 2,
         visitor_id: event.identification.visitor_id,
         api_key: testData.credentials.maxFeaturesUS.privateKey,
         region: testData.credentials.maxFeaturesUS.region,
-        // If start_date_time and end_date_time are supported, it is expected that the
-        // test app will give them higher precedence. If they aren't supported correctly,
-        // this time period will not return any events.
-        start: event.timestamp - 1000,
-        end: event.timestamp - 500,
-        start_date_time: new Date(event.timestamp - 10).toISOString(),
-        end_date_time: new Date(event.timestamp + 10).toISOString(),
+        start: event.timestamp - 10,
+        end: supportsStartEndDateTime() ? event.timestamp + 10 : new Date(event.timestamp + 10).toISOString(),
         linked_id: linkedId,
       })
 
       expect(dataWithFilter.events).toHaveLength(1)
       expect(dataWithFilter.events[0].linked_id).toBe(linkedId)
+    })
+
+    if (supportsStartEndDateTime()) {
+      await withRetry(async () => {
+        const { data: dataWithFilter } = await sdkApi.searchEvents({
+          limit: 2,
+          visitor_id: event.identification.visitor_id,
+          api_key: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          // If start_date_time and end_date_time are supported, it is expected that the
+          // test app will give them higher precedence. If they aren't supported correctly,
+          // this time period will not return any events.
+          start: event.timestamp - 1000,
+          end: event.timestamp - 500,
+          start_date_time: new Date(event.timestamp - 10).toISOString(),
+          end_date_time: new Date(event.timestamp + 10).toISOString(),
+          linked_id: linkedId,
+        })
+
+        expect(dataWithFilter.events).toHaveLength(1)
+        expect(dataWithFilter.events[0].linked_id).toBe(linkedId)
+      })
     }
   })
 

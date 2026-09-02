@@ -1,5 +1,6 @@
 import { testData } from '../../utils/testData'
 import { test } from '../../utils/playwright'
+import { withRetry } from '../../utils/retry'
 
 test.describe('GetEvents Suite', () => {
   test('for valid apiKey and requestId with Smart Signals', async ({ identify, assert }) => {
@@ -12,7 +13,8 @@ test.describe('GetEvents Suite', () => {
       requestId,
     }
 
-    await assert.thatResponsesMatch('getEvent', requestData)
+    // Poll until the event has propagated and both APIs agree.
+    await withRetry(() => assert.thatResponsesMatch('getEvent', requestData))
   })
 
   test('for valid apiKey and requestId without Smart Signals', async ({ identify, assert }) => {
@@ -25,7 +27,8 @@ test.describe('GetEvents Suite', () => {
       requestId,
     }
 
-    await assert.thatResponsesMatch('getEvent', requestData)
+    // Poll until the event has propagated and both APIs agree.
+    await withRetry(() => assert.thatResponsesMatch('getEvent', requestData))
   })
 
   test('for missing parameters', async ({ assert }) => {

@@ -69,6 +69,7 @@ jobs:
   run-node-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-node-sdk-tests || github.event.client_payload.run-node-sdk-tests }}
     runs-on: ubuntu-latest
+    environment: node
     outputs:
       v3_test_failed: ${{ steps.v3-result.outputs.test_failed }}
       v4_test_failed: ${{ steps.v4-result.outputs.test_failed }}
@@ -138,11 +139,13 @@ jobs:
           MUSICIAN_PORT: 3002
           MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
           MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
           MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
           MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
           MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
           MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
           MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
@@ -166,11 +169,13 @@ jobs:
           MUSICIAN_PORT: 3002
           MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
           MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
           MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
           MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
           MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
           MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
           MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
@@ -211,6 +216,7 @@ jobs:
   run-java-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-java-sdk-tests || github.event.client_payload.run-java-sdk-tests }}
     runs-on: ubuntu-latest
+    environment: java
     continue-on-error: true
     outputs:
       v3_test_failed: ${{ steps.v3-result.outputs.test_failed }}
@@ -299,11 +305,13 @@ jobs:
           MUSICIAN_PORT: 8080
           MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
           MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
           MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
           MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
           MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
           MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
           MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
@@ -327,11 +335,13 @@ jobs:
           MUSICIAN_PORT: 8080
           MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
           MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
           MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
           MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
           MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
           MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
           MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
@@ -372,6 +382,7 @@ jobs:
   run-dotnet-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-dotnet-sdk-tests || github.event.client_payload.run-dotnet-sdk-tests }}
     runs-on: ubuntu-latest
+    environment: dotnet
     continue-on-error: true
     outputs:
       v3_test_failed: ${{ steps.v3-result.outputs.test_failed }}
@@ -454,11 +465,13 @@ jobs:
           MUSICIAN_PORT: 5243
           MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
           MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
           MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
           MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
           MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
           MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
           MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
@@ -482,11 +495,13 @@ jobs:
           MUSICIAN_PORT: 5243
           MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
           MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
           MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
           MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
           MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
           MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
           MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
@@ -527,6 +542,7 @@ jobs:
   run-go-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-go-sdk-tests || github.event.client_payload.run-go-sdk-tests }}
     runs-on: ubuntu-latest
+    environment: go
     continue-on-error: true
     outputs:
       v3_test_failed: ${{ steps.v3-result.outputs.test_failed }}
@@ -621,11 +637,13 @@ jobs:
           MUSICIAN_PORT: 8081
           MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
           MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
           MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
           MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
           MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
           MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
           MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
@@ -649,11 +667,13 @@ jobs:
           MUSICIAN_PORT: 8081
           MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
           MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
           MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
           MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
           MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
           MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
           MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
@@ -694,6 +714,7 @@ jobs:
   run-python-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-python-sdk-tests || github.event.client_payload.run-python-sdk-tests }}
     runs-on: ubuntu-latest
+    environment: python
     continue-on-error: true
     outputs:
       v3_test_failed: ${{ steps.v3-result.outputs.test_failed }}
@@ -773,11 +794,13 @@ jobs:
           MUSICIAN_PORT: 3003
           MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
           MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
           MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
           MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
           MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
           MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
           MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
@@ -801,11 +824,13 @@ jobs:
           MUSICIAN_PORT: 3003
           MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
           MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
           MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
           MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
           MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
           MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
           MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
@@ -846,6 +871,7 @@ jobs:
   run-php-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-php-sdk-tests || github.event.client_payload.run-php-sdk-tests }}
     runs-on: ubuntu-latest
+    environment: php
     continue-on-error: true
     outputs:
       v3_test_failed: ${{ steps.v3-result.outputs.test_failed }}
@@ -934,11 +960,13 @@ jobs:
           MUSICIAN_PORT: 3004
           MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
           MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
           MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
           MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
           MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
           MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
           MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
@@ -962,11 +990,13 @@ jobs:
           MUSICIAN_PORT: 3004
           MINIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PUBLIC_KEY }}
           MINIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MINIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MINIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MINIMUM_US_SEALED_PUBLIC_KEY }}
           MINIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_SEALED_PRIVATE_KEY }}
           MINIMUM_US_SEALED_ENCRYPTION_KEY: ${{ secrets.MINIMUM_US_SEALED_ENCRYPTION_KEY }}
           MAXIMUM_US_DEFAULT_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PUBLIC_KEY }}
           MAXIMUM_US_DEFAULT_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_PRIVATE_KEY }}
+          MAXIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_UNSCOPED_PRIVATE_KEY }}
           MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_DEFAULT_DELETED_PRIVATE_KEY }}
           MAXIMUM_US_SEALED_PUBLIC_KEY: ${{ secrets.MAXIMUM_US_SEALED_PUBLIC_KEY }}
           MAXIMUM_US_SEALED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_SEALED_PRIVATE_KEY }}
