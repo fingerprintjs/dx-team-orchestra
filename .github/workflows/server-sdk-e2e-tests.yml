@@ -96,18 +96,16 @@ jobs:
           target_url: ${{ env.TARGET_URL }}
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install pnpm
-        uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
-        with:
-          version: 9
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           cache: pnpm
-          node-version: 18
+          node-version: 'lts/*'
 
       - name: Install dependencies
         run: pnpm install
@@ -213,6 +211,15 @@ jobs:
           sha: ${{ env.COMMIT_SHA }}
           target_url: ${{ env.TARGET_URL }}
 
+      - name: Upload collected visitor ids for cleanup
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visitors-${{ github.job }}
+          path: projects/conductor/.cleanup/visitors.jsonl
+          if-no-files-found: ignore
+          retention-days: 1
+
   run-java-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-java-sdk-tests || github.event.client_payload.run-java-sdk-tests }}
     runs-on: ubuntu-latest
@@ -244,18 +251,16 @@ jobs:
           target_url: ${{ env.TARGET_URL }}
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install pnpm
-        uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
-        with:
-          version: 9
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           cache: pnpm
-          node-version: 18
+          node-version: 'lts/*'
 
       - name: Install dependencies
         run: pnpm install
@@ -265,13 +270,13 @@ jobs:
         run: pnpm playwright install --with-deps
 
       - name: Set up JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           java-version: '17'
           distribution: 'zulu'
 
       - name: Cache Gradle dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.gradle/caches
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}
@@ -379,6 +384,15 @@ jobs:
           sha: ${{ env.COMMIT_SHA }}
           target_url: ${{ env.TARGET_URL }}
 
+      - name: Upload collected visitor ids for cleanup
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visitors-${{ github.job }}
+          path: projects/conductor/.cleanup/visitors.jsonl
+          if-no-files-found: ignore
+          retention-days: 1
+
   run-dotnet-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-dotnet-sdk-tests || github.event.client_payload.run-dotnet-sdk-tests }}
     runs-on: ubuntu-latest
@@ -410,18 +424,16 @@ jobs:
           target_url: ${{ env.TARGET_URL }}
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install pnpm
-        uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
-        with:
-          version: 9
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           cache: pnpm
-          node-version: 18
+          node-version: 'lts/*'
 
       - name: Install dependencies
         run: pnpm install
@@ -431,7 +443,7 @@ jobs:
         run: pnpm playwright install --with-deps
 
       - name: Set up .NET SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '9.0'
 
@@ -539,6 +551,15 @@ jobs:
           sha: ${{ env.COMMIT_SHA }}
           target_url: ${{ env.TARGET_URL }}
 
+      - name: Upload collected visitor ids for cleanup
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visitors-${{ github.job }}
+          path: projects/conductor/.cleanup/visitors.jsonl
+          if-no-files-found: ignore
+          retention-days: 1
+
   run-go-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-go-sdk-tests || github.event.client_payload.run-go-sdk-tests }}
     runs-on: ubuntu-latest
@@ -570,18 +591,16 @@ jobs:
           target_url: ${{ env.TARGET_URL }}
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install pnpm
-        uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
-        with:
-          version: 9
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           cache: pnpm
-          node-version: 18
+          node-version: 'lts/*'
 
       - name: Install dependencies
         run: pnpm install
@@ -591,12 +610,12 @@ jobs:
         run: pnpm playwright install --with-deps
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v7
         with:
           go-version: '1.23'
 
       - name: Cache Go modules
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/go-build
@@ -711,6 +730,15 @@ jobs:
           sha: ${{ env.COMMIT_SHA }}
           target_url: ${{ env.TARGET_URL }}
 
+      - name: Upload collected visitor ids for cleanup
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visitors-${{ github.job }}
+          path: projects/conductor/.cleanup/visitors.jsonl
+          if-no-files-found: ignore
+          retention-days: 1
+
   run-python-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-python-sdk-tests || github.event.client_payload.run-python-sdk-tests }}
     runs-on: ubuntu-latest
@@ -742,18 +770,16 @@ jobs:
           target_url: ${{ env.TARGET_URL }}
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install pnpm
-        uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
-        with:
-          version: 9
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           cache: pnpm
-          node-version: 18
+          node-version: 'lts/*'
 
       - name: Install dependencies
         run: pnpm install
@@ -763,7 +789,7 @@ jobs:
         run: pnpm playwright install --with-deps
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: 3.9
 
@@ -868,6 +894,15 @@ jobs:
           sha: ${{ env.COMMIT_SHA }}
           target_url: ${{ env.TARGET_URL }}
 
+      - name: Upload collected visitor ids for cleanup
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visitors-${{ github.job }}
+          path: projects/conductor/.cleanup/visitors.jsonl
+          if-no-files-found: ignore
+          retention-days: 1
+
   run-php-sdk-tests:
     if: ${{ (github.event_name != 'workflow_dispatch' && github.event_name != 'repository_dispatch') || inputs.run-php-sdk-tests || github.event.client_payload.run-php-sdk-tests }}
     runs-on: ubuntu-latest
@@ -899,18 +934,16 @@ jobs:
           target_url: ${{ env.TARGET_URL }}
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install pnpm
-        uses: pnpm/action-setup@ac5bf11548bf5e19b8aadb8182072616590fa4a6
-        with:
-          version: 9
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v7
         with:
           cache: pnpm
-          node-version: 18
+          node-version: 'lts/*'
 
       - name: Install dependencies
         run: pnpm install
@@ -926,7 +959,7 @@ jobs:
           tools: composer:v2
 
       - name: Cache dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.composer/cache
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -1033,6 +1066,49 @@ jobs:
           state: 'success'
           sha: ${{ env.COMMIT_SHA }}
           target_url: ${{ env.TARGET_URL }}
+
+      - name: Upload collected visitor ids for cleanup
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visitors-${{ github.job }}
+          path: projects/conductor/.cleanup/visitors.jsonl
+          if-no-files-found: ignore
+          retention-days: 1
+
+  cleanup-visitors:
+    name: 'Cleanup visitors'
+    needs:
+      - run-node-sdk-tests
+      - run-java-sdk-tests
+      - run-dotnet-sdk-tests
+      - run-go-sdk-tests
+      - run-python-sdk-tests
+      - run-php-sdk-tests
+    # Runs after all SDK jobs regardless of their outcome. It is independent from
+    # check-test-results, so publishing the test result never waits for cleanup.
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 'lts/*'
+
+      - name: Download collected visitor ids
+        uses: actions/download-artifact@v8
+        with:
+          path: collected
+          pattern: visitors-*
+
+      - name: Delete collected visitors
+        env:
+          MAXIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MAXIMUM_US_UNSCOPED_PRIVATE_KEY }}
+          MINIMUM_US_UNSCOPED_PRIVATE_KEY: ${{ secrets.MINIMUM_US_UNSCOPED_PRIVATE_KEY }}
+        run: node projects/conductor/scripts/cleanup-visitors.ts collected
 
   check-test-results:
     needs:

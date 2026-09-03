@@ -305,6 +305,9 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
+# e2e visitor cleanup collection (see utils/cleanupCollector.ts)
+.cleanup/
+
 # Cython debug symbols
 cython_debug/
 

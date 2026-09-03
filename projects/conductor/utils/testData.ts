@@ -25,12 +25,17 @@ const accounts = {
   },
 }
 
+// Groups a credential with the unscoped-key "type" used to clean up its visitors
+// after a run. Matches the secret prefixes (e.g. MAXIMUM_US_UNSCOPED_PRIVATE_KEY).
+export type CleanupKeyRef = 'MAXIMUM_US' | 'MINIMUM_US'
+
 export type Credential = {
   region: string
   publicKey: string
   privateKey: string
   encryptionKey?: string
   unscopedKey?: string
+  keyRef?: CleanupKeyRef
 }
 
 export type Credentials = {
@@ -60,12 +65,14 @@ const credentials: Credentials = {
     publicKey: accounts.maximumFeatures.publicKey,
     privateKey: accounts.maximumFeatures.privateKey,
     unscopedKey: accounts.maximumFeatures.unscopedPrivateKey,
+    keyRef: 'MAXIMUM_US',
   },
   minFeaturesUS: {
     region: accounts.minimumFeatures.region,
     publicKey: accounts.minimumFeatures.publicKey,
     privateKey: accounts.minimumFeatures.privateKey,
     unscopedKey: accounts.minimumFeatures.unscopedPrivateKey,
+    keyRef: 'MINIMUM_US',
   },
   regularEU: {
     region: accounts.regular.region,
@@ -78,6 +85,7 @@ const credentials: Credentials = {
     privateKey: accounts.maximumFeatures.sealedPrivateKey,
     encryptionKey: accounts.maximumFeatures.sealedEncryptionKey,
     unscopedKey: accounts.maximumFeatures.unscopedPrivateKey,
+    keyRef: 'MAXIMUM_US',
   },
   sealedMinimumFeaturesUs: {
     region: accounts.minimumFeatures.region,
@@ -85,6 +93,7 @@ const credentials: Credentials = {
     privateKey: accounts.minimumFeatures.sealedPrivateKey,
     encryptionKey: accounts.minimumFeatures.sealedEncryptionKey,
     unscopedKey: accounts.minimumFeatures.unscopedPrivateKey,
+    keyRef: 'MINIMUM_US',
   },
   invalid: {
     publicKey: 'ftxPJdxnMlP',
