@@ -10,7 +10,7 @@
   },
   "devDependencies": {
     "@fingerprintjs/eslint-config-dx-team": "^0.1.0",
-    "@fingerprintjs/prettier-config-dx-team": "^0.2.0",
+    "@fingerprintjs/prettier-config-dx-team": "^0.3.1",
     "prettier": "^3.8.1"
   }
 }
