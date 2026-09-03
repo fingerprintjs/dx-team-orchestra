@@ -3,7 +3,7 @@ import base64
 from fingerprint_pro_server_api_sdk import unseal_event_response, DecryptionKey
 from flask import jsonify, request
 
-from musician_response import prepare_musician_response, prepare_musician_response_from_error
+from handlers.v3.musician_response import prepare_musician_response, prepare_musician_response_from_error
 
 
 def unseal():
