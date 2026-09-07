@@ -1,11 +1,6 @@
 import { testData } from '../../utils/testData'
 import { test } from '../../utils/v4/playwright'
-import { delay } from '../../utils/delay'
-
-function waitBeforeFetch() {
-  // Wait before fetching visitor after deletion
-  return delay(30000)
-}
+import { withRetry } from '../../utils/retry'
 
 test.slow()
 
@@ -16,30 +11,33 @@ test.describe('DeleteVisitorData Suite', () => {
       skipCleanup: true,
     })
 
+    // Trigger the deletion. It completes asynchronously and, unlike before,
+    // events for the deleted visitor keep being returned for some time — so we
+    // can no longer confirm deletion by querying events. Instead, re-issue the
+    // delete and poll until it reports the visitor is already gone (404).
     await sdkApi.deleteVisitor({
       visitor_id,
       api_key: testData.credentials.maxFeaturesUS.unscopedKey,
       region: testData.credentials.maxFeaturesUS.region,
     })
 
-    await waitBeforeFetch()
-
-    await assert.thatResponseMatch({
-      strict: false,
-      expectedResponse: {
-        error: {
-          code: 'visitor_not_found',
-          message: 'visitor not found',
+    await withRetry(() =>
+      assert.thatResponseMatch({
+        expectedStatusCode: 404,
+        expectedResponse: {
+          error: {
+            code: 'visitor_not_found',
+            message: 'visitor not found',
+          },
         },
-      },
-      expectedStatusCode: 404,
-      callback: (api) =>
-        api.searchEvents({
-          visitor_id,
-          api_key: testData.credentials.maxFeaturesUS.privateKey,
-          region: testData.credentials.maxFeaturesUS.region,
-        }),
-    })
+        callback: (api) =>
+          api.deleteVisitor({
+            visitor_id,
+            api_key: testData.credentials.maxFeaturesUS.unscopedKey,
+            region: testData.credentials.maxFeaturesUS.region,
+          }),
+      })
+    )
   })
 
   test.describe('DeleteVisitorData Suite 400 errors', () => {
