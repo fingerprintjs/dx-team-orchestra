@@ -8,6 +8,11 @@ CUSTOM_RENAME = {
 
 UNMODIFIED_KEYS = ["tag"]  # List of keys to keep unchanged
 
+# Keys whose value is a free-form map of arbitrary attribute names (data, not model
+# fields). Their inner keys must be kept verbatim — camelCasing them would rename
+# e.g. `app_version` -> `appVersion` and break the match against the raw API response.
+PRESERVE_SUBTREES = {"raw_device_attributes"}
+
 def to_camel_case(snake_str):
     if snake_str in CUSTOM_RENAME:
         return CUSTOM_RENAME[snake_str]
@@ -15,17 +20,23 @@ def to_camel_case(snake_str):
     parts = snake_str.split('_')
     return parts[0] + ''.join(word.capitalize() for word in parts[1:])
 
-def convert_keys_to_camel_case(obj):
+def convert_keys_to_camel_case(obj, preserve=False):
     if isinstance(obj, dict):
-        return {
+        result = {}
+        for k, v in obj.items():
             # Keep the key and its value untouched if it is listed in UNMODIFIED_KEYS
-            (k if k in UNMODIFIED_KEYS else to_camel_case(k)): (
-                v if k in UNMODIFIED_KEYS else convert_keys_to_camel_case(v)
-            )
-            for k, v in obj.items()
-        }
+            if k in UNMODIFIED_KEYS:
+                result[k] = v
+            elif preserve:
+                # Inside a free-form subtree: keep keys verbatim, keep preserving down.
+                result[k] = convert_keys_to_camel_case(v, preserve=True)
+            else:
+                result[to_camel_case(k)] = convert_keys_to_camel_case(
+                    v, preserve=k in PRESERVE_SUBTREES
+                )
+        return result
     elif isinstance(obj, list):
-        return [convert_keys_to_camel_case(i) for i in obj]
+        return [convert_keys_to_camel_case(i, preserve) for i in obj]
     elif isinstance(obj, datetime):
         iso_format = obj.strftime("%Y-%m-%dT%H:%M:%S")
         milliseconds = str(f"{obj.microsecond // 1000:03}").rstrip("0")

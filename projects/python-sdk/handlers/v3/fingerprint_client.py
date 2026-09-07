@@ -4,7 +4,7 @@ from fingerprint_pro_server_api_sdk import FingerprintApi, Configuration
 from fingerprint_pro_server_api_sdk.rest import ApiException
 from flask import request, jsonify
 
-from musician_response import prepare_musician_response, prepare_musician_response_from_error
+from handlers.v3.musician_response import prepare_musician_response, prepare_musician_response_from_error
 
 
 def create_client():
