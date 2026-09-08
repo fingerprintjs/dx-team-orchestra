@@ -59,6 +59,24 @@ test.describe('DeleteVisitorData Suite', () => {
           }),
       })
     })
+
+    test('with an invalid visitor ID that should be encoded', async ({ assert }) => {
+      await assert.thatResponseMatch({
+        expectedStatusCode: 400,
+        expectedResponse: {
+          error: {
+            code: 'request_cannot_be_parsed',
+            message: 'invalid visitor id',
+          },
+        },
+        callback: (api) =>
+          api.deleteVisitor({
+            visitor_id: '../events',
+            api_key: testData.credentials.maxFeaturesUS.unscopedKey,
+            region: testData.credentials.maxFeaturesUS.region,
+          }),
+      })
+    })
   })
 
   test.describe('403 errors', () => {
@@ -97,24 +115,6 @@ test.describe('DeleteVisitorData Suite', () => {
         callback: (api) =>
           api.deleteVisitor({
             visitor_id: testData.invalid.visitorId,
-            api_key: testData.credentials.maxFeaturesUS.unscopedKey,
-            region: testData.credentials.maxFeaturesUS.region,
-          }),
-      })
-    })
-
-    test('with a visitor ID that should be encoded', async ({ assert }) => {
-      await assert.thatResponseMatch({
-        expectedStatusCode: 404,
-        expectedResponse: {
-          error: {
-            code: 'visitor_not_found',
-            message: 'visitor not found',
-          },
-        },
-        callback: (api) =>
-          api.deleteVisitor({
-            visitor_id: '../events',
             api_key: testData.credentials.maxFeaturesUS.unscopedKey,
             region: testData.credentials.maxFeaturesUS.region,
           }),
