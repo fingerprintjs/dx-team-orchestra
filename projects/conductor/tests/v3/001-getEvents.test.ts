@@ -166,7 +166,7 @@ test.describe('GetEvents Suite', () => {
       expectedResponse: {
         error: {
           code: 'RequestNotFound',
-          message: 'request id is not found'
+          message: 'request id not found'
         }
       },
       callback: (api) =>
