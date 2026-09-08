@@ -119,4 +119,22 @@ test.describe('DeleteVisitorData Suite 404 errors', () => {
         }),
     })
   })
+
+  test('with a visitor ID that should be encoded - VisitorNotFound', async ({ assert }) => {
+    await assert.thatResponseMatch({
+      expectedStatusCode: 404,
+      expectedResponse: {
+        error: {
+          code: 'VisitorNotFound',
+          message: 'visitor not found',
+        },
+      },
+      callback: (api) =>
+        api.deleteVisitor({
+          visitorId: '../events',
+          apiKey: testData.credentials.maxFeaturesUS.unscopedKey,
+          region: testData.credentials.maxFeaturesUS.region,
+        }),
+    })
+  })
 })

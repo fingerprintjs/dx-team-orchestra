@@ -152,4 +152,19 @@ test.describe('GetVisitor Suite', () => {
 
     expect(emptyData.visits).toHaveLength(0)
   })
+
+  test('with a visitor ID that should be encoded', async ({ assert }) => {
+    await assert.thatResponseMatch({
+      expectedStatusCode: 404,
+      expectedResponse: {
+        error: 'visitor not found',
+      },
+      callback: (api) =>
+        api.getVisitor({
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          visitorId: '../events',
+        }),
+    })
+  })
 })
