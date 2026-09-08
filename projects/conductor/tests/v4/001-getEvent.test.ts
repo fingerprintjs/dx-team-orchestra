@@ -159,4 +159,22 @@ test.describe('GetEvent Suite', () => {
         }),
     })
   })
+
+  test('with an event ID that should be encoded', async ({ assert }) => {
+    await assert.thatResponseMatch({
+      expectedStatusCode: 404,
+      expectedResponse: {
+        error: {
+          code: 'event_not_found',
+          message: 'event id not found',
+        },
+      },
+      callback: (api) =>
+        api.getEvent({
+          api_key: testData.credentials.minFeaturesUS.privateKey,
+          region: testData.credentials.minFeaturesUS.region,
+          event_id: '../events',
+        }),
+    })
+  })
 })

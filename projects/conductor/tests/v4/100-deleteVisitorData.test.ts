@@ -102,5 +102,23 @@ test.describe('DeleteVisitorData Suite', () => {
           }),
       })
     })
+
+    test('with a visitor ID that should be encoded', async ({ assert }) => {
+      await assert.thatResponseMatch({
+        expectedStatusCode: 404,
+        expectedResponse: {
+          error: {
+            code: 'visitor_not_found',
+            message: 'visitor not found',
+          },
+        },
+        callback: (api) =>
+          api.deleteVisitor({
+            visitor_id: '../events',
+            api_key: testData.credentials.maxFeaturesUS.unscopedKey,
+            region: testData.credentials.maxFeaturesUS.region,
+          }),
+      })
+    })
   })
 })
