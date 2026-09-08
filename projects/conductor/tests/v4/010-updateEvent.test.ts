@@ -253,7 +253,7 @@ test.describe('UpdateEvents Suite', () => {
       })
     })
 
-    test('event_id that should be encoded - RequestNotFound', async ({ assert }) => {
+    test('event_id that should be encoded - request not found', async ({ assert }) => {
       await assert.thatResponseMatch({
         expectedResponse: {
           error: {
