@@ -36,7 +36,10 @@ test.describe('DeleteVisitorData Suite', () => {
             api_key: testData.credentials.maxFeaturesUS.unscopedKey,
             region: testData.credentials.maxFeaturesUS.region,
           }),
-      })
+      }),
+      // Each retry re-issues the delete, which counts against the delete rate
+      // limit — so we favor fewer, longer-spaced attempts over tight polling.
+      { retries: 3, waitMs: 25000 }
     )
   })
 
