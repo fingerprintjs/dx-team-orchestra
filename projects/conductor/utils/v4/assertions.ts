@@ -3,6 +3,7 @@ import { expect } from '@playwright/test'
 import { JsonResponse } from '../http'
 import { withRetry } from '../retry'
 import { normalizeTimestamps } from '../normalizeTimestamps'
+import { applySdkQuirks } from '../sdkQuirks'
 import { Event } from '@fingerprint/node-sdk'
 
 interface ThatResponseMatchParams {
@@ -33,8 +34,11 @@ export class AssertionsV4 {
     const sdkResponse: JsonResponse<any> = await this.sdksApi[method].call(this.sdksApi, ...params)
 
     // Normalize timestamp formatting (some SDKs trim trailing zeros in the ms
-    // fraction) so equivalent instants compare equal.
-    const realData = normalizeTimestamps({ ...realResponse.data })
+    // fraction) so equivalent instants compare equal, then drop the fields the
+    // SDK under test is known to omit from the expected object. No v4 SDK has a
+    // registered quirk today — v4 models use nullable types — but keeping the
+    // hook here means a future one is a one-line change in `sdkQuirks.ts`.
+    const realData = applySdkQuirks(normalizeTimestamps({ ...realResponse.data }))
     const sdkData = normalizeTimestamps({ ...sdkResponse.data })
 
     if (method === 'searchEvents') {
@@ -53,7 +57,9 @@ export class AssertionsV4 {
   async thatUnsealedDataMatches(sealedData: Event, params: GetEventsParams) {
     // Poll until the event has propagated instead of failing on a not-yet-ready event.
     const { data: originalEvent } = await withRetry(() => this.fingerprintApi.getEvent(params))
-    expect(normalizeTimestamps(sealedData)).toMatchObject(normalizeTimestamps(originalEvent) as Record<string, unknown>)
+    expect(normalizeTimestamps(sealedData)).toMatchObject(
+      applySdkQuirks(normalizeTimestamps(originalEvent)) as Record<string, unknown>
+    )
   }
 
   /**
