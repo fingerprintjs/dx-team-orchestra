@@ -33,11 +33,7 @@ export class Assertions {
     const realResponse: JsonResponse<any> = await this.fingerprintApi[method].call(this.fingerprintApi, ...params)
     const sdkResponse: JsonResponse<any> = await this.sdksApi[method].call(this.sdksApi, ...params)
 
-    // Normalize timestamp formatting (some SDKs trim trailing zeros in the ms
-    // fraction) so equivalent instants compare equal, then drop the fields the
-    // SDK under test is known to omit from the expected object.
-    const realData = applySdkQuirks(normalizeTimestamps({ ...realResponse.data }))
-    const sdkData = normalizeTimestamps({ ...sdkResponse.data })
+    const { realData, sdkData } = this.prepareRealAndSdkData(realResponse, sdkResponse)
 
     if (method === 'searchEvents') {
       // The pagination  will be different in each response so just validate that
@@ -89,5 +85,22 @@ export class Assertions {
         expect(data).toEqual(expect.objectContaining(expectedResponse as any))
       }
     }
+  }
+
+  private prepareRealAndSdkData<R, S>(
+    realResponse: JsonResponse<R>,
+    sdkResponse: JsonResponse<S>
+  ): { realData: R; sdkData: S } {
+    // Normalize timestamp formatting (some SDKs trim trailing zeros in the ms
+    // fraction) so equivalent instants compare equal. Also call `applySdkQuirks`
+    // to apply realData quirks known for each SDK to eliminate known divergence
+    // between real and sdk data.
+    //
+    // Note: Always call `normalizeTimestamps` first. That's because
+    // `normalizeTimestamps` deep clones the object.
+    const realData = applySdkQuirks(normalizeTimestamps(realResponse.data))
+    const sdkData = normalizeTimestamps(sdkResponse.data)
+
+    return { realData, sdkData }
   }
 }
