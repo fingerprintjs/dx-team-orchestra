@@ -252,6 +252,24 @@ test.describe('UpdateEvents Suite', () => {
           }),
       })
     })
+
+    test('event_id that should be encoded - request not found', async ({ assert }) => {
+      await assert.thatResponseMatch({
+        expectedResponse: {
+          error: {
+            code: 'event_not_found',
+            message: 'event id not found',
+          },
+        },
+        expectedStatusCode: 404,
+        callback: (api) =>
+          api.updateEvent({
+            event_id: '../events',
+            api_key: testData.credentials.maxFeaturesUS.privateKey,
+            region: testData.credentials.maxFeaturesUS.region,
+          }),
+      })
+    })
   })
 
   test.describe('409 errors', () => {

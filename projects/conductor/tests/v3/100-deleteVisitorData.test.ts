@@ -61,6 +61,24 @@ test.describe('DeleteVisitorData Suite 400 errors', () => {
         }),
     })
   })
+
+  test('with an invalid visitor ID that should be encoded - RequestCannotBeParsed', async ({ assert }) => {
+    await assert.thatResponseMatch({
+      expectedStatusCode: 400,
+      expectedResponse: {
+        error: {
+          code: 'RequestCannotBeParsed',
+          message: 'invalid visitor id',
+        },
+      },
+      callback: (api) =>
+        api.deleteVisitor({
+          visitorId: '../events',
+          apiKey: testData.credentials.maxFeaturesUS.unscopedKey,
+          region: testData.credentials.maxFeaturesUS.region,
+        }),
+    })
+  })
 })
 
 test.describe('DeleteVisitorData Suite 403 errors', () => {
