@@ -155,8 +155,10 @@ test.describe('GetVisitor Suite', () => {
 
   test('with a visitor ID that should be encoded', async ({ assert }) => {
     await assert.thatResponseMatch({
-      expectedStatusCode: 404,
-      expectedResponse: '404 page not found',
+      expectedStatusCode: 400,
+      expectedResponse: {
+        error: 'invalid visitor_id',
+      },
       callback: (api) =>
         api.getVisitor({
           apiKey: testData.credentials.maxFeaturesUS.privateKey,
