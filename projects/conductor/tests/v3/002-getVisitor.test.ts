@@ -167,4 +167,23 @@ test.describe('GetVisitor Suite', () => {
         }),
     })
   })
+
+  test('with a query string in the visitor ID that should be encoded', async ({ assert, identify }) => {
+    const { visitorId, requestId } = await identify({
+      auth: testData.credentials.maxFeaturesUS,
+    })
+
+    await assert.thatResponseMatch({
+      expectedStatusCode: 400,
+      expectedResponse: {
+        error: 'invalid visitor_id',
+      },
+      callback: (api) =>
+        api.getVisitor({
+          apiKey: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
+          visitorId: `${visitorId}?request_id=${requestId}&ignored`,
+        }),
+    })
+  })
 })
