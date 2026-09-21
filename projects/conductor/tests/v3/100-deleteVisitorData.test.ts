@@ -1,11 +1,6 @@
 import { testData } from '../../utils/testData'
 import { test } from '../../utils/playwright'
-import { delay } from '../../utils/delay'
-
-function waitBeforeFetch() {
-  // Wait before fetching visitor after deletion
-  return delay(30000)
-}
+import { withRetry } from '../../utils/retry'
 
 test.slow()
 
@@ -16,23 +11,36 @@ test.describe('DeleteVisitorData Suite', () => {
       skipCleanup: true,
     })
 
+    // Trigger the deletion. It completes asynchronously and, unlike before,
+    // events for the deleted visitor keep being returned for some time — so we
+    // can no longer confirm deletion by querying events. Instead, re-issue the
+    // delete and poll until it reports the visitor is already gone (404).
     await sdkApi.deleteVisitor({
       visitorId,
       apiKey: testData.credentials.maxFeaturesUS.unscopedKey,
       region: testData.credentials.maxFeaturesUS.region,
     })
 
-    await waitBeforeFetch()
-
-    await assert.thatResponseMatch({
-      expectedStatusCode: 404,
-      callback: (api) =>
-        api.getVisitor({
-          visitorId,
-          apiKey: testData.credentials.maxFeaturesUS.privateKey,
-          region: testData.credentials.maxFeaturesUS.region,
-        }),
-    })
+    await withRetry(() =>
+      assert.thatResponseMatch({
+        expectedStatusCode: 404,
+        expectedResponse: {
+          error: {
+            code: 'VisitorNotFound',
+            message: 'visitor not found',
+          },
+        },
+        callback: (api) =>
+          api.deleteVisitor({
+            visitorId,
+            apiKey: testData.credentials.maxFeaturesUS.unscopedKey,
+            region: testData.credentials.maxFeaturesUS.region,
+          }),
+      }),
+      // Each retry re-issues the delete, which counts against the delete rate
+      // limit — so we favor fewer, longer-spaced attempts over tight polling.
+      { retries: 3, waitMs: 25000 }
+    )
   })
 })
 

@@ -3,6 +3,7 @@ import { expect } from '@playwright/test'
 import { JsonResponse } from '../http'
 import { withRetry } from '../retry'
 import { normalizeTimestamps } from '../normalizeTimestamps'
+import { applySdkQuirks } from '../sdkQuirks'
 import { Event } from '@fingerprint/node-sdk'
 
 interface ThatResponseMatchParams {
@@ -32,10 +33,7 @@ export class AssertionsV4 {
     const realResponse: JsonResponse<any> = await this.fingerprintApi[method].call(this.fingerprintApi, ...params)
     const sdkResponse: JsonResponse<any> = await this.sdksApi[method].call(this.sdksApi, ...params)
 
-    // Normalize timestamp formatting (some SDKs trim trailing zeros in the ms
-    // fraction) so equivalent instants compare equal.
-    const realData = normalizeTimestamps({ ...realResponse.data })
-    const sdkData = normalizeTimestamps({ ...sdkResponse.data })
+    const { realData, sdkData } = this.prepareRealAndSdkData(realResponse, sdkResponse)
 
     if (method === 'searchEvents') {
       // The pagination  will be different in each response so just validate that
@@ -53,7 +51,9 @@ export class AssertionsV4 {
   async thatUnsealedDataMatches(sealedData: Event, params: GetEventsParams) {
     // Poll until the event has propagated instead of failing on a not-yet-ready event.
     const { data: originalEvent } = await withRetry(() => this.fingerprintApi.getEvent(params))
-    expect(normalizeTimestamps(sealedData)).toMatchObject(normalizeTimestamps(originalEvent) as Record<string, unknown>)
+    expect(normalizeTimestamps(sealedData)).toMatchObject(
+      applySdkQuirks(normalizeTimestamps(originalEvent)) as Record<string, unknown>
+    )
   }
 
   /**
@@ -85,5 +85,22 @@ export class AssertionsV4 {
         expect(data).toEqual(expect.objectContaining(expectedResponse as any))
       }
     }
+  }
+
+  private prepareRealAndSdkData<R, S>(
+    realResponse: JsonResponse<R>,
+    sdkResponse: JsonResponse<S>
+  ): { realData: R; sdkData: S } {
+    // Normalize timestamp formatting (some SDKs trim trailing zeros in the ms
+    // fraction) so equivalent instants compare equal. Also call `applySdkQuirks`
+    // to apply realData quirks known for each SDK to eliminate known divergence
+    // between real and sdk data.
+    //
+    // Note: Always call `normalizeTimestamps` first. That's because
+    // `normalizeTimestamps` deep clones the object.
+    const realData = applySdkQuirks(normalizeTimestamps(realResponse.data))
+    const sdkData = normalizeTimestamps(sdkResponse.data)
+
+    return { realData, sdkData }
   }
 }
