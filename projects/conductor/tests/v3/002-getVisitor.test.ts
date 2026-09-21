@@ -157,7 +157,7 @@ test.describe('GetVisitor Suite', () => {
     await assert.thatResponseMatch({
       expectedStatusCode: 400,
       expectedResponse: {
-        error: 'invalid visitor_id',
+        error: 'bad request',
       },
       callback: (api) =>
         api.getVisitor({
@@ -176,7 +176,7 @@ test.describe('GetVisitor Suite', () => {
     await assert.thatResponseMatch({
       expectedStatusCode: 400,
       expectedResponse: {
-        error: 'invalid visitor_id',
+        error: 'bad request',
       },
       callback: (api) =>
         api.getVisitor({
