@@ -35,7 +35,7 @@ export class Assertions {
 
     const { realData, sdkData } = this.prepareRealAndSdkData(realResponse, sdkResponse)
 
-    if (method === 'searchEvents') {
+    if (method === 'searchEvents' || method === 'getVisitor') {
       // The pagination  will be different in each response so just validate that
       // both responses either include it or omit it
       expect(!!sdkData.paginationKey).toEqual(!!realData.paginationKey)
