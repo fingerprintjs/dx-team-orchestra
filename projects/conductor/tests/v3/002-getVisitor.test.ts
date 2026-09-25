@@ -155,9 +155,9 @@ test.describe('GetVisitor Suite', () => {
 
   test('with a visitor ID that should be encoded', async ({ assert }) => {
     await assert.thatResponseMatch({
-      expectedStatusCode: 400,
+      expectedStatusCode: 404,
       expectedResponse: {
-        error: 'bad request',
+        error: 'visitor not found',
       },
       callback: (api) =>
         api.getVisitor({
@@ -174,9 +174,9 @@ test.describe('GetVisitor Suite', () => {
     })
 
     await assert.thatResponseMatch({
-      expectedStatusCode: 400,
+      expectedStatusCode: 404,
       expectedResponse: {
-        error: 'bad request',
+        error: 'visitor not found',
       },
       callback: (api) =>
         api.getVisitor({
