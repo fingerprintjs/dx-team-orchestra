@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d6f2cd7a99d07c7a80778149d69eae0a",
+    "content-hash": "72e34f35e46db4d82e6915d37bdea665",
     "packages": [
         {
             "name": "fingerprint/fingerprint-pro-server-api-sdk",
-            "version": "6.12.0",
+            "version": "6.13.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fingerprintjs/php-sdk",
-                "reference": "a2d937602e86b927ae5bfa6c88357190c93b12b8"
+                "reference": "c91ad7386350b8297c9bbec2c51863d76c2522bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fingerprintjs/php-sdk/zipball/a2d937602e86b927ae5bfa6c88357190c93b12b8",
-                "reference": "a2d937602e86b927ae5bfa6c88357190c93b12b8",
+                "url": "https://api.github.com/repos/fingerprintjs/php-sdk/zipball/c91ad7386350b8297c9bbec2c51863d76c2522bf",
+                "reference": "c91ad7386350b8297c9bbec2c51863d76c2522bf",
                 "shasum": ""
             },
             "require": {
@@ -70,20 +70,20 @@
                 "swagger",
                 "visitor-identification"
             ],
-            "time": "2026-08-04T17:11:47+00:00"
+            "time": "2026-09-15T07:53:12+00:00"
         },
         {
             "name": "fingerprint/server-sdk",
-            "version": "7.6.0",
+            "version": "7.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fingerprintjs/php-sdk.git",
-                "reference": "82061e024a933476ad695c62bc714676656003d6"
+                "reference": "0068f726d8ba6bcbfda586da69fa9d1627e94d7c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fingerprintjs/php-sdk/zipball/82061e024a933476ad695c62bc714676656003d6",
-                "reference": "82061e024a933476ad695c62bc714676656003d6",
+                "url": "https://api.github.com/repos/fingerprintjs/php-sdk/zipball/0068f726d8ba6bcbfda586da69fa9d1627e94d7c",
+                "reference": "0068f726d8ba6bcbfda586da69fa9d1627e94d7c",
                 "shasum": ""
             },
             "require": {
@@ -143,9 +143,9 @@
             ],
             "support": {
                 "issues": "https://github.com/fingerprintjs/php-sdk/issues",
-                "source": "https://github.com/fingerprintjs/php-sdk/tree/v7.6.0"
+                "source": "https://github.com/fingerprintjs/php-sdk/tree/v7.6.1"
             },
-            "time": "2026-08-24T14:14:31+00:00"
+            "time": "2026-09-15T07:53:04+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
