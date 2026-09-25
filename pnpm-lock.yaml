@@ -48,11 +48,11 @@ importers:
   projects/node-sdk:
     dependencies:
       '@fingerprint/node-sdk':
-        specifier: 7.7.0
-        version: 7.7.0
+        specifier: 7.7.1
+        version: 7.7.1
       '@fingerprintjs/fingerprintjs-pro-server-api':
-        specifier: 6.12.0
-        version: 6.12.0
+        specifier: 6.13.1
+        version: 6.13.1
       express:
         specifier: ^5.0.1
         version: 5.0.1(supports-color@7.2.0)
@@ -107,6 +107,10 @@ packages:
     resolution: {integrity: sha512-7FjFJpI4CoV/alS3fGvR6yBo89eSG2jkQOrhHM9CPqgzEYglU2pBdJbQALcJOw7hmJItdV4ozj4+Tx1+lFHpPQ==}
     engines: {node: '>=18.17.0'}
 
+  '@fingerprint/node-sdk@7.7.1':
+    resolution: {integrity: sha512-g6ZjsVPjT9TdiwZnE5UcXfEufPf0N4akQHV/i3cfWdsZyaM89dpI4cTZ4zSLOqo28SXVHtjRtlg+nEArolzT3A==}
+    engines: {node: '>=18.17.0'}
+
   '@fingerprintjs/eslint-config-dx-team@0.1.0':
     resolution: {integrity: sha512-Yet9e0dDGmAhMsXnnRWbvTAWLlA2qWGvsOBnRscZtlJnv/Xm4xzurR4C4bqPBcX3rVZkedv9dBTLW3t/wRY0mA==}
     peerDependencies:
@@ -114,6 +118,10 @@ packages:
 
   '@fingerprintjs/fingerprintjs-pro-server-api@6.12.0':
     resolution: {integrity: sha512-Wl68u0a/U+62rgjqqkGsPqPPaiXilnL9k1J0GAOfQFXsG+ntUdMWR80aOfBwtJbRf/NQqLMgh0t2bxXE8HZFcQ==}
+    engines: {node: '>=18.17.0'}
+
+  '@fingerprintjs/fingerprintjs-pro-server-api@6.13.1':
+    resolution: {integrity: sha512-ZlSp1D1HSh4NzXe111uE0DC4VJ4w54XUa1KjgpkvzfilyoIKhO9+TWNOAzwxovjg0aWYr6N2q6x5ynM6yVl+SA==}
     engines: {node: '>=18.17.0'}
 
   '@fingerprintjs/fingerprintjs-pro@3.12.15':
@@ -1121,6 +1129,8 @@ snapshots:
 
   '@fingerprint/node-sdk@7.7.0': {}
 
+  '@fingerprint/node-sdk@7.7.1': {}
+
   '@fingerprintjs/eslint-config-dx-team@0.1.0(prettier@3.8.1)(supports-color@7.2.0)(typescript@5.6.3)':
     dependencies:
       '@typescript-eslint/eslint-plugin': 6.19.1(@typescript-eslint/parser@6.19.1(eslint@8.56.0(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.6.3))(eslint@8.56.0(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.6.3)
@@ -1135,6 +1145,8 @@ snapshots:
       - typescript
 
   '@fingerprintjs/fingerprintjs-pro-server-api@6.12.0': {}
+
+  '@fingerprintjs/fingerprintjs-pro-server-api@6.13.1': {}
 
   '@fingerprintjs/fingerprintjs-pro@3.12.15': {}
 

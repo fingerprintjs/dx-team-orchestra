@@ -1,6 +1,7 @@
 import { test } from '../../utils/v4/playwright'
 import testData from '../../utils/testData'
 import { withRetry } from '../../utils/retry'
+import { identify } from '../../htmlScripts/runIdentification'
 
 test.describe('GetEvent Suite', () => {
   test('for valid apiKey and event_id with Smart Signals', async ({ identify, assert }) => {
@@ -156,6 +157,55 @@ test.describe('GetEvent Suite', () => {
           api_key: testData.credentials.deleted.privateKey,
           region: testData.credentials.deleted.region,
           event_id: event_id,
+        }),
+    })
+  })
+
+  test('with an event ID that should be encoded', async ({ assert }) => {
+    await assert.thatResponseMatch({
+      expectedStatusCode: 404,
+      expectedResponse: {
+        error: {
+          code: 'event_not_found',
+          message: 'event id not found',
+        },
+      },
+      callback: (api) =>
+        api.getEvent({
+          api_key: testData.credentials.minFeaturesUS.privateKey,
+          region: testData.credentials.minFeaturesUS.region,
+          event_id: '../events',
+        }),
+    })
+  })
+
+  test('with a query string in the event ID that should be encoded', async ({ assert, identify }) => {
+    const { event_id } = await identify({
+      auth: testData.credentials.maxFeaturesUS,
+    })
+
+    const requestData = {
+      api_key: testData.credentials.maxFeaturesUS.privateKey,
+      region: testData.credentials.maxFeaturesUS.region,
+      event_id: event_id,
+    }
+
+    // Poll until the event has propagated and both APIs agree.
+    await withRetry(() => assert.thatResponsesMatch('getEvent', requestData))
+
+    await assert.thatResponseMatch({
+      expectedStatusCode: 404,
+      expectedResponse: {
+        error: {
+          code: 'event_not_found',
+          message: 'event id not found',
+        },
+      },
+      callback: (api) =>
+        api.getEvent({
+          api_key: testData.credentials.minFeaturesUS.privateKey,
+          region: testData.credentials.minFeaturesUS.region,
+          event_id: `${event_id}?ruleset_id=${testData.v4_getEvent.ruleset_id}&ignored`,
         }),
     })
   })
