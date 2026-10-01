@@ -203,8 +203,8 @@ test.describe('GetEvent Suite', () => {
       },
       callback: (api) =>
         api.getEvent({
-          api_key: testData.credentials.minFeaturesUS.privateKey,
-          region: testData.credentials.minFeaturesUS.region,
+          api_key: testData.credentials.maxFeaturesUS.privateKey,
+          region: testData.credentials.maxFeaturesUS.region,
           event_id: `${event_id}?ruleset_id=${testData.v4_getEvent.ruleset_id}&ignored`,
         }),
     })
