@@ -1,7 +1,6 @@
 import { test } from '../../utils/v4/playwright'
 import testData from '../../utils/testData'
 import { withRetry } from '../../utils/retry'
-import { identify } from '../../htmlScripts/runIdentification'
 
 test.describe('GetEvent Suite', () => {
   test('for valid apiKey and event_id with Smart Signals', async ({ identify, assert }) => {
