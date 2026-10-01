@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "72e34f35e46db4d82e6915d37bdea665",
+    "content-hash": "5f6f51e4608e6f1d1b65185b37e433bd",
     "packages": [
         {
             "name": "fingerprint/fingerprint-pro-server-api-sdk",
@@ -74,16 +74,16 @@
         },
         {
             "name": "fingerprint/server-sdk",
-            "version": "7.6.1",
+            "version": "7.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fingerprintjs/php-sdk.git",
-                "reference": "0068f726d8ba6bcbfda586da69fa9d1627e94d7c"
+                "reference": "ca4c553be70d9bebefdf8c4b36659a8b7a3d561a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fingerprintjs/php-sdk/zipball/0068f726d8ba6bcbfda586da69fa9d1627e94d7c",
-                "reference": "0068f726d8ba6bcbfda586da69fa9d1627e94d7c",
+                "url": "https://api.github.com/repos/fingerprintjs/php-sdk/zipball/ca4c553be70d9bebefdf8c4b36659a8b7a3d561a",
+                "reference": "ca4c553be70d9bebefdf8c4b36659a8b7a3d561a",
                 "shasum": ""
             },
             "require": {
@@ -143,9 +143,9 @@
             ],
             "support": {
                 "issues": "https://github.com/fingerprintjs/php-sdk/issues",
-                "source": "https://github.com/fingerprintjs/php-sdk/tree/v7.6.1"
+                "source": "https://github.com/fingerprintjs/php-sdk/tree/v7.7.0"
             },
-            "time": "2026-09-15T07:53:04+00:00"
+            "time": "2026-09-28T14:10:45+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",

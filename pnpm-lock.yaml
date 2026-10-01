@@ -48,8 +48,8 @@ importers:
   projects/node-sdk:
     dependencies:
       '@fingerprint/node-sdk':
-        specifier: 7.7.1
-        version: 7.7.1
+        specifier: 7.8.0
+        version: 7.8.0
       '@fingerprintjs/fingerprintjs-pro-server-api':
         specifier: 6.13.1
         version: 6.13.1
@@ -107,8 +107,8 @@ packages:
     resolution: {integrity: sha512-7FjFJpI4CoV/alS3fGvR6yBo89eSG2jkQOrhHM9CPqgzEYglU2pBdJbQALcJOw7hmJItdV4ozj4+Tx1+lFHpPQ==}
     engines: {node: '>=18.17.0'}
 
-  '@fingerprint/node-sdk@7.7.1':
-    resolution: {integrity: sha512-g6ZjsVPjT9TdiwZnE5UcXfEufPf0N4akQHV/i3cfWdsZyaM89dpI4cTZ4zSLOqo28SXVHtjRtlg+nEArolzT3A==}
+  '@fingerprint/node-sdk@7.8.0':
+    resolution: {integrity: sha512-/tSYxIarWwzBgdrKgCSUU6PTxCeN2+OFLXHjvnm+7gBZxF/9KmXnVwOMLzsm08YeBVkpX18xXPrJ03nHMWooUw==}
     engines: {node: '>=18.17.0'}
 
   '@fingerprintjs/eslint-config-dx-team@0.1.0':
@@ -1129,7 +1129,7 @@ snapshots:
 
   '@fingerprint/node-sdk@7.7.0': {}
 
-  '@fingerprint/node-sdk@7.7.1': {}
+  '@fingerprint/node-sdk@7.8.0': {}
 
   '@fingerprintjs/eslint-config-dx-team@0.1.0(prettier@3.8.1)(supports-color@7.2.0)(typescript@5.6.3)':
     dependencies:
