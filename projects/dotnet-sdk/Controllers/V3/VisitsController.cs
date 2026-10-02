@@ -32,11 +32,6 @@ public class VisitsController : ControllerBase
             var response = new MusicianResponse<VisitorsGetResponse>(httpResponse.StatusCode, rawResponse, apiResponse.Data);
             return Ok(response);
         }
-        // SDK rejects an empty ID without sending a request
-        catch (ArgumentException e) when (e.ParamName == "visitorId")
-        {
-            return Ok(new MusicianResponse<object>(HttpStatusCode.BadRequest, e.Message, new { error = new { code = "RequestCannotBeParsed", message = "visitor id is required" } }));
-        }
         catch (Exception e) {
             return Ok(Utils.ProcessException(e));
         }
@@ -59,6 +54,11 @@ public class VisitsController : ControllerBase
 
             var response = new MusicianResponse<object>(httpResponse.StatusCode, rawResponse, apiResponse.Data);
             return Ok(response);
+        }
+        // SDK rejects an empty ID without sending a request
+        catch (ArgumentException e) when (e.ParamName == "visitorId")
+        {
+            return Ok(new MusicianResponse<object>(HttpStatusCode.BadRequest, e.Message, new { error = new { code = "RequestCannotBeParsed", message = "visitor id is required" } }));
         }
         catch (Exception e) {
             return Ok(Utils.ProcessException(e));
