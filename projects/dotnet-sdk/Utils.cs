@@ -42,6 +42,12 @@ internal static class Utils {
         {
             return new MusicianResponse<dynamic>(v3Exception.HttpCode, v3Exception.ResponseMessage, v3Exception.ErrorContent);
         }
+        // V4 SDK rejects an invalid visitor ID without sending a request, mirror the Server API error
+        // TODO: INTER-2607 replaces this with a dedicated musician response for SDK validation errors
+        if (e is ArgumentException { ParamName: "visitorId" })
+        {
+            return new MusicianResponse<object>(HttpStatusCode.BadRequest, e.Message, new { error = new { code = "request_cannot_be_parsed", message = "visitor id is required" } });
+        }
         return new MusicianResponse<string>(HttpStatusCode.InternalServerError, e.Message, "error");
     }
 }

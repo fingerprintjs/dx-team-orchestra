@@ -33,6 +33,11 @@ public class EventsController(FingerprintV4Factory factory) : ControllerBase
                 ? Ok(new MusicianResponse<Event>(HttpStatusCode.OK, apiResponse.RawContent, data))
                 : Ok(new MusicianResponse<object>(apiResponse.StatusCode, apiResponse.RawContent, Utils.ParseRawContent(apiResponse.RawContent)));
         }
+        // Server API rejects a missing API key before validating the event ID
+        catch (ArgumentException e) when (string.IsNullOrEmpty(apiKey))
+        {
+            return Ok(new MusicianResponse<object>(HttpStatusCode.Forbidden, e.Message, new { error = new { code = "secret_api_key_required", message = "secret API key in header is missing or empty" } }));
+        }
         catch (Exception e)
         {
             return Ok(Utils.ProcessException(e));
@@ -211,6 +216,11 @@ public class EventsController(FingerprintV4Factory factory) : ControllerBase
             var apiResponse = await api.UpdateEventAsync(eventId ?? "", updateRequest);
 
             return Ok(new MusicianResponse<object>(apiResponse.StatusCode, apiResponse.RawContent ?? "", Utils.ParseRawContent(apiResponse.RawContent)));
+        }
+        // Server API rejects a missing API key before validating the event ID
+        catch (ArgumentException e) when (string.IsNullOrEmpty(apiKey))
+        {
+            return Ok(new MusicianResponse<object>(HttpStatusCode.Forbidden, e.Message, new { error = new { code = "secret_api_key_required", message = "secret API key in header is missing or empty" } }));
         }
         catch (Exception e)
         {

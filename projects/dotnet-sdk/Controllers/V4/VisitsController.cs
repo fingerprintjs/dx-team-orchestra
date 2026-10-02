@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using dotnet_sdk.Models;
 
@@ -20,6 +21,11 @@ public class VisitsController(FingerprintV4Factory factory) : ControllerBase
             var apiResponse = await api.DeleteVisitorDataAsync(visitorId ?? "");
 
             return Ok(new MusicianResponse<object>(apiResponse.StatusCode, apiResponse.RawContent ?? "", Utils.ParseRawContent(apiResponse.RawContent)));
+        }
+        // Server API rejects a missing API key before validating the visitor ID
+        catch (ArgumentException e) when (string.IsNullOrEmpty(apiKey))
+        {
+            return Ok(new MusicianResponse<object>(HttpStatusCode.Forbidden, e.Message, new { error = new { code = "secret_api_key_required", message = "secret API key in header is missing or empty" } }));
         }
         catch (Exception e)
         {
