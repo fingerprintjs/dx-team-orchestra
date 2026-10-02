@@ -33,10 +33,15 @@ public class EventsController(FingerprintV4Factory factory) : ControllerBase
                 ? Ok(new MusicianResponse<Event>(HttpStatusCode.OK, apiResponse.RawContent, data))
                 : Ok(new MusicianResponse<object>(apiResponse.StatusCode, apiResponse.RawContent, Utils.ParseRawContent(apiResponse.RawContent)));
         }
-        // Invalid ID and missing API key: Server API returns 403 for the key first
-        catch (ArgumentException e) when (e.ParamName == "eventId" && string.IsNullOrEmpty(apiKey))
+        // Server API rejects a missing API key before the ID
+        catch (ArgumentException e) when (string.IsNullOrEmpty(apiKey))
         {
             return Ok(new MusicianResponse<object>(HttpStatusCode.Forbidden, e.Message, new { error = new { code = "secret_api_key_required", message = "secret API key in header is missing or empty" } }));
+        }
+        // SDK rejects an empty ID without sending a request
+        catch (ArgumentException e) when (e.ParamName == "eventId")
+        {
+            return Ok(new MusicianResponse<object>(HttpStatusCode.NotFound, e.Message, new { error = new { code = "event_not_found", message = "event id not found" } }));
         }
         catch (Exception e)
         {
@@ -217,10 +222,15 @@ public class EventsController(FingerprintV4Factory factory) : ControllerBase
 
             return Ok(new MusicianResponse<object>(apiResponse.StatusCode, apiResponse.RawContent ?? "", Utils.ParseRawContent(apiResponse.RawContent)));
         }
-        // Invalid ID and missing API key: Server API returns 403 for the key first
-        catch (ArgumentException e) when (e.ParamName == "eventId" && string.IsNullOrEmpty(apiKey))
+        // Server API rejects a missing API key before the ID
+        catch (ArgumentException e) when (string.IsNullOrEmpty(apiKey))
         {
             return Ok(new MusicianResponse<object>(HttpStatusCode.Forbidden, e.Message, new { error = new { code = "secret_api_key_required", message = "secret API key in header is missing or empty" } }));
+        }
+        // SDK rejects an empty ID without sending a request
+        catch (ArgumentException e) when (e.ParamName == "eventId")
+        {
+            return Ok(new MusicianResponse<object>(HttpStatusCode.NotFound, e.Message, new { error = new { code = "event_not_found", message = "event id not found" } }));
         }
         catch (Exception e)
         {
