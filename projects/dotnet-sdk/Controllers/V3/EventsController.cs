@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using FingerprintPro.ServerSdk.Model;
 using dotnet_sdk.Models;
@@ -25,6 +26,15 @@ public class EventsController : ControllerBase
 
             var response = new MusicianResponse<EventsGetResponse>(httpResponse.StatusCode, rawResponse, apiResponse.Data);
             return Ok(response);
+        }
+        // Server API rejects a missing API key before the ID
+        // TODO this assertion is actually incorrect but the SDKs have diverged in their handling of an empty API key and requestId in the same getEvent call.
+        // dotnet-sdk now throws for both cases but checks the requestId first.
+        // So the caught ArgumentException in this case is actually about an empty requestId.
+        // INTER-2607 will fix this more consistently.
+        catch (ArgumentException e) when (string.IsNullOrEmpty(apiKey))
+        {
+            return Ok(new MusicianResponse<object>(HttpStatusCode.Forbidden, e.Message, new { error = new { code = "SecretKeyApiRequired", message = "secret API key in header is missing or empty" } }));
         }
         catch (Exception e) {
             return Ok(Utils.ProcessException(e));

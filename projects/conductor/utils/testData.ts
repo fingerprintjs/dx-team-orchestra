@@ -19,6 +19,7 @@ const accounts = {
     sealedPublicKey: process.env.MAXIMUM_US_SEALED_PUBLIC_KEY,
     sealedPrivateKey: process.env.MAXIMUM_US_SEALED_PRIVATE_KEY,
     sealedEncryptionKey: process.env.MAXIMUM_US_SEALED_ENCRYPTION_KEY,
+    rulesetId: process.env.MAXIMUM_US_DEFAULT_RULESET_ID
   },
   regular: {
     region: 'eu',
@@ -228,6 +229,10 @@ export const testData = {
       ],
     },
   },
+
+  v4_getEvent: {
+    ruleset_id: accounts.maximumFeatures.rulesetId
+  }
 }
 
 export function supportsStartEndDateTime(): boolean {

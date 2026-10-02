@@ -42,16 +42,6 @@ internal static class Utils {
         {
             return new MusicianResponse<dynamic>(v3Exception.HttpCode, v3Exception.ResponseMessage, v3Exception.ErrorContent);
         }
-        // V4 SDK rejects invalid IDs without sending a request, return the Server API error instead
-        // TODO: INTER-2607
-        if (e is ArgumentException { ParamName: "eventId" })
-        {
-            return new MusicianResponse<object>(HttpStatusCode.NotFound, e.Message, new { error = new { code = "event_not_found", message = "event id not found" } });
-        }
-        if (e is ArgumentException { ParamName: "visitorId" })
-        {
-            return new MusicianResponse<object>(HttpStatusCode.BadRequest, e.Message, new { error = new { code = "request_cannot_be_parsed", message = "visitor id is required" } });
-        }
         return new MusicianResponse<string>(HttpStatusCode.InternalServerError, e.Message, "error");
     }
 }
