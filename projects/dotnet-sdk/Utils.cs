@@ -42,7 +42,10 @@ internal static class Utils {
         {
             return new MusicianResponse<dynamic>(v3Exception.HttpCode, v3Exception.ResponseMessage, v3Exception.ErrorContent);
         }
-        // V4 SDK rejects an invalid visitor ID without sending a request, mirror the Server API error
+        // Since 8.9.1 the V4 SDK throws ArgumentException for empty, "." or ".." event/visitor IDs without sending a request.
+        // Only visitorId is mapped (the Server API error for a missing visitor ID), because deleteVisitorData without
+        // visitor_id is the only case covered by existing tests. Invalid event IDs, and "."/".." visitor IDs being reported
+        // as missing, are intentional gaps.
         // TODO: INTER-2607 replaces this with a dedicated musician response for SDK validation errors
         if (e is ArgumentException { ParamName: "visitorId" })
         {
