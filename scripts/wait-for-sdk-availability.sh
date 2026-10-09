@@ -25,7 +25,7 @@ case $LANGUAGE in
         VERSION="$strip_v"
         NODE_PACKAGE="${PACKAGE_NAME:-@fingerprint/node-sdk}"
         ENCODED_PACKAGE="${NODE_PACKAGE/\//%2F}"
-        CHECK_URL="https://registry.npmjs.org/${ENCODED_PACKAGE}/$VERSION"
+        CHECK_URL="https://registry.npmjs.org/${ENCODED_PACKAGE}"
         ;;
     "java")
         VERSION="$with_v"
@@ -64,8 +64,15 @@ case $LANGUAGE in
 esac
 
 check_version_available() {
-    # PHP requires parsing the JSON response to find the specific version
-    if [[ "$LANGUAGE" == "php" ]]; then
+    if [[ "$LANGUAGE" == "node" ]]; then
+        # The per-version endpoint can serve a new version before the package metadata pnpm resolves against
+        # includes it, so check both the abbreviated and full metadata documents.
+        curl -sf -H "Accept: application/vnd.npm.install-v1+json" "$CHECK_URL" | \
+            jq -e --arg v "$VERSION" '.versions[$v]' > /dev/null && \
+        curl -sf "$CHECK_URL" | \
+            jq -e --arg v "$VERSION" '.versions[$v]' > /dev/null
+    elif [[ "$LANGUAGE" == "php" ]]; then
+        # PHP requires parsing the JSON response to find the specific version
         curl -sf "$CHECK_URL" | \
             jq -e ".packages[\"${PHP_PACKAGE}\"][] | select(.version == \"$VERSION\")" > /dev/null
     else
