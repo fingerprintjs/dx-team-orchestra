@@ -1,0 +1,140 @@
+name: Update Server SDK versions
+
+# Bumps every Server SDK used by the musicians (and the conductor) to the latest stable
+# release within its current major version, regenerates lock files, and opens/updates
+# a single PR. The PR triggers the regular E2E workflow against the new versions.
+# Major bumps are intentionally not automated: they need code changes in the musicians.
+
+on:
+  push:
+    branches: [ chore/workflow_for_updating_sdks ]
+  schedule:
+    - cron: '0 6 * * *' # daily, 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: update-sdk-versions
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: Bump SDK versions
+    runs-on: ubuntu-latest
+    steps:
+      # The PR must be pushed with the app token, not GITHUB_TOKEN. Otherwise the E2E checks won't run on it.
+      - name: Get token for the GitHub App
+        uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
+        id: app-token
+        with:
+          app-id: ${{ vars.RUNNER_APP_ID }}
+          private-key: ${{ secrets.RUNNER_APP_PRIVATE_KEY }}
+          owner: fingerprintjs
+          repositories: dx-team-orchestra
+
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      # Node: `pnpm add pkg@^<major>` resolves the newest stable release in that major.
+      - name: Install pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 'lts/*'
+
+      - name: Node SDKs
+        run: |
+          for pkg in @fingerprint/node-sdk @fingerprintjs/fingerprintjs-pro-server-api; do
+            major=$(jq -r --arg p "$pkg" '.dependencies[$p]' projects/node-sdk/package.json | cut -d. -f1)
+            pnpm --filter node-sdk add --save-exact --ignore-scripts "$pkg@^$major"
+            pnpm --filter conductor add --save-dev --save-exact --ignore-scripts "$pkg@^$major"
+          done
+
+      # Go: the major is part of the module path, so @latest never crosses majors.
+      - name: Go SDKs
+        working-directory: projects/go-sdk
+        run: |
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD":/app -w /app \
+            -e GOPATH=/tmp/go -e GOCACHE=/tmp/go-cache golang:1.23 sh -c '
+              go get github.com/fingerprintjs/go-sdk/v8@latest \
+                     github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7@latest &&
+              go mod tidy'
+
+      # Java, .NET, Python, PHP: look up versions from the registry and rewrite the exact pin.
+      - name: Java, .NET, Python and PHP SDKs
+        run: |
+          # bump FILE PREFIX SUFFIX VERSION_LIST_CMD...
+          # Replaces PREFIX<current>SUFFIX in FILE with the newest stable version in the same major.
+          bump() {
+            local file=$1 prefix=$2 suffix=$3; shift 3
+            local current major latest
+            current=$(grep -oP "\Q$prefix\E\K[^\"\s]+(?=\Q$suffix\E)" "$file")
+            major=${current#v}; major=${major%%.*}
+            latest=$("$@" | sed 's/^v//' | grep -E "^${major}\.[0-9]+\.[0-9]+$" | sort -V | tail -n1)
+            [[ $current == v* ]] && latest="v$latest"
+            if [[ -z ${latest#v} ]]; then
+              echo "::error::No stable ${major}.x versions found for ${prefix} (${file})"; return 1
+            fi
+            # Only move forward
+            if [[ $latest != "$current" && $(printf '%s\n' "$current" "$latest" | sort -V | tail -n1) == "$latest" ]]; then
+              echo "${file}: ${current} -> ${latest}"
+              sed -i "s|${prefix}${current}${suffix}|${prefix}${latest}${suffix}|" "$file"
+            fi
+          }
+          gh_tags()   { git ls-remote --tags --refs "https://github.com/$1.git" | sed 's|.*refs/tags/||'; }
+          nuget()     { curl -fsSL "https://api.nuget.org/v3-flatcontainer/${1,,}/index.json" | jq -r '.versions[]'; }
+          pypi()      { curl -fsSL "https://pypi.org/pypi/$1/json" | jq -r '.releases | to_entries[] | select(any(.value[]; .yanked | not)) | .key'; }
+          packagist() { curl -fsSL "https://repo.packagist.org/p2/$1.json" | jq -r --arg p "$1" '.packages[$p][].version'; }
+
+          bump projects/java-sdk/build.gradle.kts '"com.github.fingerprintjs:java-sdk:' '"' gh_tags fingerprintjs/java-sdk
+          bump projects/java-sdk/build.gradle.kts '"com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:' '"' gh_tags fingerprintjs/fingerprint-pro-server-api-java-sdk
+          bump projects/dotnet-sdk/dotnet-sdk.csproj 'Include="Fingerprint.ServerSdk" Version="' '"' nuget Fingerprint.ServerSdk
+          bump projects/dotnet-sdk/dotnet-sdk.csproj 'Include="FingerprintPro.ServerSdk" Version="' '"' nuget FingerprintPro.ServerSdk
+          bump projects/python-sdk/requirements.txt 'fingerprint-server-sdk==' '' pypi fingerprint-server-sdk
+          bump projects/python-sdk/requirements.txt 'fingerprint_pro_server_api_sdk==' '' pypi fingerprint_pro_server_api_sdk
+          bump projects/php-sdk/composer.json '"fingerprint/server-sdk": "' '"' packagist fingerprint/server-sdk
+          bump projects/php-sdk/composer.json '"fingerprint/fingerprint-pro-server-api-sdk": "' '"' packagist fingerprint/fingerprint-pro-server-api-sdk
+
+      # Only touch composer.lock when the PHP pins moved, otherwise --with-dependencies
+      # would bump unrelated packages (guzzle, symfony, ...) every day.
+      - name: Update composer.lock
+        working-directory: projects/php-sdk
+        run: |
+          git diff --quiet -- composer.json && exit 0
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD":/app -w /app composer:2 \
+            update fingerprint/server-sdk fingerprint/fingerprint-pro-server-api-sdk \
+            --with-dependencies --no-install --no-interaction
+
+      - name: Prepare PR body
+        run: |
+          {
+            echo 'Automated update of the Server SDK versions used by the musicians and the conductor.'
+            echo
+            echo '```diff'
+            git diff -U0 -- '*package.json' '*go.mod' '*build.gradle.kts' '*.csproj' '*requirements.txt' '*composer.json' \
+              | grep -E '^[-+][^-+]' || true
+            echo '```'
+            echo
+            echo '> [!NOTE]'
+            echo '> This only bumps versions. If a release added new API parameters or endpoints, add the musician'
+            echo '> handlers and conductor tests separately (see the README, "Adding test cases").'
+          } > "$RUNNER_TEMP/pr-body.md"
+          cat "$RUNNER_TEMP/pr-body.md" >> "$GITHUB_STEP_SUMMARY"
+
+      # No-op when nothing changed.
+      - name: Create or update pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          branch: chore/update-sdk-versions
+          delete-branch: true
+          sign-commits: true
+          commit-message: 'chore: update Server SDK versions'
+          title: 'chore: update Server SDK versions'
+          body-path: ${{ runner.temp }}/pr-body.md
