@@ -21,10 +21,13 @@ concurrency:
 
 jobs:
   update:
+    defaults:
+      run:
+        shell: bash
     name: Bump SDK versions
     runs-on: ubuntu-latest
     steps:
-      # The PR must be pushed with the app token, not GITHUB_TOKEN. Otherwise the E2E checks won't run on it.
+      # The PR must be pushed with the app token, not GITHUB_TOKEN otherwise the E2E checks won't run on it.
       - name: Get token for the GitHub App
         uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
         id: app-token
@@ -39,7 +42,6 @@ jobs:
         with:
           token: ${{ steps.app-token.outputs.token }}
 
-      # Node: `pnpm add pkg@^<major>` resolves the newest stable release in that major.
       - name: Install pnpm
         uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
@@ -50,13 +52,16 @@ jobs:
 
       - name: Node SDKs
         run: |
-          for pkg in @fingerprint/node-sdk @fingerprintjs/fingerprintjs-pro-server-api; do
-            major=$(jq -r --arg p "$pkg" '.dependencies[$p]' projects/node-sdk/package.json | cut -d. -f1)
-            pnpm --filter node-sdk add --save-exact --ignore-scripts "$pkg@^$major"
-            pnpm --filter conductor add --save-dev --save-exact --ignore-scripts "$pkg@^$major"
-          done
+          api_v4_lib_version=$(pnpm view "@fingerprint/node-sdk@^7" version)
+          api_v3_lib_version=$(pnpm view "@fingerprintjs/fingerprintjs-pro-server-api@^6" version)
+          [ -n "$api_v4_lib_version" ] && [ -n "$api_v3_lib_version" ] || {
+            echo "::error::Node version lookup failed"; exit 1
+          }
+          pnpm --filter node-sdk add --save-exact --ignore-scripts "@fingerprint/node-sdk@$api_v4_lib_version" \
+              "@fingerprintjs/fingerprintjs-pro-server-api@$api_v3_lib_version"
+          pnpm --filter conductor add --save-exact --ignore-scripts "@fingerprint/node-sdk@$api_v4_lib_version" \
+              "@fingerprintjs/fingerprintjs-pro-server-api@$api_v3_lib_version"
 
-      # Go: the major is part of the module path, so @latest never crosses majors.
       - name: Go SDKs
         working-directory: projects/go-sdk
         run: |
@@ -66,50 +71,89 @@ jobs:
                      github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7@latest &&
               go mod tidy'
 
-      # Java, .NET, Python, PHP: look up versions from the registry and rewrite the exact pin.
-      - name: Java, .NET, Python and PHP SDKs
+      - name: Java SDKs
         run: |
-          # bump FILE PREFIX SUFFIX VERSION_LIST_CMD...
-          # Replaces PREFIX<current>SUFFIX in FILE with the newest stable version in the same major.
-          bump() {
-            local file=$1 prefix=$2 suffix=$3; shift 3
-            local current major latest
-            current=$(grep -oP "\Q$prefix\E\K[^\"\s]+(?=\Q$suffix\E)" "$file")
-            major=${current#v}; major=${major%%.*}
-            latest=$("$@" | sed 's/^v//' | grep -E "^${major}\.[0-9]+\.[0-9]+$" | sort -V | tail -n1)
-            [[ $current == v* ]] && latest="v$latest"
-            if [[ -z ${latest#v} ]]; then
-              echo "::error::No stable ${major}.x versions found for ${prefix} (${file})"; return 1
-            fi
-            # Only move forward
-            if [[ $latest != "$current" && $(printf '%s\n' "$current" "$latest" | sort -V | tail -n1) == "$latest" ]]; then
-              echo "${file}: ${current} -> ${latest}"
-              sed -i "s|${prefix}${current}${suffix}|${prefix}${latest}${suffix}|" "$file"
-            fi
+          latest_gh_tag()   { 
+            git ls-remote --tags --refs "https://github.com/$1.git" | sed 's|.*refs/tags/||' \
+              | grep -E "^v$2\.[0-9]+\.[0-9]+$" | sort -V | tail -n1 
           }
-          gh_tags()   { git ls-remote --tags --refs "https://github.com/$1.git" | sed 's|.*refs/tags/||'; }
-          nuget()     { curl -fsSL "https://api.nuget.org/v3-flatcontainer/${1,,}/index.json" | jq -r '.versions[]'; }
-          pypi()      { curl -fsSL "https://pypi.org/pypi/$1/json" | jq -r '.releases | to_entries[] | select(any(.value[]; .yanked | not)) | .key'; }
-          packagist() { curl -fsSL "https://repo.packagist.org/p2/$1.json" | jq -r --arg p "$1" '.packages[$p][].version'; }
 
-          bump projects/java-sdk/build.gradle.kts '"com.github.fingerprintjs:java-sdk:' '"' gh_tags fingerprintjs/java-sdk
-          bump projects/java-sdk/build.gradle.kts '"com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:' '"' gh_tags fingerprintjs/fingerprint-pro-server-api-java-sdk
-          bump projects/dotnet-sdk/dotnet-sdk.csproj 'Include="Fingerprint.ServerSdk" Version="' '"' nuget Fingerprint.ServerSdk
-          bump projects/dotnet-sdk/dotnet-sdk.csproj 'Include="FingerprintPro.ServerSdk" Version="' '"' nuget FingerprintPro.ServerSdk
-          bump projects/python-sdk/requirements.txt 'fingerprint-server-sdk==' '' pypi fingerprint-server-sdk
-          bump projects/python-sdk/requirements.txt 'fingerprint_pro_server_api_sdk==' '' pypi fingerprint_pro_server_api_sdk
-          bump projects/php-sdk/composer.json '"fingerprint/server-sdk": "' '"' packagist fingerprint/server-sdk
-          bump projects/php-sdk/composer.json '"fingerprint/fingerprint-pro-server-api-sdk": "' '"' packagist fingerprint/fingerprint-pro-server-api-sdk
+          java_latest_v4=$(latest_gh_tag fingerprintjs/java-sdk 8)
+          java_latest_v3=$(latest_gh_tag fingerprintjs/fingerprint-pro-server-api-java-sdk 7)
+        
+          [ -n "$java_latest_v4" ] && [ -n "$java_latest_v3" ] || { 
+            echo "::error::Java tag lookup failed"; exit 1
+          }
+        
+          sed -i \
+            -e "s|\"com.github.fingerprintjs:java-sdk:v8\.[^\"]*\"|\"com.github.fingerprintjs:java-sdk:$java_latest_v4\"|" \
+            -e "s|\"com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:v7\.[^\"]*\"|\"com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:$java_latest_v3\"|" \
+            projects/java-sdk/build.gradle.kts
 
-      # Only touch composer.lock when the PHP pins moved, otherwise --with-dependencies
-      # would bump unrelated packages (guzzle, symfony, ...) every day.
-      - name: Update composer.lock
-        working-directory: projects/php-sdk
+      - name: .NET SDKs
         run: |
-          git diff --quiet -- composer.json && exit 0
-          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD":/app -w /app composer:2 \
-            update fingerprint/server-sdk fingerprint/fingerprint-pro-server-api-sdk \
-            --with-dependencies --no-install --no-interaction
+          latest_nuget() {
+            curl -fsSL "https://api.nuget.org/v3-flatcontainer/$(echo "$1" | tr '[:upper:]' '[:lower:]')/index.json" \
+              | jq -r '.versions[]' \
+              | grep -E "^$2\.[0-9]+\.[0-9]+$" | sort -V | tail -n1
+          }
+
+          dotnet_latest_v4=$(latest_nuget Fingerprint.ServerSdk 8)
+          dotnet_latest_v3=$(latest_nuget FingerprintPro.ServerSdk 7)
+        
+          [ -n "$dotnet_latest_v4" ] && [ -n "$dotnet_latest_v3" ] || { 
+            echo "::error::DotNet nuget lookup failed"; exit 1
+          }
+
+          sed -i \
+            -e "s|Include=\"Fingerprint\.ServerSdk\" Version=\"8\.[^\"]*\"|Include=\"Fingerprint.ServerSdk\" Version=\"$dotnet_latest_v4\"|" \
+            -e "s|Include=\"FingerprintPro\.ServerSdk\" Version=\"7\.[^\"]*\"|Include=\"FingerprintPro.ServerSdk\" Version=\"$dotnet_latest_v3\"|" \
+            projects/dotnet-sdk/dotnet-sdk.csproj
+
+      - name: Python SDKs
+        run: |
+          latest_pypi() {
+            curl -fsSL "https://pypi.org/pypi/$1/json" \
+              | jq -r '.releases | to_entries[] | select(any(.value[]; .yanked | not)) | .key' \
+              | grep -E "^$2\.[0-9]+\.[0-9]+$" | sort -V | tail -n1
+          }
+
+          python_latest_v4=$(latest_pypi fingerprint-server-sdk 9)
+          python_latest_v3=$(latest_pypi fingerprint_pro_server_api_sdk 8)
+
+          [ -n "$python_latest_v4" ] && [ -n "$python_latest_v3" ] || { 
+            echo "::error::Python pypi lookup failed"; exit 1
+          }
+        
+          sed -i \
+            -e "s|^fingerprint-server-sdk==9\..*|fingerprint-server-sdk==$python_latest_v4|" \
+            -e "s|^fingerprint_pro_server_api_sdk==8\..*|fingerprint_pro_server_api_sdk==$python_latest_v3|" \
+            projects/python-sdk/requirements.txt
+
+      - name: PHP SDKs
+        run: |
+          latest_packagist() {
+            curl -fsSL "https://repo.packagist.org/p2/$1.json" \
+              | jq -r --arg p "$1" '.packages[$p][].version' \
+              | sed 's/^v//' \
+              | grep -E "^$2\.[0-9]+\.[0-9]+$" | sort -V | tail -n1
+          }
+
+          php_latest_v4=$(latest_packagist fingerprint/server-sdk 7)
+          php_latest_v3=$(latest_packagist fingerprint/fingerprint-pro-server-api-sdk 6)
+        
+          [ -n "$php_latest_v4" ] && [ -n "$php_latest_v3" ] || {
+            echo "::error::PHP packagist lookup failed"; exit 1
+          }
+        
+          # Skip if nothing changed, otherwise --update-with-dependencies bumps guzzle etc. every day
+          current_v4=$(jq -r '.require["fingerprint/server-sdk"]' projects/php-sdk/composer.json)
+          current_v3=$(jq -r '.require["fingerprint/fingerprint-pro-server-api-sdk"]' projects/php-sdk/composer.json)
+          [ "$current_v4" = "$php_latest_v4" ] && [ "$current_v3" = "$php_latest_v3" ] && exit 0
+        
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD/projects/php-sdk":/app -w /app composer:2 \
+            require "fingerprint/server-sdk:$php_latest_v4" "fingerprint/fingerprint-pro-server-api-sdk:$php_latest_v3" \
+            --update-with-dependencies --no-install --no-interaction
 
       - name: Prepare PR body
         run: |
@@ -129,7 +173,7 @@ jobs:
 
       # No-op when nothing changed.
       - name: Create or update pull request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ steps.app-token.outputs.token }}
           branch: chore/update-sdk-versions
