@@ -21,11 +21,10 @@ jobs:
   update:
     defaults:
       run:
-        shell: bash
+        shell: bash # sets `-eo pipefail`
     name: Bump SDK versions
     runs-on: ubuntu-latest
     steps:
-      # The PR must be pushed with the app token, not GITHUB_TOKEN otherwise the E2E checks won't run on it.
       - name: Get token for the GitHub App
         uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
         id: app-token
@@ -50,10 +49,13 @@ jobs:
 
       - name: Node SDKs
         run: |
-          api_v4_lib_version=$(pnpm view "@fingerprint/node-sdk@^7" version)
-          api_v3_lib_version=$(pnpm view "@fingerprintjs/fingerprintjs-pro-server-api@^6" version)
+          api_v4_lib_version=$(pnpm view "@fingerprint/node-sdk@^7" version) \
+            || { echo "::error::Node v4 version lookup failed"; exit 1; }
+          api_v3_lib_version=$(pnpm view "@fingerprintjs/fingerprintjs-pro-server-api@^6" version) \
+            || { echo "::error::Node v3 version lookup failed"; exit 1; }
+          # `pnpm view` can print nothing and still exit 0 when no version matches
           [ -n "$api_v4_lib_version" ] && [ -n "$api_v3_lib_version" ] || {
-            echo "::error::Node version lookup failed"; exit 1
+            echo "::error::Node version lookup returned no version"; exit 1
           }
           pnpm --filter node-sdk add --save-exact --ignore-scripts "@fingerprint/node-sdk@$api_v4_lib_version" \
               "@fingerprintjs/fingerprintjs-pro-server-api@$api_v3_lib_version"
@@ -71,18 +73,16 @@ jobs:
 
       - name: Java SDKs
         run: |
-          latest_gh_tag()   { 
+          latest_gh_tag() {
             git ls-remote --tags --refs "https://github.com/$1.git" | sed 's|.*refs/tags/||' \
-              | grep -E "^v$2\.[0-9]+\.[0-9]+$" | sort -V | tail -n1 
+              | grep -E "^v$2\.[0-9]+\.[0-9]+$" | sort -V | tail -n1
           }
 
-          java_latest_v4=$(latest_gh_tag fingerprintjs/java-sdk 8)
-          java_latest_v3=$(latest_gh_tag fingerprintjs/fingerprint-pro-server-api-java-sdk 7)
-        
-          [ -n "$java_latest_v4" ] && [ -n "$java_latest_v3" ] || { 
-            echo "::error::Java tag lookup failed"; exit 1
-          }
-        
+          java_latest_v4=$(latest_gh_tag fingerprintjs/java-sdk 8) \
+            || { echo "::error::Java v4 tag lookup failed"; exit 1; }
+          java_latest_v3=$(latest_gh_tag fingerprintjs/fingerprint-pro-server-api-java-sdk 7) \
+            || { echo "::error::Java v3 tag lookup failed"; exit 1; }
+
           sed -i \
             -e "s|\"com.github.fingerprintjs:java-sdk:v8\.[^\"]*\"|\"com.github.fingerprintjs:java-sdk:$java_latest_v4\"|" \
             -e "s|\"com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:v7\.[^\"]*\"|\"com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:$java_latest_v3\"|" \
@@ -96,12 +96,10 @@ jobs:
               | grep -E "^$2\.[0-9]+\.[0-9]+$" | sort -V | tail -n1
           }
 
-          dotnet_latest_v4=$(latest_nuget Fingerprint.ServerSdk 8)
-          dotnet_latest_v3=$(latest_nuget FingerprintPro.ServerSdk 7)
-        
-          [ -n "$dotnet_latest_v4" ] && [ -n "$dotnet_latest_v3" ] || { 
-            echo "::error::DotNet nuget lookup failed"; exit 1
-          }
+          dotnet_latest_v4=$(latest_nuget Fingerprint.ServerSdk 8) \
+            || { echo "::error::.NET v4 NuGet lookup failed"; exit 1; }
+          dotnet_latest_v3=$(latest_nuget FingerprintPro.ServerSdk 7) \
+            || { echo "::error::.NET v3 NuGet lookup failed"; exit 1; }
 
           sed -i \
             -e "s|Include=\"Fingerprint\.ServerSdk\" Version=\"8\.[^\"]*\"|Include=\"Fingerprint.ServerSdk\" Version=\"$dotnet_latest_v4\"|" \
@@ -116,13 +114,11 @@ jobs:
               | grep -E "^$2\.[0-9]+\.[0-9]+$" | sort -V | tail -n1
           }
 
-          python_latest_v4=$(latest_pypi fingerprint-server-sdk 9)
-          python_latest_v3=$(latest_pypi fingerprint_pro_server_api_sdk 8)
+          python_latest_v4=$(latest_pypi fingerprint-server-sdk 9) \
+            || { echo "::error::Python v4 PyPI lookup failed"; exit 1; }
+          python_latest_v3=$(latest_pypi fingerprint_pro_server_api_sdk 8) \
+            || { echo "::error::Python v3 PyPI lookup failed"; exit 1; }
 
-          [ -n "$python_latest_v4" ] && [ -n "$python_latest_v3" ] || { 
-            echo "::error::Python pypi lookup failed"; exit 1
-          }
-        
           sed -i \
             -e "s|^fingerprint-server-sdk==9\..*|fingerprint-server-sdk==$python_latest_v4|" \
             -e "s|^fingerprint_pro_server_api_sdk==8\..*|fingerprint_pro_server_api_sdk==$python_latest_v3|" \
@@ -137,18 +133,16 @@ jobs:
               | grep -E "^$2\.[0-9]+\.[0-9]+$" | sort -V | tail -n1
           }
 
-          php_latest_v4=$(latest_packagist fingerprint/server-sdk 7)
-          php_latest_v3=$(latest_packagist fingerprint/fingerprint-pro-server-api-sdk 6)
-        
-          [ -n "$php_latest_v4" ] && [ -n "$php_latest_v3" ] || {
-            echo "::error::PHP packagist lookup failed"; exit 1
-          }
-        
+          php_latest_v4=$(latest_packagist fingerprint/server-sdk 7) \
+            || { echo "::error::PHP v4 Packagist lookup failed"; exit 1; }
+          php_latest_v3=$(latest_packagist fingerprint/fingerprint-pro-server-api-sdk 6) \
+            || { echo "::error::PHP v3 Packagist lookup failed"; exit 1; }
+
           # Skip if nothing changed, otherwise --update-with-dependencies bumps guzzle etc. every day
           current_v4=$(jq -r '.require["fingerprint/server-sdk"]' projects/php-sdk/composer.json)
           current_v3=$(jq -r '.require["fingerprint/fingerprint-pro-server-api-sdk"]' projects/php-sdk/composer.json)
           [ "$current_v4" = "$php_latest_v4" ] && [ "$current_v3" = "$php_latest_v3" ] && exit 0
-        
+
           docker run --rm --user "$(id -u):$(id -g)" -v "$PWD/projects/php-sdk":/app -w /app composer:2 \
             require "fingerprint/server-sdk:$php_latest_v4" "fingerprint/fingerprint-pro-server-api-sdk:$php_latest_v3" \
             --update-with-dependencies --no-install --no-interaction
@@ -160,7 +154,7 @@ jobs:
             echo
             echo '```diff'
             git diff -U0 -- '*package.json' '*go.mod' '*build.gradle.kts' '*.csproj' '*requirements.txt' '*composer.json' \
-              | awk '/^diff --git/ { if (seen++) print ""; print substr($4,3); next } /^[-+][^-+]/' || true
+              | awk '/^diff --git/ { if (seen++) print ""; print substr($4,3); next } /^[-+][^-+]/'
             echo '```'
             echo
             echo '> [!NOTE]'
