@@ -1,0 +1,176 @@
+name: Update Server SDK versions
+
+# Bumps every Server SDK used by the musicians (and the conductor) to the latest stable
+# release within its current major version, regenerates lock files, and opens/updates
+# a single PR. The PR triggers the regular E2E workflow against the new versions.
+# Major bumps are intentionally not automated: they need code changes in the musicians.
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # daily, 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: update-sdk-versions
+  cancel-in-progress: false
+
+jobs:
+  update:
+    defaults:
+      run:
+        shell: bash # sets `-eo pipefail`
+    name: Bump SDK versions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get token for the GitHub App
+        uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
+        id: app-token
+        with:
+          app-id: ${{ vars.RUNNER_APP_ID }}
+          private-key: ${{ secrets.RUNNER_APP_PRIVATE_KEY }}
+          owner: fingerprintjs
+          repositories: dx-team-orchestra
+
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 'lts/*'
+
+      - name: Node SDKs
+        run: |
+          api_v4_lib_version=$(pnpm view "@fingerprint/node-sdk@^7" version) \
+            || { echo "::error::Node v4 version lookup failed"; exit 1; }
+          api_v3_lib_version=$(pnpm view "@fingerprintjs/fingerprintjs-pro-server-api@^6" version) \
+            || { echo "::error::Node v3 version lookup failed"; exit 1; }
+          # `pnpm view` can print nothing and still exit 0 when no version matches
+          [ -n "$api_v4_lib_version" ] && [ -n "$api_v3_lib_version" ] || {
+            echo "::error::Node version lookup returned no version"; exit 1
+          }
+          pnpm --filter node-sdk add --save-exact --ignore-scripts "@fingerprint/node-sdk@$api_v4_lib_version" \
+              "@fingerprintjs/fingerprintjs-pro-server-api@$api_v3_lib_version"
+          pnpm --filter conductor add --save-exact --ignore-scripts "@fingerprint/node-sdk@$api_v4_lib_version" \
+              "@fingerprintjs/fingerprintjs-pro-server-api@$api_v3_lib_version"
+
+      - name: Go SDKs
+        working-directory: projects/go-sdk
+        run: |
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD":/app -w /app \
+            -e GOPATH=/tmp/go -e GOCACHE=/tmp/go-cache golang:1.23 sh -c '
+              go get github.com/fingerprintjs/go-sdk/v8@latest \
+                     github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7@latest &&
+              go mod tidy'
+
+      - name: Java SDKs
+        run: |
+          latest_gh_tag() {
+            git ls-remote --tags --refs "https://github.com/$1.git" | sed 's|.*refs/tags/||' \
+              | grep -E "^v$2\.[0-9]+\.[0-9]+$" | sort -V | tail -n1
+          }
+
+          java_latest_v4=$(latest_gh_tag fingerprintjs/java-sdk 8) \
+            || { echo "::error::Java v4 tag lookup failed"; exit 1; }
+          java_latest_v3=$(latest_gh_tag fingerprintjs/fingerprint-pro-server-api-java-sdk 7) \
+            || { echo "::error::Java v3 tag lookup failed"; exit 1; }
+
+          sed -i \
+            -e "s|\"com.github.fingerprintjs:java-sdk:v8\.[^\"]*\"|\"com.github.fingerprintjs:java-sdk:$java_latest_v4\"|" \
+            -e "s|\"com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:v7\.[^\"]*\"|\"com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:$java_latest_v3\"|" \
+            projects/java-sdk/build.gradle.kts
+
+      - name: .NET SDKs
+        run: |
+          latest_nuget() {
+            curl -fsSL "https://api.nuget.org/v3-flatcontainer/$(echo "$1" | tr '[:upper:]' '[:lower:]')/index.json" \
+              | jq -r '.versions[]' \
+              | grep -E "^$2\.[0-9]+\.[0-9]+$" | sort -V | tail -n1
+          }
+
+          dotnet_latest_v4=$(latest_nuget Fingerprint.ServerSdk 8) \
+            || { echo "::error::.NET v4 NuGet lookup failed"; exit 1; }
+          dotnet_latest_v3=$(latest_nuget FingerprintPro.ServerSdk 7) \
+            || { echo "::error::.NET v3 NuGet lookup failed"; exit 1; }
+
+          sed -i \
+            -e "s|Include=\"Fingerprint\.ServerSdk\" Version=\"8\.[^\"]*\"|Include=\"Fingerprint.ServerSdk\" Version=\"$dotnet_latest_v4\"|" \
+            -e "s|Include=\"FingerprintPro\.ServerSdk\" Version=\"7\.[^\"]*\"|Include=\"FingerprintPro.ServerSdk\" Version=\"$dotnet_latest_v3\"|" \
+            projects/dotnet-sdk/dotnet-sdk.csproj
+
+      - name: Python SDKs
+        run: |
+          latest_pypi() {
+            curl -fsSL "https://pypi.org/pypi/$1/json" \
+              | jq -r '.releases | to_entries[] | select(any(.value[]; .yanked | not)) | .key' \
+              | grep -E "^$2\.[0-9]+\.[0-9]+$" | sort -V | tail -n1
+          }
+
+          python_latest_v4=$(latest_pypi fingerprint-server-sdk 9) \
+            || { echo "::error::Python v4 PyPI lookup failed"; exit 1; }
+          python_latest_v3=$(latest_pypi fingerprint_pro_server_api_sdk 8) \
+            || { echo "::error::Python v3 PyPI lookup failed"; exit 1; }
+
+          sed -i \
+            -e "s|^fingerprint-server-sdk==9\..*|fingerprint-server-sdk==$python_latest_v4|" \
+            -e "s|^fingerprint_pro_server_api_sdk==8\..*|fingerprint_pro_server_api_sdk==$python_latest_v3|" \
+            projects/python-sdk/requirements.txt
+
+      - name: PHP SDKs
+        run: |
+          latest_packagist() {
+            curl -fsSL "https://repo.packagist.org/p2/$1.json" \
+              | jq -r --arg p "$1" '.packages[$p][].version' \
+              | sed 's/^v//' \
+              | grep -E "^$2\.[0-9]+\.[0-9]+$" | sort -V | tail -n1
+          }
+
+          php_latest_v4=$(latest_packagist fingerprint/server-sdk 7) \
+            || { echo "::error::PHP v4 Packagist lookup failed"; exit 1; }
+          php_latest_v3=$(latest_packagist fingerprint/fingerprint-pro-server-api-sdk 6) \
+            || { echo "::error::PHP v3 Packagist lookup failed"; exit 1; }
+
+          # Skip if nothing changed, otherwise --update-with-dependencies bumps guzzle etc. every day
+          current_v4=$(jq -r '.require["fingerprint/server-sdk"]' projects/php-sdk/composer.json)
+          current_v3=$(jq -r '.require["fingerprint/fingerprint-pro-server-api-sdk"]' projects/php-sdk/composer.json)
+          [ "$current_v4" = "$php_latest_v4" ] && [ "$current_v3" = "$php_latest_v3" ] && exit 0
+
+          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD/projects/php-sdk":/app -w /app composer:2 \
+            require "fingerprint/server-sdk:$php_latest_v4" "fingerprint/fingerprint-pro-server-api-sdk:$php_latest_v3" \
+            --update-with-dependencies --no-install --no-interaction
+
+      - name: Prepare PR body
+        run: |
+          {
+            echo 'Automated update of the Server SDK versions used by the musicians and the conductor.'
+            echo
+            echo '```diff'
+            git diff -U0 -- '*package.json' '*go.mod' '*build.gradle.kts' '*.csproj' '*requirements.txt' '*composer.json' \
+              | awk '/^diff --git/ { if (seen++) print ""; print substr($4,3); next } /^[-+][^-+]/'
+            echo '```'
+            echo
+            echo '> [!NOTE]'
+            echo '> This only bumps versions. If a release added new API parameters or endpoints, add the musician'
+            echo '> handlers and conductor tests separately (see the README, "Adding test cases").'
+          } > "$RUNNER_TEMP/pr-body.md"
+          cat "$RUNNER_TEMP/pr-body.md" >> "$GITHUB_STEP_SUMMARY"
+
+      # No-op when nothing changed.
+      - name: Create or update pull request
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          branch: chore/update-sdk-versions
+          delete-branch: true
+          sign-commits: true
+          commit-message: 'chore: update Server SDK versions'
+          title: 'chore: update Server SDK versions'
+          body-path: ${{ runner.temp }}/pr-body.md
