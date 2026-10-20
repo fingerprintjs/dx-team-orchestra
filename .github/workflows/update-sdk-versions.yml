@@ -1,0 +1,91 @@
+name: Update Server SDK versions
+
+# Bumps every Server SDK used by the musicians (and the conductor) to the latest stable
+# release within its current major version, regenerates lock files, and opens/updates
+# a single PR. The PR triggers the regular E2E workflow against the new versions.
+# Major bumps are intentionally not automated: they need code changes in the musicians.
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # daily, 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: update-sdk-versions
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: Bump SDK versions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get token for the GitHub App
+        uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c
+        id: app-token
+        with:
+          app-id: ${{ vars.RUNNER_APP_ID }}
+          private-key: ${{ secrets.RUNNER_APP_PRIVATE_KEY }}
+          owner: fingerprintjs
+          repositories: dx-team-orchestra
+
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 'lts/*'
+
+      - name: Node SDKs
+        run: ./scripts/update-node-sdks.sh
+
+      - name: Go SDKs
+        run: ./scripts/update-go-sdks.sh
+
+      - name: Java SDKs
+        run: ./scripts/update-java-sdks.sh
+
+      - name: .NET SDKs
+        run: ./scripts/update-dotnet-sdks.sh
+
+      - name: Python SDKs
+        run: ./scripts/update-python-sdks.sh
+
+      - name: PHP SDKs
+        run: ./scripts/update-php-sdks.sh
+
+      - name: Prepare PR body
+        run: |
+          {
+            echo 'Automated update of the Server SDK versions used by the musicians and the conductor.'
+            echo
+            echo '```diff'
+            git diff -U0 -- '*package.json' '*go.mod' '*build.gradle.kts' '*.csproj' '*requirements.txt' '*composer.json' \
+              | awk '/^diff --git/ { if (seen++) print ""; print substr($4,3); next } /^[-+][^-+]/'
+            echo '```'
+            echo
+            echo '> [!NOTE]'
+            echo '> This only bumps versions. If a release added new API parameters or endpoints, add the musician'
+            echo '> handlers and conductor tests separately (see the README, "Adding test cases").'
+          } > "$RUNNER_TEMP/pr-body.md"
+          cat "$RUNNER_TEMP/pr-body.md" >> "$GITHUB_STEP_SUMMARY"
+
+      # No-op when nothing changed.
+      - name: Create or update pull request
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          branch: chore/update-sdk-versions
+          delete-branch: true
+          sign-commits: true
+          commit-message: 'chore: update Server SDK versions'
+          title: 'chore: update Server SDK versions'
+          body-path: ${{ runner.temp }}/pr-body.md
