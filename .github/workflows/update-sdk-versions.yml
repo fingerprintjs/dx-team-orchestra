@@ -6,9 +6,6 @@ name: Update Server SDK versions
 # Major bumps are intentionally not automated: they need code changes in the musicians.
 
 on:
-  push:
-    branches:
-      - chore/workflow_for_updating_sdks
   schedule:
     - cron: '0 6 * * *' # daily, 06:00 UTC
   workflow_dispatch:
