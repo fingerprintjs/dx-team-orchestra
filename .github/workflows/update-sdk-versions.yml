@@ -19,9 +19,6 @@ concurrency:
 
 jobs:
   update:
-    defaults:
-      run:
-        shell: bash # sets `-eo pipefail`
     name: Bump SDK versions
     runs-on: ubuntu-latest
     steps:
@@ -48,104 +45,22 @@ jobs:
           node-version: 'lts/*'
 
       - name: Node SDKs
-        run: |
-          api_v4_lib_version=$(pnpm view "@fingerprint/node-sdk@^7" version) \
-            || { echo "::error::Node v4 version lookup failed"; exit 1; }
-          api_v3_lib_version=$(pnpm view "@fingerprintjs/fingerprintjs-pro-server-api@^6" version) \
-            || { echo "::error::Node v3 version lookup failed"; exit 1; }
-          # `pnpm view` can print nothing and still exit 0 when no version matches
-          [ -n "$api_v4_lib_version" ] && [ -n "$api_v3_lib_version" ] || {
-            echo "::error::Node version lookup returned no version"; exit 1
-          }
-          pnpm --filter node-sdk add --save-exact --ignore-scripts "@fingerprint/node-sdk@$api_v4_lib_version" \
-              "@fingerprintjs/fingerprintjs-pro-server-api@$api_v3_lib_version"
-          pnpm --filter conductor add --save-exact --ignore-scripts "@fingerprint/node-sdk@$api_v4_lib_version" \
-              "@fingerprintjs/fingerprintjs-pro-server-api@$api_v3_lib_version"
+        run: ./scripts/update-node-sdks.sh
 
       - name: Go SDKs
-        working-directory: projects/go-sdk
-        run: |
-          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD":/app -w /app \
-            -e GOPATH=/tmp/go -e GOCACHE=/tmp/go-cache golang:1.23 sh -c '
-              go get github.com/fingerprintjs/go-sdk/v8@latest \
-                     github.com/fingerprintjs/fingerprint-pro-server-api-go-sdk/v7@latest &&
-              go mod tidy'
+        run: ./scripts/update-go-sdks.sh
 
       - name: Java SDKs
-        run: |
-          latest_gh_tag() {
-            git ls-remote --tags --refs "https://github.com/$1.git" | sed 's|.*refs/tags/||' \
-              | grep -E "^v$2\.[0-9]+\.[0-9]+$" | sort -V | tail -n1
-          }
-
-          java_latest_v4=$(latest_gh_tag fingerprintjs/java-sdk 8) \
-            || { echo "::error::Java v4 tag lookup failed"; exit 1; }
-          java_latest_v3=$(latest_gh_tag fingerprintjs/fingerprint-pro-server-api-java-sdk 7) \
-            || { echo "::error::Java v3 tag lookup failed"; exit 1; }
-
-          sed -i \
-            -e "s|\"com.github.fingerprintjs:java-sdk:v8\.[^\"]*\"|\"com.github.fingerprintjs:java-sdk:$java_latest_v4\"|" \
-            -e "s|\"com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:v7\.[^\"]*\"|\"com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:$java_latest_v3\"|" \
-            projects/java-sdk/build.gradle.kts
+        run: ./scripts/update-java-sdks.sh
 
       - name: .NET SDKs
-        run: |
-          latest_nuget() {
-            curl -fsSL "https://api.nuget.org/v3-flatcontainer/$(echo "$1" | tr '[:upper:]' '[:lower:]')/index.json" \
-              | jq -r '.versions[]' \
-              | grep -E "^$2\.[0-9]+\.[0-9]+$" | sort -V | tail -n1
-          }
-
-          dotnet_latest_v4=$(latest_nuget Fingerprint.ServerSdk 8) \
-            || { echo "::error::.NET v4 NuGet lookup failed"; exit 1; }
-          dotnet_latest_v3=$(latest_nuget FingerprintPro.ServerSdk 7) \
-            || { echo "::error::.NET v3 NuGet lookup failed"; exit 1; }
-
-          sed -i \
-            -e "s|Include=\"Fingerprint\.ServerSdk\" Version=\"8\.[^\"]*\"|Include=\"Fingerprint.ServerSdk\" Version=\"$dotnet_latest_v4\"|" \
-            -e "s|Include=\"FingerprintPro\.ServerSdk\" Version=\"7\.[^\"]*\"|Include=\"FingerprintPro.ServerSdk\" Version=\"$dotnet_latest_v3\"|" \
-            projects/dotnet-sdk/dotnet-sdk.csproj
+        run: ./scripts/update-dotnet-sdks.sh
 
       - name: Python SDKs
-        run: |
-          latest_pypi() {
-            curl -fsSL "https://pypi.org/pypi/$1/json" \
-              | jq -r '.releases | to_entries[] | select(any(.value[]; .yanked | not)) | .key' \
-              | grep -E "^$2\.[0-9]+\.[0-9]+$" | sort -V | tail -n1
-          }
-
-          python_latest_v4=$(latest_pypi fingerprint-server-sdk 9) \
-            || { echo "::error::Python v4 PyPI lookup failed"; exit 1; }
-          python_latest_v3=$(latest_pypi fingerprint_pro_server_api_sdk 8) \
-            || { echo "::error::Python v3 PyPI lookup failed"; exit 1; }
-
-          sed -i \
-            -e "s|^fingerprint-server-sdk==9\..*|fingerprint-server-sdk==$python_latest_v4|" \
-            -e "s|^fingerprint_pro_server_api_sdk==8\..*|fingerprint_pro_server_api_sdk==$python_latest_v3|" \
-            projects/python-sdk/requirements.txt
+        run: ./scripts/update-python-sdks.sh
 
       - name: PHP SDKs
-        run: |
-          latest_packagist() {
-            curl -fsSL "https://repo.packagist.org/p2/$1.json" \
-              | jq -r --arg p "$1" '.packages[$p][].version' \
-              | sed 's/^v//' \
-              | grep -E "^$2\.[0-9]+\.[0-9]+$" | sort -V | tail -n1
-          }
-
-          php_latest_v4=$(latest_packagist fingerprint/server-sdk 7) \
-            || { echo "::error::PHP v4 Packagist lookup failed"; exit 1; }
-          php_latest_v3=$(latest_packagist fingerprint/fingerprint-pro-server-api-sdk 6) \
-            || { echo "::error::PHP v3 Packagist lookup failed"; exit 1; }
-
-          # Skip if nothing changed, otherwise --update-with-dependencies bumps guzzle etc. every day
-          current_v4=$(jq -r '.require["fingerprint/server-sdk"]' projects/php-sdk/composer.json)
-          current_v3=$(jq -r '.require["fingerprint/fingerprint-pro-server-api-sdk"]' projects/php-sdk/composer.json)
-          [ "$current_v4" = "$php_latest_v4" ] && [ "$current_v3" = "$php_latest_v3" ] && exit 0
-
-          docker run --rm --user "$(id -u):$(id -g)" -v "$PWD/projects/php-sdk":/app -w /app composer:2 \
-            require "fingerprint/server-sdk:$php_latest_v4" "fingerprint/fingerprint-pro-server-api-sdk:$php_latest_v3" \
-            --update-with-dependencies --no-install --no-interaction
+        run: ./scripts/update-php-sdks.sh
 
       - name: Prepare PR body
         run: |
