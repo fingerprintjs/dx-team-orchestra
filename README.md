@@ -216,6 +216,27 @@ $ make start-all-same-branch SDK_BRANCH=feat/open-api-v3.3.1
 
 ## Updating SDK versions
 
+Run the workflow called [Update Server SDK versions](https://github.com/fingerprintjs/dx-team-orchestra/actions/workflows/update-sdk-versions.yml).
+It also runs daily. This  workflow creates a PR that updates all SDKs to the latest stable version within the same
+major. This workflow does not upgrade to next major versions by design.
+
+The workflow runs one script per SDK. You can run the same scripts locally, from anywhere in the repo:
+
+```bash
+./scripts/update-node-sdks.sh     # requires pnpm
+./scripts/update-go-sdks.sh       # requires Docker
+./scripts/update-java-sdks.sh
+./scripts/update-dotnet-sdks.sh
+./scripts/update-python-sdks.sh
+./scripts/update-php-sdks.sh      # requires Docker
+```
+
+Note: if you are on Mac, remember to change `sed -i` commands to `sed -i ''` before running.
+
+If you wish to update SDKs versions in legacy way, read the following section.
+
+### Updating SDK versions (legacy)
+
 There are two supported ways to bump Server SDK versions: via the helper script (recommended) or manually per language.
 
 > Heads-up:
