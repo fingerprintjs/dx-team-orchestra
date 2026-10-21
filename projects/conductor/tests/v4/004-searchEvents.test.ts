@@ -300,6 +300,25 @@ test.describe('SearchEvents suite', () => {
     await withRetry(async () => {
       const result = await sdkApi.searchEvents(searchParams)
 
+      if (result.response.status() !== 200) {
+        const direct = await fingerprintApi.searchEvents(searchParams)
+        console.log(
+          '[with all params] non-200 from musician',
+          JSON.stringify(
+            {
+              musicianStatus: result.response.status(),
+              musicianUrl: result.response.url().replace(/(api_?key=)[^&]+/gi, '$1***'),
+              musicianBody: result.data,
+              directApiStatus: direct.response.status(),
+              directApiBody: direct.data,
+              searchParams: { ...searchParams, api_key: '***' },
+            },
+            null,
+            2
+          )
+        )
+      }
+
       await assert.thatResponseMatch({
         expectedStatusCode: 200,
         expectedResponse: {
