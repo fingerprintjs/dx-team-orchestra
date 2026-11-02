@@ -55,6 +55,7 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	var botInfoProvider []string
 	var botInfoName []string
 	var activeCall *bool
+	var compromisedDeviceIntegrity *bool
 
 	if query.Has("limit") {
 		limitInt64, _ := strconv.ParseInt(query.Get("limit"), 10, 32)
@@ -215,6 +216,11 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
             activeCall = &val
         }
 	}
+	if query.Has("compromised_device_integrity") {
+		if val, err := strconv.ParseBool(query.Get("compromised_device_integrity")); err == nil {
+			compromisedDeviceIntegrity = &val
+		}
+	}
 
 	paginationKey := query.Get("pagination_key")
 	visitorId := query.Get("visitor_id")
@@ -345,6 +351,9 @@ func SearchEvents(w http.ResponseWriter, r *http.Request) {
 	}
 	if activeCall != nil {
 		searchEventsReq = searchEventsReq.ActiveCall(*activeCall)
+	}
+	if compromisedDeviceIntegrity != nil {
+		searchEventsReq = searchEventsReq.CompromisedDeviceIntegrity(*compromisedDeviceIntegrity)
 	}
 
 	queryParams := searchEventsQueryParams{

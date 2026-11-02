@@ -58,6 +58,7 @@ def search_events():
         "bot_info_provider": request.args.getlist('bot_info_provider'),
         "bot_info_name": request.args.getlist('bot_info_name'),
         "active_call": _parse_bool(request.args.get('active_call')),
+        "compromised_device_integrity": _parse_bool(request.args.get('compromised_device_integrity')),
     }
 
     filtered_additional_params = {key: value for key, value in additional_params.items() if value is not None}
