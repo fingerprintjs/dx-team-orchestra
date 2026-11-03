@@ -76,6 +76,7 @@ class EventsController
             $incrementalIdentificationStatus = isset($queryParams['incremental_identification_status']) ? SearchEventsIncrementalIdentificationStatus::from($queryParams['incremental_identification_status']) : null;
             $simulator = isset($queryParams['simulator']) ? filter_var($queryParams['simulator'], FILTER_VALIDATE_BOOLEAN) : null;
             $activeCall = isset($queryParams['active_call']) ? filter_var($queryParams['active_call'], FILTER_VALIDATE_BOOLEAN) : null;
+            $compromisedDeviceIntegrity = isset($queryParams['compromised_device_integrity']) ? filter_var($queryParams['compromised_device_integrity'], FILTER_VALIDATE_BOOLEAN) : null;
 
             // Parse array parameters from raw query string since repeated keys (key=a&key=b)
             // are collapsed to the last value by PHP's parse_str / getQueryParams().
@@ -176,6 +177,7 @@ class EventsController
                 incremental_identification_status: $incrementalIdentificationStatus,
                 simulator: $simulator,
                 active_call: $activeCall,
+                compromised_device_integrity: $compromisedDeviceIntegrity,
             );
         });
     }

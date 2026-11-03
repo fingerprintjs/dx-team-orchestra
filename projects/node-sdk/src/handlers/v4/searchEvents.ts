@@ -60,6 +60,7 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     tor_node,
     url,
     active_call,
+    compromised_device_integrity,
     total_hits,
   } = req.query
 
@@ -208,6 +209,12 @@ export const searchEvents: Handler<QueryParams> = async (req, res) => {
     }
     if (active_call !== undefined) {
       filter.active_call = parseBooleanFromString(active_call, 'active_call')
+    }
+    if (compromised_device_integrity !== undefined) {
+      filter.compromised_device_integrity = parseBooleanFromString(
+        compromised_device_integrity,
+        'compromised_device_integrity'
+      )
     }
     if (total_hits !== undefined) {
       filter.total_hits = parseNumberFromString(total_hits, 'total_hits')

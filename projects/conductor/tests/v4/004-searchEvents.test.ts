@@ -247,6 +247,7 @@ test.describe('SearchEvents suite', () => {
     const botInfoProvider = event.bot_info?.provider ? [event.bot_info.provider] : undefined
     const botInfoName = event.bot_info?.name ? [event.bot_info.name] : undefined
     const activeCall = event.active_call ?? undefined
+    const compromisedDeviceIntegrity = event.compromised_device_integrity ?? undefined
 
     const searchParams: SearchEventsParams = {
       api_key: testData.credentials.maxFeaturesUS.privateKey,
@@ -294,6 +295,7 @@ test.describe('SearchEvents suite', () => {
       bot_info_provider: botInfoProvider,
       bot_info_name: botInfoName,
       active_call: activeCall,
+      compromised_device_integrity: compromisedDeviceIntegrity,
     }
 
     // Poll until the event is indexed for search instead of asserting once.

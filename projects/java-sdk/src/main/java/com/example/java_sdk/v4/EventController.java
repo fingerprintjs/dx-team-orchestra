@@ -78,7 +78,8 @@ public class EventController {
             @RequestParam(required = false) List<String> bot_info_confidence,
             @RequestParam(required = false) List<String> bot_info_provider,
             @RequestParam(required = false) List<String> bot_info_name,
-            @RequestParam(required = false) Boolean active_call
+            @RequestParam(required = false) Boolean active_call,
+            @RequestParam(required = false) Boolean compromised_device_integrity
     ) {
         ApiClient client = Configuration.getDefaultApiClient(api_key, Utils.getRegion(region));
         FingerprintApi api = new FingerprintApi(client);
@@ -129,7 +130,8 @@ public class EventController {
                             .setBotInfoConfidence(bot_info_confidence != null ? bot_info_confidence.stream().map(BotInfoConfidence::fromValue).toList() : null)
                             .setBotInfoProvider(bot_info_provider)
                             .setBotInfoName(bot_info_name)
-                            .setActiveCall(active_call);
+                            .setActiveCall(active_call)
+                            .setCompromisedDeviceIntegrity(compromised_device_integrity);
 
             if (start_date_time != null) {
                 params.setStartDateTime(start_date_time);

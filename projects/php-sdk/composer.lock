@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7d14329de204c101cb38e0575635fa9d",
+    "content-hash": "6989776467f669ef7827389b3562b826",
     "packages": [
         {
             "name": "fingerprint/fingerprint-pro-server-api-sdk",
@@ -74,16 +74,16 @@
         },
         {
             "name": "fingerprint/server-sdk",
-            "version": "7.8.0",
+            "version": "7.9.0-beta.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fingerprintjs/php-sdk.git",
-                "reference": "efb6a5bf79b03a686ba795ace4957521a9b0e769"
+                "reference": "28037c7fabeb51a44f2c284b77a98b1fa7456c59"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fingerprintjs/php-sdk/zipball/efb6a5bf79b03a686ba795ace4957521a9b0e769",
-                "reference": "efb6a5bf79b03a686ba795ace4957521a9b0e769",
+                "url": "https://api.github.com/repos/fingerprintjs/php-sdk/zipball/28037c7fabeb51a44f2c284b77a98b1fa7456c59",
+                "reference": "28037c7fabeb51a44f2c284b77a98b1fa7456c59",
                 "shasum": ""
             },
             "require": {
@@ -143,9 +143,10 @@
             ],
             "support": {
                 "issues": "https://github.com/fingerprintjs/php-sdk/issues",
-                "source": "https://github.com/fingerprintjs/php-sdk/tree/v7.8.0"
+                "source": "https://github.com/fingerprintjs/php-sdk/tree/v7.9.0-beta.0"
             },
-            "time": "2026-10-12T17:29:18+00:00"
+            "time": "2026-11-02T10:01:18+00:00",
+            "published-time": "2026-11-02T10:03:03+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1139,10 +1140,12 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "fingerprint/server-sdk": 10
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {},
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.11.0"
 }
