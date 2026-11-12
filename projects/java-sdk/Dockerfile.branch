@@ -41,7 +41,7 @@ COPY --chown=gradle:gradle src /home/gradle/app/src
 RUN gradle clean build --no-daemon
 
 
-FROM eclipse-temurin:17-jre-noble AS start-webserver
+FROM amazoncorretto:17-alpine AS start-webserver
 
 WORKDIR /app
 

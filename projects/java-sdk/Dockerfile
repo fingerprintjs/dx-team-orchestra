@@ -15,7 +15,7 @@ COPY src /app/src
 RUN gradle clean build --no-daemon
 
 # Stage 2: Run the application
-FROM eclipse-temurin:17-jre-noble AS start-webserver
+FROM amazoncorretto:17-alpine AS start-webserver
 
 # Set the working directory for the final container
 WORKDIR /app
