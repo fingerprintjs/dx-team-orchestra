@@ -8,4 +8,4 @@ app.register_blueprint(v3_blueprint)
 app.register_blueprint(v4_blueprint, url_prefix='/v4')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3003, debug=True)
+    app.run(host='0.0.0.0', port=3003, debug=False)
