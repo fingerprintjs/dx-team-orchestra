@@ -1,6 +1,15 @@
 # Snyk (https://snyk.io) policy file
+# This repo is a test harness that only runs in CI and locally; nothing here is
+# deployed. Snyk Code excludes below cover code that is insecure on purpose.
 version: v1.25.0
 exclude:
   code:
-    # Test fixture: deliberately invalid placeholder API keys, not secrets.
+    # Deliberately invalid placeholder API keys, not secrets.
     - projects/conductor/utils/testData.ts
+    # Maintenance script that builds file paths from its own CLI arguments.
+    - projects/conductor/scripts/cleanup-visitors.ts
+    # Handlers return raw SDK errors to the conductor tests, which assert on them.
+    - projects/node-sdk/src/handlers/**
+    # Unseal endpoints called by the test runner, which has no browser session to protect from CSRF.
+    - projects/java-sdk/src/main/java/com/example/java_sdk/v3/SealedResultController.java
+    - projects/java-sdk/src/main/java/com/example/java_sdk/v4/SealedResultController.java
