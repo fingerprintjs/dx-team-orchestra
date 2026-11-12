@@ -16,6 +16,15 @@ java {
 // Override versions pinned by the Spring Boot BOM to pick up fixes Boot has not shipped.
 extra["jackson-2-bom.version"] = "2.22.4" // jackson-databind critical
 extra["jackson-bom.version"] = "3.1.8" // tools.jackson jackson-databind critical
+extra["logback.version"] = "1.6.5" // logback-classic directory traversal (SNYK-JAVA-CHQOSLOGBACK-19882330, -20824362)
+extra["json-smart.version"] = "2.6.1" // json-smart (test classpath, SNYK-JAVA-NETMINIDEV-21715438)
+
+dependencyManagement {
+	dependencies {
+		dependency("org.ow2.asm:asm:9.11.1") // test classpath, SNYK-JAVA-ORGOW2ASM-21715439 and 4 more
+		dependency("org.objenesis:objenesis:3.6") // test classpath, SNYK-JAVA-ORGOBJENESIS-21755439
+	}
+}
 
 repositories {
 	mavenCentral()
