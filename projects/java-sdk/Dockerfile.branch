@@ -1,6 +1,6 @@
 ARG SDK_BRANCH=main
 
-FROM gradle:8.11.1-jdk17 AS sdk-builder
+FROM gradle:8.14.7-jdk17-noble AS sdk-builder
 
 ARG SDK_BRANCH
 
@@ -19,7 +19,7 @@ RUN JITPACK=true gradle :sdk:publishToMavenLocal --no-daemon -PjavaVersion=17 -D
 RUN grep "^projectVersion" gradle.properties | awk -F'=' '{print $2}' | tr -d ' ' > /home/gradle/sdk_version.txt
 
 
-FROM gradle:8.11.1-jdk17 AS build
+FROM gradle:8.14.7-jdk17-noble AS build
 
 USER gradle
 
@@ -41,7 +41,7 @@ COPY --chown=gradle:gradle src /home/gradle/app/src
 RUN gradle clean build --no-daemon
 
 
-FROM eclipse-temurin:17-jre-focal AS start-webserver
+FROM eclipse-temurin:17-jre-noble AS start-webserver
 
 WORKDIR /app
 
