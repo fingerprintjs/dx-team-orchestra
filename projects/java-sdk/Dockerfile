@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM gradle:8.11.1-jdk17 AS build
+FROM gradle:8.14.7-jdk17-noble AS build
 
 # Set the working directory for Gradle
 WORKDIR /app
@@ -15,7 +15,7 @@ COPY src /app/src
 RUN gradle clean build --no-daemon
 
 # Stage 2: Run the application
-FROM eclipse-temurin:17-jre-focal AS start-webserver
+FROM amazoncorretto:17-alpine AS start-webserver
 
 # Set the working directory for the final container
 WORKDIR /app

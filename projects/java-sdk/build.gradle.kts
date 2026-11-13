@@ -1,7 +1,7 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.4.0"
-	id("io.spring.dependency-management") version "1.1.6"
+	id("org.springframework.boot") version "4.0.9"
+	id("io.spring.dependency-management") version "1.1.7"
 }
 
 group = "com.example"
@@ -10,6 +10,19 @@ version = "0.0.1-SNAPSHOT"
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+// Override versions pinned by the Spring Boot BOM to pick up fixes Boot has not shipped.
+extra["jackson-2-bom.version"] = "2.22.4" // jackson-databind critical
+extra["jackson-bom.version"] = "3.1.8" // tools.jackson jackson-databind critical
+extra["logback.version"] = "1.6.5" // logback-classic directory traversal (SNYK-JAVA-CHQOSLOGBACK-19882330, -20824362)
+extra["json-smart.version"] = "2.6.1" // json-smart (test classpath, SNYK-JAVA-NETMINIDEV-21715438)
+
+dependencyManagement {
+	dependencies {
+		dependency("org.ow2.asm:asm:9.11.1") // test classpath, SNYK-JAVA-ORGOW2ASM-21715439 and 4 more
+		dependency("org.objenesis:objenesis:3.6") // test classpath, SNYK-JAVA-ORGOBJENESIS-21755439
 	}
 }
 
@@ -24,6 +37,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	// The SDK models and JacksonConfig use Jackson 2 (com.fasterxml); Boot 4 defaults to Jackson 3.
+	implementation("org.springframework.boot:spring-boot-jackson2")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("com.github.fingerprintjs:fingerprint-pro-server-api-java-sdk:v7.14.1")

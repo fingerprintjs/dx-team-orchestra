@@ -615,7 +615,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v7
         with:
-          go-version: '1.23'
+          go-version-file: projects/go-sdk/go.mod
 
       - name: Cache Go modules
         uses: actions/cache@v6
@@ -795,7 +795,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: '3.11'
+          python-version: '3.13'
 
       - name: Install dependencies
         working-directory: ./projects/python-sdk

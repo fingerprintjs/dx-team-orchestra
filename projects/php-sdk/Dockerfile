@@ -1,7 +1,6 @@
-FROM php:8.2-cli
+FROM php:8.2-cli-alpine
 
-RUN apt-get update -y
-RUN apt-get install git -y
+RUN apk add --no-cache git unzip
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 COPY . /app

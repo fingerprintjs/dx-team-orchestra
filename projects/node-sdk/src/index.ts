@@ -14,6 +14,7 @@ import { unseal as unsealV4 } from './handlers/v4/unseal'
 import { updateEvent as updateEventV4 } from './handlers/v4/updateEvent'
 
 const app = express()
+app.disable('x-powered-by')
 
 app.use(express.json())
 
