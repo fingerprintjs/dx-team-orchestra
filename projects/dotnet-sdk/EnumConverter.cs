@@ -175,3 +175,37 @@ public class BotdBotResultConverter : JsonConverter<BotdBotResult>
         writer.WriteStringValue(stringValue);
     }
 }
+
+public class RareDevicePercentileBucketConverter : JsonConverter<RareDevice.PercentileBucketEnum>
+{
+    public override RareDevice.PercentileBucketEnum Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var value = reader.GetString();
+        return value switch
+        {
+            "<p95" => RareDevice.PercentileBucketEnum.P95,
+            "p95-p99" => RareDevice.PercentileBucketEnum.P95P99,
+            "p99-p99.5" => RareDevice.PercentileBucketEnum.P99P995,
+            "p99.5-p99.9" => RareDevice.PercentileBucketEnum.P995P999,
+            "p99.9+" => RareDevice.PercentileBucketEnum.P999,
+            "not_seen" => RareDevice.PercentileBucketEnum.Notseen,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    public override void Write(Utf8JsonWriter writer, RareDevice.PercentileBucketEnum value, JsonSerializerOptions options)
+    {
+        var stringValue = value switch
+        {
+            RareDevice.PercentileBucketEnum.P95 => "<p95",
+            RareDevice.PercentileBucketEnum.P95P99 => "p95-p99",
+            RareDevice.PercentileBucketEnum.P99P995 => "p99-p99.5",
+            RareDevice.PercentileBucketEnum.P995P999 => "p99.5-p99.9",
+            RareDevice.PercentileBucketEnum.P999 => "p99.9+",
+            RareDevice.PercentileBucketEnum.Notseen => "not_seen",
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        writer.WriteStringValue(stringValue);
+    }
+}
