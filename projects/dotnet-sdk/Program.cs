@@ -25,6 +25,7 @@ builder.Services.AddControllers()
             options.JsonSerializerOptions.Converters.Add(new TamperingConfidenceConverter());
             options.JsonSerializerOptions.Converters.Add(new ProxyTypeConverter());
             options.JsonSerializerOptions.Converters.Add(new BotdBotResultConverter());
+            options.JsonSerializerOptions.Converters.Add(new RareDevicePercentileBucketConverter());
 
             // V4 SDK converters
             options.JsonSerializerOptions.Converters.Add(new DateTimeTrimTrailingZerosConverter());

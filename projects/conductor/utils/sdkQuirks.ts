@@ -31,9 +31,11 @@ const OMIT_EMPTY_QUIRKS: Partial<Record<Sdk, Quirk[]>> = {
     // getEvent / unseal
     { path: 'products.vpn.data.methods.mlPrediction', zeroValue: false },
     { path: 'products.identification.data.suspect', zeroValue: false },
+    { path: 'products.rareDevice.data.result', zeroValue: false },
     // searchEvents
     { path: 'events.products.vpn.data.methods.mlPrediction', zeroValue: false },
     { path: 'events.products.identification.data.suspect', zeroValue: false },
+    { path: 'events.products.rareDevice.data.result', zeroValue: false },
   ],
 }
 
