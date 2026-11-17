@@ -21,6 +21,14 @@ const accounts = {
     sealedEncryptionKey: process.env.MAXIMUM_US_SEALED_ENCRYPTION_KEY,
     rulesetId: process.env.MAXIMUM_US_DEFAULT_RULESET_ID
   },
+  // Separate subscription used only by the delete-visitor tests. Deleting a visitor
+  // removes it from every environment of its subscription, and CI identifications
+  // share a few visitor IDs, so deletes in the shared subscription break other tests.
+  deleteVisitor: {
+    region: 'us',
+    publicKey: process.env.DELETE_VISITOR_US_PUBLIC_KEY,
+    unscopedPrivateKey: process.env.DELETE_VISITOR_US_UNSCOPED_PRIVATE_KEY,
+  },
   regular: {
     region: 'eu',
     publicKey: process.env.DEFAULT_EU_DEFAULT_PUBLIC_KEY,
@@ -49,6 +57,7 @@ export type Credentials = {
   deleted: Credential
   sealedMaximumFeaturesUs: Credential
   sealedMinimumFeaturesUs: Credential
+  deleteVisitorUS: Credential
 }
 
 export type Mocks = {
@@ -102,6 +111,13 @@ const credentials: Credentials = {
     publicKey: 'ftxPJdxnMlP',
     privateKey: 'fz2%^pvvv',
     region: 'AB',
+  },
+  // No keyRef: the delete tests remove their own visitors, so the cleanup job skips them.
+  deleteVisitorUS: {
+    region: accounts.deleteVisitor.region,
+    publicKey: accounts.deleteVisitor.publicKey,
+    privateKey: accounts.deleteVisitor.unscopedPrivateKey,
+    unscopedKey: accounts.deleteVisitor.unscopedPrivateKey,
   },
   deleted: {
     privateKey: accounts.maximumFeatures.deletedPrivateKey,

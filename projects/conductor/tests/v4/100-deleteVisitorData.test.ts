@@ -7,7 +7,7 @@ test.slow()
 test.describe('DeleteVisitorData Suite', () => {
   test('for valid apiKey and visitor_id with Smart Signals', async ({ identify, sdkApi, assert }) => {
     const { visitor_id } = await identify({
-      auth: testData.credentials.maxFeaturesUS,
+      auth: testData.credentials.deleteVisitorUS,
       skipCleanup: true,
     })
 
@@ -17,8 +17,8 @@ test.describe('DeleteVisitorData Suite', () => {
     // delete and poll until it reports the visitor is already gone (404).
     await sdkApi.deleteVisitor({
       visitor_id,
-      api_key: testData.credentials.maxFeaturesUS.unscopedKey,
-      region: testData.credentials.maxFeaturesUS.region,
+      api_key: testData.credentials.deleteVisitorUS.unscopedKey,
+      region: testData.credentials.deleteVisitorUS.region,
     })
 
     await withRetry(() =>
@@ -33,8 +33,8 @@ test.describe('DeleteVisitorData Suite', () => {
         callback: (api) =>
           api.deleteVisitor({
             visitor_id,
-            api_key: testData.credentials.maxFeaturesUS.unscopedKey,
-            region: testData.credentials.maxFeaturesUS.region,
+            api_key: testData.credentials.deleteVisitorUS.unscopedKey,
+            region: testData.credentials.deleteVisitorUS.region,
           }),
       }),
       // Each retry re-issues the delete, which counts against the delete rate
